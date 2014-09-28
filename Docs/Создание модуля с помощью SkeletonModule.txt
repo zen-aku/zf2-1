@@ -1,0 +1,45 @@
+
+Ссылки на документацию : 
+http://framework.zend.com/manual/2.3/en/modules/zend.mvc.quick-start.html
+https://github.com/zendframework/ZendSkeletonModule 
+книга Шасанкара.Zend Framework 2.0.Разработка веб-приложений Zend - стр.42
+
+1. Перейдите в GIT-консоли(PowerShell) в папку module приложения.
+    I:\openserver\domains> cd .\zend.loc\module
+
+2. Склонируйте скелет модуля в модуль, напр. Users  
+    I:\openserver\domains\zend.loc\module> git clone https://github.com/zendframework/ZendSkeletonModule.git Users
+
+3. После удаления лишних папок модуль будет выглядеть:
+    - config
+    - src
+    - tests
+    - view
+    - autoload_classmap.php
+    - autoload_function.php
+    - autoload_register.php
+    - Module.php
+
+4. С помощью NetBeans найти в папке модуля Users, где установлен скелетон,
+    - ZendSkeletonModule - заменить на Users
+    - Skeleton - заменить на Users
+
+5. Переименовать папки и файлы:
+    - src/ZendSkeletonModule/Controller/SkeletonController --> src/Users/Controller/UsersController
+    - view/zend-skeleton-module/skeleton --> view/users/users
+    - tests/ZendSkeletonModule --> tests/Users
+
+6. В config/module.config.php изменить:
+    - '/module-specific-root' --> '/users'
+    - 'module-name-here' --> 'users'
+    
+
+7. Скелетон имеет полную (избыточную) структуру и некоторые папки/файлы/классы/методы могут быть впоследствие удалены,
+    а некоторые переименованы под свою структуру () при этом проконтролировать соответствующие изменения в 
+    - config/module.config.php
+    - autoload_classmap.php
+
+
+8. Я сделаю свой скелетон с переименованным модулeм Users и отформатированным кодом.
+    Впоследствие можно будет просто копировать модуль-скелетон Users и изменять его под конкретный модуль.
+

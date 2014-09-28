@@ -1,0 +1,57 @@
+
+Порядок прописывания сервисов:
+	1. Создать папку Service в src/Module/
+	2. В src/Module/Service создать класс сервиса
+	3. Прописать файл класса в classmap
+	4. Зарегистрировать сервис в service_config файле
+	5. В контроллере вызвать сервис в экшене
+
+	Блоки паттерна Service Locator
+	------------------------------
+В порядке наследования (если есть родственные связи)
+
+1. Конфигурирование ServiceManager (Service Definition):
+
+	ConfigIntarface
+	Config
+
+2. Контейнер ServiceManager (Service Container):
+
+	ServiceLocatorInterface
+	ServiceManager
+	AbstractPluginManager (содержит в свойстве ServiceManager и наследуется от ServiceManager)
+
+
+3. Фабрики сервисов, помещаемых в ServiceManager (Service Definition - Factories):
+
+	3.1 Factory
+
+		AbstractFactoryInterface
+		FactoryInterface
+		DelegatorFactoryInterface - фабрика-декоратор сервиса
+
+	3.2 ProxyManager
+
+		LazyServiceFactory
+		LazyServiceFactoryFactory
+
+4. Внедрение (инъекция) ServiceManager в класс (Injection of Service Container)
+
+	ServiceLocatorAwareInterface
+	ServiceLocatorAwareTrait
+	ServiceManagerAwareInterface ???
+
+5. Инициаализация сервиса
+
+	InitializerInterface
+
+6. DiC ???
+
+	DiServiceFactory
+	DiAbstractServiceFactory
+
+	DiInstanceManagerProxy
+	DiServiceInitializer
+
+
+

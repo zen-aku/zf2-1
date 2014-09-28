@@ -1,0 +1,109 @@
+<?php
+
+/* 
+ * Литеральный роутинг. 
+ * Быстрый, но очень громоздкий при наличии большого числа экшенов и параметров экшенов
+ * Применять при 1-2 роутах к одному контроллеру
+ */
+
+'router' => array(
+		'routes' => array(
+
+			/*
+			 * Именование элемента массива роутов : '<module>-<controller>-<action>'
+			 * Если имя модуля и контроллера совпадают, то '<controller>-<action>'
+			 * Если экшен index, то его не прописывают '<controller>'
+			 */
+			'module-controller-action' => array(
+				'type' => 'Literal',
+				'options' => array(
+					/*
+					 * Адрес роута: URL.'route'
+					 * Полный путь роута должен быть (c маленькой буквы):
+					 *		'route' => '/<module>/<controller>/<action>' 
+					 * Как правило, имя модуля совпадает с именем контроллера и поэтому имена контроллеров не пересекаются в различных модулях.
+					 * И роуты таких контроллеров рекомендуется писать без укзания модуля:
+					 *		'route' => '/<controller>/<action>' 
+					 * Если имя контроллера не совпадает с именем модуля, то надо писать полный роут с указанием имени модуля
+					 * Если имя экшена index, то его как правило не указывыают в роуте:
+					 *		'route' => '/<controller> 
+					 * Имена контроллера и экшена пишутся в route и defaults без суффиксов Controller и Action
+					 */ 
+					'route' => '/module/controller/action',
+					/*
+					 * Вызов компонентов модуля при вызове роута:
+					 *		'__NAMESPACE__'	=> '<Module name>\Controller',
+					 *		'controller' => '<Сontroller name>',
+					 *		'action' => '<action name>',
+					 * Для экономии места зачастую неймспейс включают в имя контроллера:
+					 *		'controller' => '<Module name>\Controller\<Controller name>',
+					 *		'action' => '<action name>',
+					 * Имена пространства имён и контроллера - с большой буквы, экшена - с маленькой
+					 */
+					'defaults' => array(
+						'__NAMESPACE__'	=> 'Modulename\Controller',
+						'controller' => 'Controllername',
+						'action' => 'actionname',
+					)
+				)
+			),
+		
+            /*
+             * Пример использования роута с child routes (дерево).
+             * Сайт на основе модуля Blog  
+             */           
+            //  URL '/' (Домашняя страница) would load the “Index” controller, “index” action.
+            'blog-index-index' => array(
+                'type' => 'literal',
+                'options' => array(
+                    'route' => '/', 
+                    'defaults' => array(
+                        'controller' => 'Blog\Controller\IndexController',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
+            'may_terminate' => true,
+            'child_routes' => array(
+                //  URL '/blog' - would load the “Blog” controller, “index” action.
+                'blog-blog-index' => array(
+                    'type' => 'literal',
+                    'options' => array(
+                        'route' => '/blog',
+                        'defaults' => array(
+                            'controller' => 'Blog\Controller\BlogController',
+                            'action' => 'index',
+                        ),
+                    ),
+                    'may_terminate' => true,
+                    'child_routes' => array(
+                        //  URL '/blog/rss' - would load the “Blog” controller, “rss” action.
+                        'blog-blog-rss' => array(
+                            'type' => 'literal',
+                            'options' => array(
+                                'route' => '/rss',
+                                'defaults' => array(
+                                    'action' => 'rss',
+                                )
+                            ),
+                            'may_terminate' => true,
+                            'child_routes' => array(
+                                // URL '/blog/rss/sub' - would load the “Blog” controller, “subrss” action.
+                                'subrss' => array(
+                                    'type' => 'literal',
+                                    'options' => array(
+                                        'route' => '/sub',
+                                        'defaults' => array(
+                                            'action' => 'subrss',
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),              
+            ),
+  
+            
+		),
+	)

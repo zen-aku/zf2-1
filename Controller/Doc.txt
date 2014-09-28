@@ -1,0 +1,10 @@
+
+    Порядок создания контроллера:
+        1. В src/Module/Contriller создаём файл MyContrController.php с суффиксом Controller
+        2. В controller_confif регистрируем контроллер
+        3. В classmap прописываем путь к файлу контроллера
+        4. В config router прописываем роуты контроллера
+        5. В view/module создаём папку mycontr с именем контроллера внижнем регистре
+        6. В view/module/mycontr создаём файлы view, именованные как соответствующие экшены контроллера
+
+

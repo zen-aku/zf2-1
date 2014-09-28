@@ -1,0 +1,22 @@
+<!
+    Для каждого Action существует обычно ровно одно представление (шаблон представления), имя которого совпадает с именем Action:
+    view/[имя_модуля]/[имя_контроллера]/[имя_action].phtml - view/helloworld/index/index.phtml
+
+    Доступ к переданным данным из Action предоставляется из объекта c помощью:
+    $this-[ключ элемента передаваемого массива в new ViewModel(array()) из Action]
+!>
+
+<h1>Invokable controller</h1>
+<p>1.object: <?php echo $this->object; ?></p>
+<p>2.invokable: <?php echo $this->invokable; ?></p>
+<p>invokable_inject: <?php echo $this->invokable_inject; ?></p>
+<p>3.1.factoryObject: <?php echo $this->factoryObject; ?></p>
+<p>3.2.factoryCallback: <?php echo $this->factoryCallback; ?></p>
+<p>3.3.factoryInvokable: <?php echo $this->factoryInvokable; ?></p>
+<p>4.alias сервиса greetingService: <?php echo $this->alias; ?></p>
+<p>5.abstractFactory: <?php echo $this->simple1; ?></p>
+<p>abstractFactory:<?php echo $this->simple2; ?></p>
+<p>6.initializer:<?php echo $this->init; ?></p>
+<p>7.delegator:<?php echo $this->delegator; ?></p>
+<p>8.serviceAware:<?php echo $this->serviceAware; ?></p>
+<p>serviceAwareTrait:<?php echo $this->serviceAwareTrait; ?></p>

@@ -1,0 +1,92 @@
+
+<h1>IndexPage</h1>
+
+<?php
+use HtmlGenerator\View\Helper\Html;
+
+// хелпер HtmlGenerator\View\Helper\HtmlHelper
+$h = $this->html();
+
+// html-аттрибуты
+$id = "navbar-nav";
+$href = $this->url();
+
+// Расчёт времени теста
+set_time_limit(120); 
+function microtime_float() {
+	list($usec, $sec) = explode(" ", microtime());
+	return ((float)$usec + (float)$sec);
+}
+$time_start = microtime_float();
+
+// Тест
+for ( $i = 0; $i < 10000; $i++) {
+       
+    // Задание массива аттрибутов в параметре тега-метода : 0.85c
+    //$h->a(['id'=> $id, 'href'=> $href]);
+    //$h->end();
+	
+	// Статик: Задание массива аттрибутов в параметре тега-метода : 0.85c
+    //Html::a(['id'=> $id, 'href'=> $href]);
+    //Html::end();
+	
+    // Задание контента в отдельном методе: 0.86c
+    //$h->a(['id'=> $id, 'href'=> $href]);
+    //    $h->content('Hello, world!');
+    //$h->end();
+	
+	// Задание контента в отдельном методе: 0.86c
+    //Html::a(['id'=> $id, 'href'=> $href]);
+    //    Html::content('Hello, world!');
+    //Html::end();
+}
+
+// Вывод времени теста
+$time_end = microtime_float();
+$time = round($time_end - $time_start, 5);
+// продолжительность скрипта
+echo "time_script = $time sec<br>".PHP_EOL;
+
+
+// Тест читабельности кода без принудительного задания имени закрывающего тэга
+
+$h->a(['id'=> $id, 'href'=> $href]);
+    $h->span(['class' => 'sfsf']);
+        $h->span(['id' => 'sas']);
+            $h->content('Привет');	
+		$h->end();
+        $h->br();
+    $h->end(); 
+    $h->span();
+        $h->content('Мир!');
+    $h->end();
+$h->end();
+ 
+Html::a(['id'=> $id, 'href'=> $href]);
+    Html::span(['class' => 'sfsf']);
+        Html::span(['id' => 'sas']);
+            Html::content('Привет');	
+		Html::end();
+        Html::br();
+    Html::end(); 
+    Html::span();
+        Html::content('Мир!');
+    Html::end();
+Html::end();
+
+
+/*
+// Тест автопроверки закрывающего тэга при принудительном задании имени закрывающего тэга
+$h->span();
+	$h->content('Мир!');
+	$h->a(['id'=> $id, 'href'=> $href]);
+$h->end('span');	// пропущен Html::end('a')
+*/
+
+/*
+// Тест автопроверки закрывающего тэга при принудительном задании имени закрывающего тэга
+Html::span();
+	Html::content('Мир!');
+	Html::a(['id'=> $id, 'href'=> $href]);
+Html::end('span');	// пропущен Html::end('a')
+*/

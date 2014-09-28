@@ -1,0 +1,29 @@
+Установка в Windows:
+
+Ссылки на документацию :
+http://framework.zend.com/manual/2.3/en/user-guide/skeleton-application.html
+https://github.com/zendframework/ZendSkeletonApplication
+
+Предварительно в php надо инсталлировать Composer (идёт уже установленный в пакете с OpenServer)
+и уствновить в Windows GIT.
+
+Перейти в папку, куда будет инсталлироваться ZF2 и набрать:
+I:\OpenServer\domains\zend.loc>composer create-project -sdev --repository-url="https://packages.zendframework.com" zendframework/skeleton-application ./
+I:\OpenServer\domains\zend.loc>composer update
+
+
+
+Установка дополнительных модулей на ZF2:
+
+1. ProxyManager:
+	I:\OpenServer\domains\zend.loc>composer require ocramius/proxy-manager:*
+	Дополнительные модули, расширяющие функционал ProxyManager:
+	I:\OpenServer\domains\zend.loc>composer require ocramius/generated-hydrator:*
+	Установятся в vendor:
+	- ocramius/proxy-manager
+	- ocramius/generated-hydrator
+	- ocramius/code-generator-utils
+	- nikic/php-parser
+
+2. ZFTool:
+        I:\OpenServer\domains\zend.loc>composer require zendframework/zftool:dev-master

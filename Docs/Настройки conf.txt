@@ -1,0 +1,23 @@
+
+I:\OpenServer\userdata\config\Apache-2.4_vhost
+
+#------------------------------------------------------#
+# Начало блока конфигурации ZendFramework2 хоста       #
+#------------------------------------------------------#
+
+<VirtualHost *:80>
+    ServerName zend.loc
+	ServerAlias www.zend.loc
+    DocumentRoot "I:/OpenServer/domains/zend.loc/public"
+    SetEnv APPLICATION_ENV "development"
+    <Directory "I:/OpenServer/domains/zend.loc/public">
+        DirectoryIndex index.php
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+#------------------------------------------------------#
+#  Конец блока конфигурации ZendFramework2 хоста       #
+#------------------------------------------------------#

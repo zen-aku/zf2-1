@@ -1,0 +1,130 @@
+Методы класса NameModule/Module, которые автоматически вызываются фреймворком и могут быть использованы разработчиками приложений:
+
+	- getAutoloadingConfig() (определен в Zend\ModuleManager\Feature\AutoloaderProviderInterface):
+		предоставляет информацию о том, как классы модуля могут быть автоматически загружены.
+		Если опустить этот метод, классы модуля (например, его контроллер) не могут быть загружены
+		автоматически, и возникают серьезные проблемы, когда вызывается
+		соответствующий URL. Следовательно, он всегда должен предоставлять
+		информацию фреймворку о том, как классы могут быть загружены автоматически.
+
+	- init() (определен в Zend\ModuleManager\Feature\InitProviderInterface):
+		позволяет разработчику приложений выполнить инициализацию своего собственного модуля, например,
+		чтобы зарегистрировать своих собственных слушателей для определенных событий.
+		ModuleManager передается в этот метод, и последний может таким образом, при
+		необходимости, получить доступ к соответствующим событиям (из ModuleManager)
+		или получить доступ к модулям. Важно то, что этот "метод" вызывается всегда – это
+		значит, что для каждого запроса и вообще для каждого модуля. Следует также
+		понимать, что это хорошее место, чтобы нанести ущерб времени загрузки
+		приложения. Таким образом, только небольшие и только легковесные операции
+		должны выполняться в рамках метода init(). Если вы пытаетесь оптимизировать
+		скорость ZF2 приложений, всегда следует сначала взглянуть на методы init()
+		активированных модулей.
+
+				namespace Helloworld;
+
+ 				use Zend\ModuleManager\ModuleManager;
+ 				use Zend\ModuleManager\ModuleEvent;
+
+				class Module {
+ 					function init(ModuleManager $moduleManager) {
+ 						$moduleManager->getEventManager()->attach( ModuleEvent::EVENT_LOAD_MODULES_POST, array($this, 'onModulesPost') );
+ 					}
+
+ 					function onModulesPost() {
+						die("Modules loaded!")
+					}
+ 				}
+
+	- onBoostrap() (определен в Zend\ModuleManager\Feature\BootstrapListenerInterface):
+		дополнительная возможность для разработчика приложений для реализации начальной загрузки
+		конкретного модуля. По сути, у этого метода то же назначение и полезные свойства,
+		что и у init(), но вызывается onBootstrap позже в ходе обработки, а именно, когда
+		ModuleManager уже завершил свою работу и вернул управление приложению
+		(Application). Таким образом, при использовании onBootstrap() доступны методы,
+		сервисы и данные, которые еще не были доступны в init().
+
+	- getConfig() (определен в Zend\ModuleManager\Feature\ConfigProviderInterface):
+		обеспечивает возможность передачи файла конфигурации модуля, который в соответствии с соглашением называется module.config.php и
+		хранится в этом модуле в подкаталоге config. Однако, это не обязательно. Строго
+		говоря, этот метод абсолютно необходим для выполнения модуля, но на практике
+		никто не может обойтись без конфигурационного файла этого модуля, который
+		становится доступным для фреймворка с помощью этого модуля. Что касается
+		конфигурации, фреймворк обеспечивает определенную степень гибкости. Таким
+		образом, либо все конфигурации могут быть доступными в одном или более
+		внешних файлах через getConfig(), либо специальные "конфигурационные
+		методы" могут быть реализованы в классе модуля. Последние относятся к сервис-
+		менеджерам, которые присутствуют в системе, то есть к ServiceManager,
+		ControllerLoader, ViewHelperManager и ControllerPluginManager.
+
+
+Группа методов конфигураций ServiceManager и его наследников Plugin Manager, автоматически вызываемые из Module класса для конфигурирования модуля
+
+	- getServiceConfig (определен в Zend\ModuleManager\Feature\ServiceProviderInterface):
+		позволяет настраивать ServiceManager и эквивалентен ключу
+		массива config в разделе service_manager в module.config.php.
+
+	- getControllerConfig() (определен в Zend\ModuleManager\Feature\ControllerProviderInterface):
+		позволяет настраивать ControllerLoader и эквивалентен
+		ключу массива config в разделе controllers в module.config.php.
+
+	- getControllerPluginConfig() (определен в Zend\ModuleManager\Feature\ControllerPluginProviderInterface):
+		позволяет настраивать ControllerPluginManager и
+		эквивалентен ключу массива config в разделе controller_plugins в module.config.php.
+
+	- getViewHelperConfig() (определен в Zend\ModuleManager\Feature\ViewHelperProviderInterface):
+		позволяет настраивать ViewHelperManager и эквивалентен
+		ключу массива config в разделе view_helpers в module.config.php.
+
+				function getViewHelperConfig() {
+					return array(
+ 						'invokables' => array(
+ 							'displayCurrentDate' => 'Helloworld\View\Helper\DisplayCurrentDate',
+					)
+ 				);
+
+
+В таблице ниже приведен полный список плагинов менеджеров, которые конфигурируются подобно ServiceManager,
+ключи конфигурации в массива config файла config\module.config.php,
+интерфейсы ModuleManager (все интерфейсы расположены в Zend\ModuleManager\Feature namespace)  и  названия методов в Module.php.
+
+Plugin Manager 					Config Key 		Interface 				Module Method
+
+Zend\Mvc\Controller\ControllerManager 		controllers 		ControllerProviderInterface 		getControllerConfig
+Zend\Mvc\Controller\PluginManager 		controller_plugins 	ControllerPluginProviderInterface 	getControllerPluginConfig
+Zend\Filter\FilterPluginManager 		filters 		FilterProviderInterface 		getFilterConfig
+Zend\Form\FormElementManager 			form_elements 		FormElementProviderInterface 		getFormElementConfig
+Zend\Stdlib\Hydrator\HydratorPluginManager 	hydrators 		HydratorProviderInterface 		getHydratorConfig
+Zend\InputFilter\InputFilterPluginManager 	input_filters 		InputFilterProviderInterface 		getInputFilterConfig
+Zend\Mvc\Router\RoutePluginManager 		route_manager 		RouteProviderInterface 			getRouteConfig
+Zend\Serializer\AdapterPluginManager 		serializers 		SerializerProviderInterface 		getSerializerConfig
+Zend\ServiceManager\ServiceManager 		service_manager 	ServiceProviderInterface 		getServiceConfig
+Zend\Validator\ValidatorPluginManager 		validators 		ValidatorProviderInterface 		getValidatorConfig
+Zend\View\HelperPluginManager 			view_helpers 		ViewHelperProviderInterface 		getViewHelperConfig
+Zend\Log\ProcessorPluginManager 		log_processors 		LogProcessorProviderInterface 		getLogProcessorConfig
+Zend\Log\WriterPluginManager 			log_writers 		LogWriterProviderInterface 		getLogWriterConfig
+
+!!! Все Plugin Manager extends AbstractPluginManager extends ServiceManager и ключи конфигурации для секции плагина имеют те же имена что и для ServiceManager:
+
+abstract_factories - абстрактные фабрики, массив состоящий из имен классов абстрактных классов.
+
+aliases - псевдонимы, ассоциативный массив состоящий из пар «имя псевдонима - соответствие»
+
+factories - фабрики, массив состоящий из пар «имя сервиса – класс фабрики».
+	Фабрикой должны быть либо классы реализующие Zend\ServiceManager\FactoryInterface либо invokable классы.
+	При использовании файлов конфигурации, фабрикой может выступать функция замыкание.
+
+invokables - вызовы, массив состоящий из пар «имя сервиса – имя класса».
+	Имя класса должно соответствовать классу, который может отработать без обязательной передачи аргументов в конструктор.
+
+services - сервисы, массив состоящий из пар «имя сервиса -  объект».
+
+shared - общедоступность, массив состоящий из пар «имя сервиса – булево значение», указывающая на то, должен ли быть сервис доступным или нет.
+	По-умолчанию в ServiceManager все сервисы доступны. Однако вручную можно указать значение «false», то есть будет возвращаться каждый раз новый экземпляр, а не уже существующий.
+
+initializers - array of PHP callables or string class names of classes implementing Zend\ServiceManager\InitializerInterface
+	(if a callable is used, it should be defined only in Module classes)
+
+delegators - массив 'декорируемый сервис' => 'декоратор'  конфигурирут ServiceManager, указывая какой сервис следует декорировать и как
+
+allow_override - разрешение на переопределение сервиса(сервисманагера?)
+

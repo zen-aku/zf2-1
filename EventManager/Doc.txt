@@ -1,0 +1,46 @@
+
+		Блоки паттерна Observer(Event) и другие структурные единицы
+		-----------------------------
+
+1. Контейнер Событий - часть класса Observable или SplSubject, отвечающая за события:
+	 - добавление, удаление, хранениие наблюдателей(слушателей) и исполнение события(посылка
+	 уведомления всем наблюдателям-слушателям об наступлении события):
+
+	 EventManagerInterface
+	 EventManager
+
+	 1.1. Регситрация нескольких слушателей на одно или несколько событий:
+
+	 	ListenerAggregateInterface
+	 	ListenerAggregateTrait
+
+2. EventManager Injection - внедрение контейнера событий непосредственно в тот класс,
+	с которым он взаимодействует ( связывание двух частей класса Observable или SplSubject:
+	контейнера событий с частью, не связанную с организацией событий)
+
+	EventsCapableInterface
+	EventManagerAwareInterface
+	EventManagerAwareTrait
+
+3. Event - создание объекта события в EventManager->trigger() и передача его в callback-слушателя в качестве аргумента
+
+ 	EventInterface
+ 	Event
+
+4. SharedEventManager Injection	- внедрение контейнера SharedEventManager ещё несуществующих событий в тот контейнер EventManager,
+	с которым он идентифицирован. EventManager имплементирован от SharedEventManagerAwareInterface
+
+	SharedEventManagerAwareInterface
+
+5. Контейнер ещё несуществующих событий:
+
+	SharedEventAggregateAwareInterface - для регистрации в SharedEventManager множества слушателей от SharedListenerAggregateInterface
+	SharedEventManagerInterface
+	SharedEventManager
+
+	5.1. Регистрация нескольких слушателей на одно или несколько несуществующих событий:
+
+		SharedListenerAggregateInterface
+
+
+

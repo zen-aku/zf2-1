@@ -1,0 +1,107 @@
+Установка в Windows:
+
+ZFTool предоставляет возможности по :
+	- получению базовой инфы
+	- созданию модуля, контроллера, классмапа и т.д.
+
+Но лучше использовать более специализированные инструменты:
+	- composer
+	- skeleton
+
+Ссылки на документацию : 
+http://framework.zend.com/manual/2.1/en/modules/zendtool.introduction.html
+https://github.com/zendframework/ZFTool
+
+Предварительно в php надо инсталлировать Composer (идёт уже установленный в пакете с OpenServer)
+и уствновить в Windows GIT.
+
+Перейти в папку, где будет инсталлирован ZF2 и набрать
+	I:\OpenServer\domains\zend.loc> composer require zendframework/zftool:dev-master
+
+Запуск команд ZFTool:
+Перейти в папку, где будет инсталлирован ZF2 и набрать vendor\bin\zf.php.bat [команда]:
+	I:\OpenServer\domains\zend.loc> vendor\bin\zf.php.bat version
+	
+Создание модуля в ZF2 с помощью ZFTool:	
+
+1.Перейти в папку, где будет инсталлирован ZF2 и набрать vendor\bin\zf.php.bat create module [name_module]:	
+	I:\OpenServer\domains\zend.loc> vendor\bin\zf.php.bat create module Users
+    Одновременно модуль прописывается в глобальном конфиге: в config/application.config.php    
+        'modules' => array(
+                'Application',
+                '<module namespace>',
+            ),
+	
+2. Cоздать класс-контроллер в модуле vendor\bin\zf.php.bat create controller [name_controller] [name_module]
+	I:\OpenServer\domains\zend.loc> vendor\bin\zf.php.bat create controller Users Users
+	
+3. Сгенерировать autoload_classmap vendor\bin\zf.php.bat classmap generate ./module/[name_module]	
+	I:\OpenServer\domains\zend.loc> vendor\bin\zf.php.bat classmap generate ./module/Users/
+	Отредактировать файл autoload_classmap.php - правые директории укоротить на __DIR__ файла autoload_classmap.php
+	Отредактировать файл Module.php: 
+			return array(
+				'Zend\Loader\ClassMapAutoloader' => array(
+					__DIR__ . '/autoload_classmap.php',
+				),
+
+!!! Вывод: ZFTool создаёт только структуру модуля (папки), а для наполнения его автозагрузчиками, контроллерами, конфигами его использовать неудобною
+		Для более продвинутого создания модулей надо использовать ZendSkeletonModule : https://github.com/zendframework/ZendSkeletonModule 
+
+	
+
+Команды ZFTool:
+
+1.Basic information
+	zf.php modules [list]           show loaded modules
+	zf.php version | --version      display current Zend Framework version
+
+2.Diagnostics
+	zf.php diag [options] [module name]
+		[module name]       (Optional) name of module to test
+		-v --verbose        Display detailed information.
+		-b --break          Stop testing on first failure.
+		-q --quiet          Do not display any output unless an error occurs.
+		--debug             Display raw debug info from tests.
+
+3.Project creation
+	zf.php create project <path>
+		<path>              The path of the project to be created
+
+4.Module creation
+	zf.php create module <name> [<path>]
+		<name>              The name of the module to be created
+		<path>              The path to the root folder of the ZF2 application (optional)
+
+5.Controller creation:
+	zf.php create controller <name> <module> [<path>]
+		<name>      The name of the controller to be created
+		<module>    The module in which the controller should be created
+		<path>      The root path of a ZF2 application where to create the controller
+
+6.Action creation:
+	zf.php create action <name> <controller> <module> [<path>]
+		<name>          The name of the action to be created
+		<controller>    The name of the controller in which the action should be created
+		<module>        The module containing the controller
+		<path>          The root path of a ZF2 application where to create the action
+
+7.Application configuration
+	zf.php config list                  list all configuration option
+	zf.php config get <name>            display a single config value, i.e. "config get db.host"
+	zf.php config set <name> <value>    set a single config value (use only to change scalar values)
+
+8.Classmap generator
+	zf.php classmap 	generate <directory> <classmap file> [--append|-a] [--overwrite|-w]
+		<directory>         The directory to scan for PHP classes (use "." to use current directory)
+		<classmap file>     File name for generated class map file  or - for standard output. If not supplied, defaults to
+							autoload_classmap.php inside <directory>.
+		--append | -a       Append to classmap file if it exists
+		--overwrite | -w    Whether or not to overwrite existing classmap file
+
+9.ZF library installation
+	zf.php install zf <path> [<version>]
+		<path>              The directory where to install the ZF2 library
+		<version>           The version to install, if not specified uses the last available
+
+
+

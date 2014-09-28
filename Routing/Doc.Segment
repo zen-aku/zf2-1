@@ -1,0 +1,56 @@
+<?php
+
+/* 
+ * Сегментный роутинг.
+ * Что такое default? Это вызов при отсутствии экшена?
+ */
+
+'router' => array(
+	'routes' => array(
+
+		// Segment route '<module name>-<controller>'
+		'modulename-controllername' => array(
+			'type' => 'Segment',
+			'options' => array(
+				/*
+				 * Адрес роута: URL.'route'
+				 * Полный путь роута должен быть (c маленькой буквы):
+				 *		'route' => '/<module>/<controller>[/:action[/:arg]] 
+				 * Как правило, имя модуля совпадает с именем контроллера и поэтому имена контроллеров не пересекаются в различных модулях.
+				 * И роуты таких контроллеров рекомендуется писать без укзания модуля:
+				 *		'route' => '/<controller>[/:action[/:arg]]' 
+				 * Если имя контроллера не совпадает с именем модуля, то надо писать полный роут с указанием имени модуля
+				 * Имена контроллера и экшена пишутся в route и defaults без суффиксов Controller и Action
+				 */ 
+				'route' => '/module/controller[/:action[/:id]]',
+				/*
+				 * Вызов компонентов модуля при вызове роута:
+				 *		'__NAMESPACE__'	=> '<Module name>\Controller',
+				 *		'controller' => '<Сontroller name>',
+				 *		'action' => '<action name>', - экшен по умолчанию (вызывается при отсутствии экшена в роуте?)
+				 * Для экономии места зачастую неймспейс включают в имя контроллера:
+				 *		'controller' => '<Module name>\Controller\<Controller name>',
+				 *		'action' => '<action name>',
+				 * Имена пространства имён и контроллера - с большой буквы, экшена - с маленькой
+				 * Как правило экшен поумолчанию делают index: 'action' => 'index',
+				 */
+				'defaults' => array(
+					'__NAMESPACE__'	=> 'Modulename\Controller',
+					'controller' => 'Controller name',
+					'action' => 'action name',
+				),
+				// optional constraints
+				'constraints' => array(
+					// 'action' => '(<action name1>|<action name2>|...)',
+					// 'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+					'action' => '(index)',
+					// 'arg' => '<regexp param>'
+					'arg' => '[0-9]+',
+				),
+			),
+		),
+		
+		
+	),
+)
+	
