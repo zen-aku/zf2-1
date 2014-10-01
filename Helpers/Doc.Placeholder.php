@@ -4,11 +4,10 @@
  * Хелпер-контейнер placeholder() спользуется для сохранения содержимого между скриптом вида и отображением. 
  * placeholder()->_invoke($key) возвращает контейнер класса Zend\View\Helper\Placeholder\Container\AbstractContainer extends ArrayObject 
  * из своего свойства массива с ключом $key: $this->items['foo'] = <AbstractContainer(value)> 
- * Так же имеются несколько полезных функций:
- *      - объединение содержимого, 
- *      - сохранение содержимого скрипта вида для последующего использования, 
- *      - добавления пред- и пост- текста, 
- *      - добавление разделителей
+ * placeholder() имеет функции:
+ * 1. хранение и последующий вывод как одиночного контента (set()) так и массива контента (exchangeArray())
+ * 2. задание отступа(getIndent()), префикса(getPrefix()), постфикса(getPostfix()) и разделителя(getSeparator()) для выводимого из хранилища контента
+ * 3. захват и сохранение забуфферизованного вывода (captureStart()-captureEnd()) в хранилище для позднего вывода
  */
 
 /* 
@@ -32,7 +31,6 @@
  echo $this->placeholder('foo')['bar'];     
  echo $this->placeholder('foo')->offsetGet('bar');
  
-
 /*
  * Зададим отступ(indent), префикс(prefix), постфикс(postfix) и разделитель(separator):
  */
@@ -110,6 +108,15 @@ $this->placeholder('foo')->captureEnd();
 echo $this->placeholder('foo')->data;
 // echo $this->placeholder('foo')['data'];
 
+/*
+ * По аналогии с placeholder() Класс-контейнер Zend\View\Helper\Placeholder\Container используется в хелперах-тегах, 
+ * формирующих html-элементы заголовка head: 
+ *	- headlink 
+ *	- headmeta
+ *	- headscript и inlinescript (extends HeadScript)
+ *	- headstyle 
+ *	- headtitle
+ */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace Zend\View\Helper;
@@ -183,8 +190,8 @@ class Placeholder extends AbstractHelper{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//namespace Zend\View\Helper\Placeholder;
-//class Container extends Container\AbstractContainer{}
+namespace Zend\View\Helper\Placeholder;
+class Container extends Container\AbstractContainer{}
 
 namespace Zend\View\Helper\Placeholder\Container;
 
