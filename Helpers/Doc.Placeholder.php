@@ -31,6 +31,11 @@
  echo $this->placeholder('foo')['bar'];     
  echo $this->placeholder('foo')->offsetGet('bar');
  
+// Проверка существования контейнера 
+// Через __invoke() вызов( placeholder() ) нельзя, надо через создание объекта хелпера из хелперплагинменеджера:
+if ($this->getHelperPluginManager()->get('placeholder')->containerExists('foo4')) echo "placeholder('foo4') существует<br />\n";
+if ($this->plugin('placeholder')->containerExists('foo3')) echo "placeholder('foo3') существует<br />\n";
+ 
 /*
  * Зададим отступ(indent), префикс(prefix), постфикс(postfix) и разделитель(separator):
  */
