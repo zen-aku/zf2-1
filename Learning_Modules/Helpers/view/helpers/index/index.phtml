@@ -1,0 +1,52 @@
+
+<h1>IndexPage</h1>
+
+<?php
+    /*
+     * Хелпер doctype()
+     */
+    // Задать doctype html-странице (по умолчанию HTML4_LOOSE)
+    $this->doctype('XHTML11');
+    //$this->doctype()->setDoctype('XHTML11');
+    
+    // Вывести тэг doctype html-страницы
+    echo $this->doctype();
+    // echo $this->doctype('XHTML11');  // сразу с заданием типа (по умолчанию HTML4_LOOSE)
+    
+    // Получить тип доктайпа
+    echo $this->doctype()->getDoctype()."<br />\n";       // XHTML11
+  
+    // Проверить doctype html-страницы
+    if ( $this->doctype()->isXhtml() ) echo 'xhtml';      // xhtml
+    elseif ( $this->doctype()->isHtml5() ) echo 'html5';  // html5
+    elseif ( $this->doctype()->isRdfa() ) echo 'rdfa';    // rdfa   
+    echo "\n<hr>";
+    
+    /*
+     * Хелпер placeholder()
+     */
+    $this->placeholder('foo1')->set("Сохраняем сообщение как единственный нулевой элемент массива ArrayObject[0]");
+    echo $this->placeholder('foo1')."<br />\n";   
+    
+    $this->placeholder('foo2')->bar = 'Сохраняем как свойство ArrayObject';
+    echo $this->placeholder('foo2')['bar']."<br />\n";
+    
+    $this->placeholder('foo3')['bar'] = 'Сохраняем как ассоциат. элемент ArrayObject';
+    echo $this->placeholder('foo3')->bar."<br />\n";
+    
+    $this->placeholder('foo4')->offsetSet('bar', 'Сохраняем через offsetSet() как элемент ArrayObject');
+    echo $this->placeholder('foo4')->offsetGet('bar')."<br />\n";
+     
+    // сохраняем массив сообщений и задаём параметры вывода
+    $this->placeholder('foo5')->exchangeArray([1,2,3,4]);
+    $this->placeholder('foo5')
+        ->setPrefix("<ul>\n    <li>")
+        ->setSeparator("</li><li>\n")
+        ->setIndent(4)
+        ->setPostfix("</li></ul>\n");
+    echo $this->placeholder('foo5');
+    
+?>
+
+
+
