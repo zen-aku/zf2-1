@@ -16,28 +16,30 @@
  * $this->items['foo'] = new AbstractContainer() и AbstractContainer::set("Some text for later")
  * AbstractContainer::set($value) { $this->exchangeArray(array($value)); } - Заменяет текущий массив (array) на другой массив (array) или объект (object)
  */ 
+ // сохранить одно сообщение как единственный нулевой элемент ArrayObject[0]
  $this->placeholder('foo')->set("Some text for later");
- // можно напрямую обращаясь к контейнеру как к ArrayObject
- $this->placeholder('foo')->exchangeArray(array("Some text for later"));
+ // сохранить массив сообщений
+ $this->placeholder('foo')->exchangeArray(array(1,2,3,4,5));
+ // вызываем содержимое всего массива
+ echo $this->placeholder('foo');
  
- // можно сохранять в отдельную ячейку или свойство ArrayObject
+ // можно сохранять в отдельную ячейку(свойство) ArrayObject
  $this->placeholder('foo')->bar = 'Some text for later';
- $this->placeholder('foo')['bar'] = 'Some text for later';  // проверить вызов без создания промежуточной переменной
- $this->placeholder('foo')->offsetSet('bar') = 'Some text for later';
- // вызываем из отдельного свойства или ячейки ArrayObject
+ $this->placeholder('foo')['bar'] = 'Some text for later';
+ $this->placeholder('foo')->offsetSet('bar', 'Some text for later');
+ // вызываем из отдельного свойства(ячейки) ArrayObject
  echo $this->placeholder('foo')->bar;
- echo $this->placeholder('foo')['bar']; // проверить вызов без создания промежуточной переменной      
+ echo $this->placeholder('foo')['bar'];     
  echo $this->placeholder('foo')->offsetGet('bar');
- //$foo = $this->placeholder('foo');
- //echo $foo['bar'];
+ 
 
 /*
  * Зададим отступ(indent), префикс(prefix), постфикс(postfix) и разделитель(separator):
  */
 $this->placeholder('foo')->setPrefix("<ul>n    <li>")   // префикс перед выводимой строкой, узнать префикс getPrefix()
                          ->setSeparator("</li><li>n")   // разделитель между элементами массива, узнать разделитель getSeparator()
-                         ->setIndent(4)                 // отступ перед элементом массива (4 пробела), узнать отступ getIndent()
-                         ->setPostfix("</li></ul>n");   // постфикс после элемента массива, узнать постфикс getPostfix()
+                         ->setIndent(4)                 // отступ перед всей строкой (4 пробела), узнать отступ getIndent()
+                         ->setPostfix("</li></ul>n");   // постфикс после всей строки, узнать постфикс getPostfix()
   
  /*
   * Вернуть содержимое контейнера $this->items['foo'] вызвав его метод AbstractContainer::__toString(), 
