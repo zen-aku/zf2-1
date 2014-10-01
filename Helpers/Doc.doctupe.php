@@ -4,6 +4,7 @@
 <?php
     /*
      * Применение Хелпера doctype()
+     * Задавать doctype html-странице лучше всего в bootstrap модуля Application или конкретного модуля
      */
     // Задать doctype html-странице (по умолчанию HTML4_LOOSE)
     $this->doctype('XHTML11');
