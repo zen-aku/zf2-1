@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Хелпер-контейнер placeholder() спользуется для сохранения содержимого между скриптом вида и отображением. 
+ * Хелпер-контейнер placeholder() используется для сохранения содержимого между скриптом вида и отображением. 
  * placeholder()->_invoke($key) возвращает контейнер класса Zend\View\Helper\Placeholder\Container\AbstractContainer extends ArrayObject 
  * из своего свойства массива с ключом $key: $this->items['foo'] = <AbstractContainer(value)> 
  * placeholder() имеет функции:
