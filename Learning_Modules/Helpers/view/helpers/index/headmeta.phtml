@@ -1,0 +1,79 @@
+<?php
+
+/*
+ * Способы добавления контента заголовка в контейнер Zend\View\Helper\Placeholder\Container\AbstractContainer
+ */
+/*
+ * Первый способ добавления meta в хранилище - через __invoke() - meta добавляются в контейнер как числовые элементы массива
+ * headmeta($content = null, $keyValue = null, $keyType = 'name', $modifiers = array(), $placement = Placeholder\Container\AbstractContainer::APPEND)
+ *   $content - содержимое аттрибута content (content = $content)
+ *   $keyValue - содержимое аттрибута $keyType ($keyType = $keyValue)
+ *   $keyType - имя аттрибута (name, http-equiv, charset)
+ *   $modifiers - массив аттрибутов lang или scheme(в html5 не используется)
+ *   $placement - способ добавления в контейнер: APPEND(по умолчанию), SET, PREPEND 
+ */
+$this->headmeta(                        // <meta name="keywords" content="framework, PHP, productivity" lang="ru">
+    'framework, PHP, productivity',     // содержимое аттрибута content (content = 'framework, PHP, productivity') 
+    'keywords',                         // содержимое аттрибута (name = 'keywords')
+    'name',                             // имя аттрибута: name (по умолчанию), 
+    ['lang' => 'ru'],                   // массив аттр. lang или scheme (в html5 не используется); [] по умолчанию
+    'SET'                               // способ добавления в контейнер: APPEND(по умолчанию), SET, PREPEND  
+);
+$this->headmeta('Wed, 26 Feb 1997 08:21:57 GMT', 'expires', 'http-equiv');  // <meta http-equiv="expires" content="Wed, 26 Feb 1997 08:21:57 GMT">
+$this->headmeta('text/html; charset=UTF-8', 'content-type', 'http-equiv');  // <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+//echo $this->headmeta();  
+
+/*
+ * Второй способ добавления meta в хранилище - через индивидуальные методы хелмера, соответствующие аттрибутам мета-тега: 
+ *    аттр. 'name'
+ *       appendName($keyValue, $content, $conditionalName) - $keyValue - значение аттр. 'name', $content - значение аттр. content, $conditionalName - платформа IE для условного комментария
+ *       offsetSetName($index, $keyValue, $content, $conditionalName) - вставить в контейнер в позицию $index
+ *       prependName($keyValue, $content, $conditionalName)
+ *       setName($keyValue, $content, $modifiers) - заменить весь массив контейнера на новое значение
+ *    аттр. 'http-equiv'
+ *       appendHttpEquiv($keyValue, $content, $conditionalHttpEquiv) - значение аттр. 'http-equiv', $content - значение аттр. content, $conditionalName - платформа IE для условного комментария
+ *       offsetSetHttpEquiv($index, $keyValue, $content, $conditionalHttpEquiv) - вставить в контейнер в позицию $index
+ *       prependHttpEquiv($keyValue, $content, $conditionalHttpEquiv)
+ *       setHttpEquiv($keyValue, $content, $modifiers)
+ *    аттр. 'charset'
+ *       setCharset($charset) - $charset - значение аттр. 'charset'
+ */
+// setting meta keywords
+$this->headMeta()
+    ->appendName('keywords', 'framework, PHP, productivity');
+
+// disabling client-side cache
+$this->headMeta()
+    ->appendHttpEquiv('expires', 'Wed, 26 Feb 1997 08:21:57 GMT')
+    ->appendHttpEquiv('pragma', 'no-cache')
+    ->appendHttpEquiv('Cache-Control', 'no-cache');
+
+// setting content type and character set
+$this->headMeta()
+    ->prependHttpEquiv('Content-Type','text/html; charset=UTF-8')
+    ->offsetSetHttpEquiv(2, 'Content-Language', 'en-US');
+
+// setting character set in HTML5
+$this->headMeta()->setCharset('UTF-8'); //<meta charset="UTF-8">
+
+// setting a meta refresh for 3 seconds to a new url:
+$this->headMeta()->appendHttpEquiv('Refresh','3;URL=http://www.some.org/some.html');
+
+echo $this->headMeta();
+
+/*
+ * Для использования meta в doctype='HTML1_RDFA' (напр. в Facebook Open Graph Protocol) используются методы:
+ *      appendProperty($property, $content, $modifiers)
+ *      offsetSetProperty($index, $property, $content, $modifiers)
+ *      prependProperty($property, $content, $modifiers)
+ *      setProperty($property, $content, $modifiers)
+ */
+// устанавливаем doctype='HTML1_RDFA'
+$this->doctype(Zend\View\Helper\Doctype::XHTML1_RDFA);
+$this->headMeta()->setProperty('og:title', 'my article title');
+$this->headMeta()->setProperty('og:type', 'article');
+echo $this->headMeta();
+
+// output is:
+//   <meta property="og:title" content="my article title" />
+//   <meta property="og:type" content="article" />

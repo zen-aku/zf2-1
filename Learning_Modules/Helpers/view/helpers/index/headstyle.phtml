@@ -1,0 +1,54 @@
+<?php
+/*
+ * Хелпер headstyle() - это частный случай хелпера placeholder(). 
+ * Он предназначен для хранения и вывода inline стилей (в теге <style>).
+ * Для хранения используется контейнер Zend\View\Helper\Placeholder\Container\AbstractContainer (см. Doc.Placeholder.php)
+ */
+
+/*
+ * Способы добавления стилей в контейнер Zend\View\Helper\Placeholder\Container\AbstractContainer.
+ * Стили добавляются на страницу как inline в теги <style></style> каждый добавленый стиль в отдельный тег.
+ * $this->headstyle($style = null, $placement = 'APPEND', $attributes = array())
+ * $attributes - массив аттрибутов тэга <style>: lang, title, media, dir : array('lang'=>'ru')
+ * $placement - APPEND, SET, PREPEND
+ */
+$style1 = "p{background-color:red;}";
+$style2 = "p{background-color:green;}";
+$style3 = "p{background-color:yellow;}";
+
+
+// Первый способ добавления в хранилище - через __invoke() - заголовки добавляются в контейнер как числовые элементы массива
+// AbstractContainer::set("стиль"). Второй аргумент 'SET' - замена всего содержимого контейнера на новое
+$this->headstyle($style1, 'SET');
+// AbstractContainer::append("стиль"). Второй аргумент по умолчанию - 'APPEND' - добавление в конец массива
+$this->headstyle($style2);
+// AbstractContainer::prepend("стиль"). Второй аргумент 'PREPEND' - добавление в начало массива
+$this->headstyle($style3, 'PREPEND');
+echo $this->headstyle()."<br />\n";
+
+
+// Другой способ добавления стилей в хранилище - через __call методы хелпера с проверкой валидности стилей.  
+// Стили добавляются в контейнер как числовые элементы массива
+$style = $this->headstyle();
+$style->setStyle($style1)
+	->appendStyle($style2)
+	->prependStyle($style3);
+echo $style."<br />\n";
+
+// Если надо определить стили в определённом месте массива то надо использовать offsetSetStyle($index, $style), $index - числовой индекс массива стилей
+$this->headstyle()->offsetSetStyle(4, $style3);
+echo $style."<br />\n";
+
+/*
+ * Захват стилей с помощью буфферизации вывода
+ */
+$this->headstyle()->captureStart(); 
+// Буфферизация вывода ?>
+body {
+    background-color: silver;
+}
+<?php 
+// Остановить захват, очистить буффер и сохранить стили в хрвнилище стилей
+$this->headStyle()->captureEnd();
+// применить стили
+echo $this->headStyle();
