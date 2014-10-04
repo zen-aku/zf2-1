@@ -70,3 +70,9 @@ $('foo_form').action = action;
 // остановить буфферизацию и добавить скрипт в хранилище методом, указанным в captureStart() (по умолчанию APPEND)
 $this->headScript()->captureEnd('PREPEND');
 echo $this->headScript();
+
+/*
+ * Передаваемый контент в хелпер автоматически экранируется. Чтобы отключить автоматическое экранирование
+ * надо использовать метод: setAutoEscape(false)
+ */
+$this->headscript()->setAutoEscape(false);

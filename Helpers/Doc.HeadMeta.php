@@ -81,3 +81,10 @@ echo $this->headMeta();
 // output is:
 //   <meta property="og:title" content="my article title" />
 //   <meta property="og:type" content="article" />
+
+
+/*
+ * Передаваемый контент в хелпер автоматически экранируется. Чтобы отключить автоматическое экранирование
+ * надо использовать метод: setAutoEscape(false)
+ */
+$this->headmeta()->setAutoEscape(false);

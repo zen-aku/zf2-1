@@ -55,3 +55,9 @@ $this->headLink()->offsetSetStylesheet(
 );
 // rendering the links from the layout:
 //echo $this->headLink();
+
+/*
+ * Передаваемый контент в хелпер автоматически экранируется. Чтобы отключить автоматическое экранирование
+ * надо использовать метод: setAutoEscape(false)
+ */
+$this->headlink()->setAutoEscape(false);

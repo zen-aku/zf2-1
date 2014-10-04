@@ -8,7 +8,6 @@
  *      3. захват и сохранение забуфферизованного вывода (captureStart()-captureEnd()) в хранилище для позднего вывода 
  * headtitle() - это специализированный аналог (тег <title> в <head>) хелпера-хранилища контента placeholder() (см. Doc.Placeholder.php)
  */
-
 /*
  * Способы добавления контента заголовка в контейнер Zend\View\Helper\Placeholder\Container\AbstractContainer:
  */
@@ -47,6 +46,12 @@ $this->headtitle()
 	->setSeparator("---")	
 	->setPostfix("?????");
 echo $this->headtitle();
+
+/*
+ * Передаваемый контент в хелпер автоматически экранируется. Чтобы отключить автоматическое экранирование
+ * надо использовать метод: setAutoEscape(false)
+ */
+$this->headtitle()->setAutoEscape(false);
   
 // вывести заголовок без тегов <title>
 echo $this->headTitle()->renderTitle()."<br />\n";

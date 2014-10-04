@@ -54,3 +54,9 @@ body {
 $this->headStyle()->captureEnd();
 // применить стили
 echo $this->headStyle();
+
+/*
+ * Передаваемый контент в хелпер автоматически экранируется. Чтобы отключить автоматическое экранирование
+ * надо использовать метод: setAutoEscape(false)
+ */
+$this->headstyle()->setAutoEscape(false);
