@@ -1,0 +1,77 @@
+<?php
+/*
+ * Хелпер headtitle() используется для формирования заголовка тега <title> в <head>.
+ * Он наследуется от Placeholder\Container\AbstractStandalone, который формирует доступ к 
+ * контейнеру Zend\View\Helper\Placeholder\Container\AbstractContainer, который  имеет функции:
+ *      1. хранение и последующий вывод как одиночного контента (set()) так и массива контента (exchangeArray())
+ *      2. задание отступа(getIndent()), префикса(getPrefix()), постфикса(getPostfix()) и разделителя(getSeparator()) для выводимого из хранилища контента
+ *      3. захват и сохранение забуфферизованного вывода (captureStart()-captureEnd()) в хранилище для позднего вывода 
+ * headtitle() - это специализированный аналог (тег <title> в <head>) хелпера-хранилища контента placeholder() (см. Doc.Placeholder.php)
+ */
+
+/*
+ * Способы добавления контента заголовка в контейнер Zend\View\Helper\Placeholder\Container\AbstractContainer:
+ */
+// Первый способ добавления заголовка в хранилище - через __invoke() - заголовки добавляются в контейнер как числовые элементы массива
+// AbstractContainer::set("заголовок") второй аргумент 'SET'контента - замена всего содержимого контейнера на новое
+$this->headtitle('Заголовок страницы SET', 'SET');
+// AbstractContainer::append("заголовок") второй аргумент по умолчанию - 'APPEND' - добавление в конец массива
+$this->headtitle('Заголовок страницы APPEND');
+// AbstractContainer::prepend("заголовок") второй аргумент 'PREPEND' - добавление в начало массива
+$this->headtitle('Заголовок страницы PREPEND', 'PREPEND');
+/*
+  * Вернуть содержимое контейнера вызвав его метод AbstractContainer::__toString(), 
+  * который соберёт в строку все элементы контейнера-массива типа ArrayObject с учётом отступа(indent), префикса(prefix), постфикса(postfix) и разделителя(separator):
+  * AbstractContainer::__toString(){
+  * $items  = $this->getArrayCopy(); // ArrayObject::getArrayCopy() - Создаёт копию ArrayObject в виде массива
+  * return $this->getIndent()
+  *     . $this->getPrefix()
+  *     . implode($this->getSeparator(), $items)
+  *     . $this->getPostfix();
+  * }
+  */
+echo $this->headtitle()."<br />\n"; 
+
+
+// Другой способ добавления заголовка в хранилище - через методы AbstractContainer - заголовки добавляются в контейнер как числовые элементы массива
+$title = $this->headtitle();
+$title->set('Заголовок через set()')
+	->append('Заголовок через append()')
+	->prepend('Заголовок через prepend()');
+echo $title;
+
+// зададим отступ, префикс, разделитель и постфикс
+$this->headtitle()
+	->setIndent(4)	
+	->setPrefix("!!!!!")
+	->setSeparator("---")	
+	->setPostfix("?????");
+echo $this->headtitle();
+
+/*
+ * Передаваемый контент в хелпер автоматически экранируется. Чтобы отключить автоматическое экранирование
+ * надо использовать метод: setAutoEscape(false)
+ */
+$this->headtitle()->setAutoEscape(false);
+  
+// вывести заголовок без тегов <title>
+echo $this->headTitle()->renderTitle()."<br />\n";
+
+// сохраняем заголовки в отдельных свойствах(элементах массива) хелпера, который extends IteratorAggregate, ArrayAccess
+$this->headtitle()->bar1 = 'Заголовок через свойство';
+$this->headtitle()['bar2'] = 'Заголовок через ячейки массива';
+$this->headtitle()->offsetSet('bar3', 'Заголовок через offsetSet()');
+// При обращении к объекту хелпера как к строке все его свойства-элементы массива итерируются и собираются в строку с заданными отступом, префиксом, разделителем и постфиксом
+echo $this->headtitle();
+echo $this->headTitle()->renderTitle()."<br />\n";
+
+// проверка существования заголовка осуществляется методами хелпера как extends ArrayAccess
+if ( isset($this->headtitle()->bar1) ) echo 'Контейнер заголовка bar1 существует'."<br />\n";
+if ( $this->headtitle()->offsetExists('bar2') ) echo 'Контейнер заголовка bar2 существует'."<br />\n";
+
+// Mожно буфферизировать вывод заголовка по аналогии с placeholder(), но это не имеет практического смысла.
+
+?>
+
+
+
