@@ -27,6 +27,8 @@ echo $this->varName3;
  * В объекте вида класса PhpRenderer сохраняются декларируемые переменные в массиве-хранилище:
  * PhpRenderer::__vars['имя деклприруемой переменной'] => <значение деклприруемой переменной>
  * PhpRenderer::__vars - это объект Zend\View\Variables extends ArrayObject.
+ * 
+ * По-видимому таким путём заносятся в объект View данные из экшеновконтроллеров.
  */
 
 class DeclareVars extends AbstractHelper {

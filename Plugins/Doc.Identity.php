@@ -5,11 +5,18 @@ class IndexController extends AbstractActionController {
         /*
          * Zend\Mvc\Controller\Plugin\Identity::__invoke()
          * Плагин позволяет получить идентичность из сервиса Zend\Authentication\AuthenticationService
-         * Плагин работает, если в ServiceManager зарегистрирован сервис Zend\Authentication\AuthenticationService
-         * При вызове Identity::__invoke() идёт обращение к методу getIdentity() сервиса Zend\Authentication\AuthenticationService, 
-         * который возвращает из сессии аутентифицированного мембера или null, если его нет
-         */
-        $user = $this->identity(); 
+         * Плагин работает, если в конфиге ServiceManager зарегистрирован сервис Zend\Authentication\AuthenticationService
+		 * 'invokables' => array(
+		 *		'Zend\Authentication\AuthenticationService' => 'Zend\Authentication\AuthenticationService',
+		 *	),
+		 * Т.к. этот сервис требуется фактически для всех модулей, то его лучше регистрировать в общем модуле Application
+		 * 
+		 * Плагин 'identity' вызывается через фабрику Zend\Mvc\Controller\Service\IdentityFactory,
+		 * в которой вызывается сервис Zend\Authentication\AuthenticationService
+		 * При вызове Identity::__invoke() идёт обращение к методу getIdentity() сервиса Zend\Authentication\AuthenticationService, 
+		 * который возвращает из сессии имя аутентифицированного мембера или null, если его нет
+		 */
+        //$user = $this->identity(); 
         
         // Использование identity() для проверки входа:        
         if ($user = $this->identity()) {
