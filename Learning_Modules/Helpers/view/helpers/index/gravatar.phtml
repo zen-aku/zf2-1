@@ -1,0 +1,48 @@
+<?php
+/*
+ * Хелпер gravatar() представляет собой сервис, с помощью которого можно подключить на страницу
+ * аватар, зарегистрированный пользователем на http://www.gravatar.com
+ * 
+ * Хелпер gravatar() расширяет Zend\View\Helper\AbstractHtmlElement и фактически представляет собой
+ * генератор тега <img>, которому задаётся ссылка изображения аватара и дополнительные аттрибуты
+ * 
+ * Рейтинги аватара (с личных настроек аватар с сайта http://www.gravatar.com):
+ *      G  Граватары с рейтингом G пригодны для показа на сайтах с любой аудиторией.
+ *      PG Граватары с рейтингом PG могут содержать неприличные жесты, провокационно одетых людей, грубые выражения или умеренную жестокость.
+ *      R  Граватары с рейтингом R могут быть оскорбительными, содержать сцены жестокости, обнаженные тела или связанные с наркотиками.
+ *      X  Граватары с рейтингом X могут содержать откровенные сексуальные изображения или сцены экстремальной жестокости.
+ */
+
+/*
+ * Для вывода изображения использутся метод:
+ * __invoke ($email = "", $options = array(), $attribs = array())
+ *      $email - адрес почты, к которому привязан аватар на http://www.gravatar.com
+ *      $options - массив опций
+ *      $attribs - массив аттрибутов тега <img> (height, width, title, alt, class, id и т.д.)
+ *  $options:
+ *      'img_size'    => 80,    - размер изображения в пикселях (1-512) как сторона 
+ *      'default_img' => self::DEFAULT_MM,
+ *      'rating'      => self::RATING_G, - рейтинг аватара ('g', 'pg', 'r', 'x')
+ *      'secure'      => null, - SSL(true) or No-SSL(null или false) загрузка аватара
+ *  Возвращает объект класса Gravatar. 
+ * __toString() вызывает возврат тега изображения с помощью getImgTag()
+ */
+// 
+echo $this->gravatar(
+    'algerd75@mail.ru', 
+    ['img_size'=>100, 'rating'=>'pg'], 
+    ['title'=>'koala', 'alt'=>'avatar' ]
+);
+// Для вывода аватара можно также использовать:
+echo $this->gravatar()->getImgTag();
+
+// Генерируем аватар через сеттеры
+$gravatar = $this->gravatar();
+$gravatar->setEmail('algerd75@mail.ru');
+$gravatar->setImgSize(40);
+$gravatar->setDefaultImg( \Zend\View\Helper\Gravatar::DEFAULT_MM ); // задать аватар по умолчанию
+$gravatar->setRating( \Zend\View\Helper\Gravatar::RATING_G );
+$gravatar->setSecure(true);
+echo $gravatar->getImgTag();
+
+// Соответствующие настройки можно вернуть с помощью геттеров: напр. getImgSize()
