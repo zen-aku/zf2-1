@@ -1,0 +1,26 @@
+
+<h1>IndexPage</h1>
+
+<?php
+/*
+ * Хелпер doctype()
+ */
+// Задать doctype html-странице (по умолчанию HTML4_LOOSE)
+$this->doctype('XHTML11');
+//$this->doctype()->setDoctype('XHTML11');
+
+// Вывести тэг doctype html-страницы
+echo $this->doctype();
+// echo $this->doctype('XHTML11');  // сразу с заданием типа (по умолчанию HTML4_LOOSE)
+
+// Получить тип доктайпа
+echo $this->doctype()->getDoctype()."<br />\n";       // XHTML11
+
+// Проверить doctype html-страницы
+if ( $this->doctype()->isXhtml() ) echo 'xhtml';      // xhtml
+elseif ( $this->doctype()->isHtml5() ) echo 'html5';  // html5
+elseif ( $this->doctype()->isRdfa() ) echo 'rdfa';    // rdfa   
+
+
+
+
