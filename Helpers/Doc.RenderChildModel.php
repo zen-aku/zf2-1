@@ -1,0 +1,43 @@
+<?php
+
+use Zend\View\Model\ViewModel;
+
+/*
+ * Хелпер renderChildModel($captureTo) - выводит шаблон ребёнка, 
+ * сохранённый в объекте текущего вида ViewModel под именем $captureTo
+ * Дети добавляются в вид ViewModel с помощью его метода ViewModel::addChild():
+ * ViewModel::addChild(ModelInterface $child, $captureTo = null, $append = null)
+ *  $child - объект класса ViewModel, в котором находится шаблон
+ *  $captureTo - имя, под которым сохраняется дочерний шаблон в родителе - объекте вида ViewModel
+ *  $append - Set flag indicating whether or not append to child  with the same capture
+ */
+/*
+ * Добавляем в текущий объект вида (ViewModel) шаблоны как детей данного вида. 
+ * Эту операцию лучше проделывать в экшене контроллера, получая шаблоны из других контроллеров 
+ * или из корневой директории шаблонов /widget, используя плагин контроллеров dorward() и layout()
+ * (см. Doc.Layout.php и Doc.Forward.php)
+ */
+/*
+ *  Получить объект класса ViewModel текущего вида с помощью хелпера viewModel()
+ */
+$currentView = $this->viewModel()->getCurrent();
+
+// создаём объек ViewModel явно и передаём ему шаблон, прописанный в конфиге в карте шаблонов
+$article = new ViewModel();
+$article->setTemplate('layout/ArticleTemplate');
+$currentView->addChild($article, 'article');
+
+// создаём объект ViewModel на лету и передаём ему шаблон
+$currentView->addChild(
+    (new ViewModel())->setTemplate('layout/SidebarTemplate'), 
+    'sidebar'
+);
+
+/*
+ * Теперь где-то в html-коде мы можем вызвать шаблоны с помощью хелпера renderChildModel($captureTo):
+ */
+echo $this->renderChildModel('sidebar');
+echo $this->renderChildModel('article');
+
+// или через метод хелпера
+echo $this->plugin('renderChildModel')->render('article');

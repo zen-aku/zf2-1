@@ -64,16 +64,16 @@ class IndexController extends AbstractActionController {
 		 * Вызываем из карты шаблонов готовые шаблоны 
 		 */
 		
-        $articleView = new View\Model(array('article' => $article));
+        $articleView = new ViewModel(array('article' => $article));
         $articleView->setTemplate('content/article');
  
-        $primarySidebarView = new View\Model();
+        $primarySidebarView = new ViewModel();
         $primarySidebarView->setTemplate('content/main-sidebar');
  
-        $secondarySidebarView = new View\Model();
+        $secondarySidebarView = new ViewModel();
         $secondarySidebarView->setTemplate('content/secondary-sidebar');
  
-        $sidebarBlockView = new View\Model();
+        $sidebarBlockView = new ViewModel();
         $sidebarBlockView->setTemplate('content/block');
  
 		/*
