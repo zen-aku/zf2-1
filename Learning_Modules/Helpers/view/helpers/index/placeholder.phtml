@@ -1,0 +1,86 @@
+
+<h1>IndexPage</h1>
+
+<?php
+/*
+ * Хелпер-контейнер placeholder() используется для сохранения содержимого между скриптом вида и отображением. 
+ * placeholder()->_invoke($key) возвращает контейнер класса Zend\View\Helper\Placeholder\Container\AbstractContainer extends ArrayObject 
+ * из своего свойства массива с ключом $key: $this->items['foo'] = <AbstractContainer(value)> 
+ * placeholder() имеет функции:
+ * 1. хранение и последующий вывод как одиночного контента (set()) так и массива контента (exchangeArray())
+ * 2. задание отступа(getIndent()), префикса(getPrefix()), постфикса(getPostfix()) и разделителя(getSeparator()) для выводимого из хранилища контента
+ * 3. захват и сохранение забуфферизованного вывода (captureStart()-captureEnd()) в хранилище для позднего вывода
+ */
+
+/* 
+ * создать контейнер для ключа 'foo' контейнер и добавить в него значение "Some text for later"
+ * $this->items['foo'] = new AbstractContainer() и AbstractContainer::set("Some text for later")
+ * AbstractContainer::set($value) { $this->exchangeArray(array($value)); } - Заменяет текущий массив (array) на другой массив (array) или объект (object)
+ */ 
+
+$this->placeholder('foo1')->set("Сохраняем сообщение как единственный нулевой элемент массива ArrayObject[0]");
+echo $this->placeholder('foo1')."<br />\n";   
+
+$this->placeholder('foo2')->bar = 'Сохраняем как свойство ArrayObject';
+echo $this->placeholder('foo2')['bar']."<br />\n";
+
+$this->placeholder('foo3')['bar'] = 'Сохраняем как ассоциат. элемент ArrayObject';
+echo $this->placeholder('foo3')->bar."<br />\n";
+
+$this->placeholder('foo4')->offsetSet('bar', 'Сохраняем через offsetSet() как элемент ArrayObject');
+echo $this->placeholder('foo4')->offsetGet('bar')."<br />\n";
+
+
+// Проверка существования контейнера 
+// Через __invoke() вызов( placeholder() ) нельзя, надо через вызов объекта хелпера из хелперменеджера:
+if ($this->getHelperPluginManager()->get('placeholder')->containerExists('foo4')) echo "placeholder('foo4') существует<br />\n";
+if ($this->plugin('placeholder')->containerExists('foo3')) echo "placeholder('foo3') существует<br />\n";
+
+
+// сохраняем массив сообщений и задаём параметры вывода
+$this->placeholder('foo5')->exchangeArray([1,2,3,4]);
+$this->placeholder('foo5')
+	->setIndent(4)	
+	->setPrefix("<ul>\n    <li>")
+	->setSeparator("</li><li>\n")	
+	->setPostfix("</li></ul>\n");
+echo $this->placeholder('foo5');
+
+
+// Задаём для хранения захватываемого вывода ключ в AbstractContainer['data'] и SET - замещение содержимого
+$this->placeholder('foo')->captureStart('SET', 'data');
+// Захватываемый вывод
+?>
+<div>
+    <h2><?php echo $data['title'] ?></h2>
+    <p><?php echo $data['content'] ?></p>
+</div>
+<?php
+// остановить захват вывода: очистить буфер и поместить его в контейнер способом SET: $this->items['foo']->set() в свойство-ключ 'data'
+$this->placeholder('foo')->captureEnd();
+// вывести забуфферизованный и сохранённый вывод из контейнера $this->items['foo'][AbstractContainer['data']]
+echo "Сейчас будет выведен забуфферизованный html: <br />\n";
+echo $this->placeholder('foo')->data;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * Хелпер renderToPlaceholder($script, $key) сoхраняет шаблон вывода, переданный через $script (html или script код)
+ * в контейнере-хранилище под именем ключа массива $key для последующего вывода содержимого в нужном месте
+ * $script - имя шаблона, прописанного в конфиге:
+ * 'template_map' => array(
+ *           'layout/RenderToPlaceholderTemplate' => __DIR__ . '/../view/layout/render-to-placeholder-template.phtml',
+ *		), 
+ */
+/*
+__invoke($script, $placeholder) {
+        $placeholderHelper = $this->view->plugin('placeholder');
+        $placeholderHelper($placeholder)->captureStart();
+        echo $this->view->render($script);
+        $placeholderHelper($placeholder)->captureEnd();
+    }
+ */
+$this->renderToPlaceholder('layout/RenderToPlaceholderTemplate', 'html-код');
+/* .. какой-то html-код ... */
+// вывод шаблона из контейнера 'html-код':
+echo $this->placeholder('html-код');

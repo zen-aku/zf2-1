@@ -1,0 +1,13 @@
+<?php
+// Для лучшего понимания смотреть renderchildmodel.php
+
+// отрендерить шаблоны с помощью хелпера renderChildModel($captureTo):
+echo $this->renderChildModel('sidebar');
+echo $this->renderChildModel('article');
+
+// или через метод хелпера
+echo $this->plugin('renderChildModel')->render('article');
+
+// отрендерить шаблон, переданный в экшене из экшена другого контроллера
+echo $this->renderChildModel('gravatar');
+
