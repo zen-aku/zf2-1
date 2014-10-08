@@ -124,6 +124,29 @@ echo $this->placeholder('foo')->data;
  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * Хелпер renderToPlaceholder($script, $key) сoхраняет шаблон вывода, переданный через $script (html или script код)
+ * в контейнере-хранилище под именем ключа массива $key для последующего вывода содержимого в нужном месте
+ * $script - имя шаблона, прописанного в конфиге:
+ * 'template_map' => array(
+ *           'layout/RenderToPlaceholderTemplate' => __DIR__ . '/../view/layout/render-to-placeholder-template.phtml',
+ *		), 
+ */
+/*
+__invoke($script, $placeholder) {
+        $placeholderHelper = $this->view->plugin('placeholder');
+        $placeholderHelper($placeholder)->captureStart();
+        echo $this->view->render($script);
+        $placeholderHelper($placeholder)->captureEnd();
+    }
+ */
+$this->renderToPlaceholder('layout/RenderToPlaceholderTemplate', 'html-код');
+/* .. какой-то html-код ... */
+// вывод шаблона из контейнера 'html-код':
+echo $this->placeholder('html-код');
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace Zend\View\Helper;
 use Zend\View\Helper\Placeholder\Container;
 
