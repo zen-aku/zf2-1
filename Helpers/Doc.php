@@ -80,6 +80,14 @@ abstract class AbstractHelper implements HelperInterface {
    * <имя плагина> => <путь к плагину>
    * После регистрации, этот помощник может быть вызван во всех представлениях всех модулей
    */
+  /*
+   * Порядок создания своего хелпера:
+   * 1. Прописать в конфиге Module::getViewHelperConfig() альяс хелпера, используемый для вызова
+   * 2. Прописать в autoload_classmap вызываемый класс
+   * 3. Создать в директории module/view/helper/ класс хелпера и сделать его extends AbstractHelper
+   * 4. Если надо получать какие-то действия при вызове хелпера, то прописать в нём __invoke()
+   */
+	
     namespace Helloworld\View\Helper;
     use Zend\View\Helper\AbstractHelper;
 
@@ -89,11 +97,11 @@ abstract class AbstractHelper implements HelperInterface {
         }
     }
 
-    // Module::getControllerPluginConfig()
+    // Module::getViewHelperConfig()
     function getViewHelperConfig() {
         return array(
             'invokables' => array(
-                'displayCurrentDate' => 'Helloworld\View\Helper\DisplayCurrentDate',
+                'displayCurrentDate' => 'Helpers\View\Helper\DisplayCurrentDate',
             )
         );
     }

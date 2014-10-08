@@ -13,11 +13,13 @@ class IndexController extends AbstractActionController {
         
         /*
          * Zend\Mvc\Controller\Plugin\Layout::dispatch($name, array $params = null)
+		 *		$params - массив параметров роута из конфига: ['action' => 'info', 'id' => 5]
+		 *				если не задан, то берётся дефолтный экшен из конфига (как правило это index)
          * Запустить контроллер: вызывается метод dispatch() контроллера $name с роутингом, определённым параметром $params
          */
         $resultDispatch = $this->forward()->dispatch('Helloworld\Controller\Other');
               
-        // Если мы хотим имитировать "перенаправление контроллера":
+        // Если мы хотим имитировать "перенаправление контроллера"
         return $this->forward()->dispatch('Helloworld\Controller\Other');
             
         // Если мы хотим вызвать определенное действие другого контроллера, это можно сделать следующим образом:
@@ -30,6 +32,7 @@ class IndexController extends AbstractActionController {
     
     /**
      * Генерация модели представления одного контроллера в модели представления другого контроллера
+	 * Смотреть реализацию в модуле Helpers\Controller\ViewsController.php
      */
     function showAction() {
         
@@ -51,10 +54,10 @@ class IndexController extends AbstractActionController {
         return $page;
         
         // $page.phtml:       
-        // Внутри вида $page <вид>.phtml можно обратиться к виду $widget, вызвав свойство widgetContent этого вида(объекта $page)
+        // Теперь в виде экшена можно в разных местах вызывать переданные шаблоны c помощью хелпера renderChildModel()
             /*   
             <sidebar>
-                   <?php echo $this->widgetContent ?>
+                   <?php echo $this->renderChildModel('widgetContent') ?>
             </sidebar>
             */
         /*

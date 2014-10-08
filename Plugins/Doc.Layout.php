@@ -54,6 +54,9 @@ class IndexController extends AbstractActionController {
          */
 	}
 	
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// Смотреть реализацию в модуле Helpers\Controller\ViewsController.php
 	function ViewAction() {
 		
 		/*... какой-то код */
@@ -95,30 +98,30 @@ class IndexController extends AbstractActionController {
         return $view;
 	
 		/*
-		 * Теперь в виде экшена можно в разных местах вызывать переданные шаблоны:
+		 * Теперь в виде экшена можно в разных местах вызывать переданные шаблоны c помощью хелпера renderChildModel():
 		 *
 			<!-- This is from the $articleView view model, and the "content/article" template -->
 			<article class="twelve columns">
-				<?php echo $this->article ?>
+				<?php echo $this->renderChildModel('article') ?>
 			</article>
 
 			<!-- This is from the $primarySidebarView view model, and the "content/main-sidebar template -->
 			<div class="two columns sidebar">
-				<?php echo $this->sidebar_primary ?>
+				<?php echo $this->renderChildModel('sidebar_primary') ?>
 			</div>
 
 			<!-- This is from the $secondarySidebarView view model, and the "content/secondary-sidebar template -->
 			<div class="two columns sidebar">
-				<?php echo $this->sidebar_secondary ?>
+				<?php echo $this->renderChildModel('sidebar_secondary') ?>
 			</div>
 
 			<!-- This is from the $sidebarBlockView view model, and the "content/block template -->
 			<div class="block">
-				<?php echo $this->block ?>
+				<?php echo $this->renderChildModel('block') ?>
 			</div>
 		
 			<div class="widget">
-				<?php echo $this->widget ?>
+				<?php echo $this->renderChildModel('widget') ?>
 			</div>	 
 		*/
 		
