@@ -1,0 +1,118 @@
+<?php
+/*
+ * Класс Zend\Db\Adapter\Adapter - это обёртка php-драйверов работы с бд.
+ * Он отвечает за соединение с бд с помощью указанного драйвера и выполнение запросов (прямых или подготовленных).
+ * Это расширенный аналог PDO с возможностью работы с другими неPDO драйверами бд (оболочка или адаптер драйверов)
+ * 
+ * function __construct($driver, PlatformInterface $platform = null, ResultSet $queryResultSetPrototype = null)
+ *	 $driver - массив данных соединения с бд, определённый используемым драйвером бд или объект Zend\Db\Adapter\Driver\DriverInterface:
+ *		driver	    required				Mysqli, Sqlsrv, Pdo_Sqlite, Pdo_Mysql, Pdo=OtherPdoDriver
+ *		database	generally required		the name of the database (schema)
+ *		username	generally required		the connection username
+ *		password	generally required		the connection password
+ *		hostname	not generally required	the IP address or hostname to connect to
+ *		port		not generally required	the port to connect to (if applicable)
+ *		charset		not generally required	the character set to use
+ *	 $platform - экземпляр Zend\Db\Platform\PlatformInterface, по-умолчанию создается на основе драйвера
+ *   $queryResultSetPrototype - экземпляр Zend\Db\ResultSet\ResultSet
+ * 
+ * Как правило, массив соединения $driver размещают в глобальном конфиге: global.php и local.php(логин и пароль) или в Application-модуле.
+ * Передача настроек соединения производится с помощью фабрики Zend\Db\Adapter\AdapterServiceFactory через регистрацию сервиса в сервис-менеджере (как правило в global.php)
+ * Если необходимо работать с разными базами в разных модулях, то параметры настроек соединеия прописывают в конфиге модуля (getConfig())??? - Протестировать 
+ */
+/*
+ * config/global.php
+ */
+return array(
+	//Параметры соединения с бд для Zend\Db\Adapter\Adapter
+	'db' => array(
+		'driver' => 'pdo_mysql',
+		'hostname' => 'localhost',
+		'database' => 'test',		
+        'charset' => 'utf8',
+    ),
+	// Создание объекта соединения Zend\Db\Adapter\Adapter через фабрику с переданными параметрами соединения (как првило в global.php - см.выше и в local.php)
+    'service_manager' => array(
+        'factories' => array(
+            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+        ),
+    ),
+);
+/*
+ * config/local.php
+ */
+return array(
+	'db' => array(
+        'username' => 'root',
+        'password' => '',
+    ),
+);
+/*
+ * AdapterServiceFactory создаёт объект Zend\Db\Adapter\Adapter и передаёт в его конструктор конфиги 'db':
+ *	function createService(ServiceLocatorInterface $serviceLocator) {
+ *		$config = $serviceLocator->get('Config');
+ *		return new Adapter($config['db']);
+ *	}
+ */
+
+
+
+// Самый простой способ соединения с бд
+$adapter = new Zend\Db\Adapter\Adapter(array(
+    'driver'   => 'pdo',
+	'hostname' => 'localhost',
+    'database' => 'zend_db_example',
+    'username' => 'root',
+    'password' => '',
+	'charset'  => 'utf8'
+ ));
+	
+
+/*
+ * При создании сервиса таблицы с помощью фабрики, напр AlbumTableGateway, в неё можно передавать адаптер
+ * двумя способами:
+ *	1. через сервис-манагер: get('Zend\Db\Adapter\Adapter') в клозуре при регистрации фабрики в сервис-манагере: 
+ */	
+'AlbumTableGateway' => function ($sm) {
+	$dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+	$resultSetPrototype = new ResultSet();
+	$resultSetPrototype->setArrayObjectPrototype(new Album());
+	return new TableGateway('album', $dbAdapter, null, $resultSetPrototype);
+}
+// или в классе-фабрике:
+use Zend\ServiceManager\FactoryInterface;
+class AlbumTableGatewayFactory implements FactoryInterface{
+	createService( ServiceLocatorInterface $serviceLocator ) {
+		$dbAdapter = $serviceLocator->get('Zend\Db\Adapter\Adapter');
+		$resultSetPrototype = new ResultSet();
+		$resultSetPrototype->setArrayObjectPrototype(new Album());
+		return new TableGateway('album', $this->adapter, null, $resultSetPrototype);
+	}
+}	
+/*
+ * 2.??? через автоматическую передачу адаптера в класс-фабрику с помощью AdapterAwareInterface-AdapterAwareTrait - тестировать!!!:
+ * trait AdapterAwareTrait {
+ *		protected $adapter = null;
+ *		function setDbAdapter(Adapter $adapter){
+ *			$this->adapter = $adapter;
+ *			return $this;
+ *		}
+ *	}
+ */		
+use Zend\ServiceManager\FactoryInterface;
+use Zend\Db\Adapter\AdapterAwareInterface;
+use Zend\Db\Adapter\AdapterAwareTrait;
+class AlbumTableGatewayFactory implements FactoryInterface, AdapterAwareInterface {
+	use AdapterAwareTrait;
+	createService( ServiceLocatorInterface $serviceLocator ) {
+		$resultSetPrototype = new ResultSet();
+		$resultSetPrototype->setArrayObjectPrototype(new Album());
+		return new TableGateway('album', $this->adapter, null, $resultSetPrototype);
+	}
+}
+/*
+ * Любой класс, использующий адаптер вне конструтора, может внедрять адаптер в своё свойство с помощью AdapterAwareInterface-AdapterAwareTrait.
+ * А можно ещё дальше пойти: создать свой класс MyTableGateway extends TableGateway implements  AdapterAwareInterface,
+ * трейтить в него AdapterAwareTrait с адаптером. Проблема: конструктор TableGateway использует адаптер, а
+ * AdapterAwareInterface внедряет адаптер после создания объекта(конструктора) - надо из конструтора вынести ипользование адаптера!!! 
+ */
