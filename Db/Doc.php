@@ -5,16 +5,16 @@
  * Это расширенный аналог PDO с возможностью работы с другими неPDO драйверами бд (оболочка или адаптер драйверов)
  * 
  * function __construct($driver, PlatformInterface $platform = null, ResultSet $queryResultSetPrototype = null)
- *	 $driver - массив данных соединения с бд, определённый используемым драйвером бд или объект Zend\Db\Adapter\Driver\DriverInterface:
- *		driver	    required				Mysqli, Sqlsrv, Pdo_Sqlite, Pdo_Mysql, Pdo=OtherPdoDriver
- *		database	generally required		the name of the database (schema)
- *		username	generally required		the connection username
- *		password	generally required		the connection password
- *		hostname	not generally required	the IP address or hostname to connect to
- *		port		not generally required	the port to connect to (if applicable)
- *		charset		not generally required	the character set to use
- *	 $platform - экземпляр Zend\Db\Platform\PlatformInterface, по-умолчанию создается на основе драйвера
- *   $queryResultSetPrototype - экземпляр Zend\Db\ResultSet\ResultSet
+ *      $driver - массив данных соединения с бд, определённый используемым драйвером бд или объект Zend\Db\Adapter\Driver\DriverInterface:
+ *          driver	    required				Mysqli, Sqlsrv, Pdo_Sqlite, Pdo_Mysql, Pdo=OtherPdoDriver
+ *          database	generally required		the name of the database (schema)
+ *          username	generally required		the connection username
+ *          password	generally required		the connection password
+ *          hostname	not generally required	the IP address or hostname to connect to
+ *          port		not generally required	the port to connect to (if applicable)
+ *          charset		not generally required	the character set to use
+ *      $platform - экземпляр Zend\Db\Platform\PlatformInterface, по-умолчанию создается на основе драйвера
+ *      $queryResultSetPrototype - экземпляр Zend\Db\ResultSet\ResultSet
  * 
  * Как правило, массив соединения $driver размещают в глобальном конфиге: global.php и local.php(логин и пароль) или в Application-модуле.
  * Передача настроек соединения производится с помощью фабрики Zend\Db\Adapter\AdapterServiceFactory через регистрацию сервиса в сервис-менеджере (как правило в global.php)
@@ -54,9 +54,6 @@ return array(
  *		return new Adapter($config['db']);
  *	}
  */
-
-
-
 // Самый простой способ соединения с бд
 $adapter = new Zend\Db\Adapter\Adapter(array(
     'driver'   => 'pdo',
@@ -66,7 +63,31 @@ $adapter = new Zend\Db\Adapter\Adapter(array(
     'password' => '',
 	'charset'  => 'utf8'
  ));
-	
+
+/*
+ * Для выполнение запросов напрямую или через подготовленный запрос используется метод:
+ * query($sql, $parametersOrQueryMode = self::QUERY_MODE_PREPARE, ResultSet\ResultSetInterface $resultPrototype = null)
+ *   $sql - строка sql-запроса
+ *   $parametersOrQueryMode - режим запроса или массив переменных для полготовленного запроса (или объект контейнера Zend\Db\Adapter\ParameterContainer - класс-массив)
+ *       Adapter::QUERY_MODE_PREPARE(по умолчанию) выполняет подготовленный запрос: Adapter::createStatement($sql, $parametersOrQueryMode)
+ *       Adapter::QUERY_MODE_EXECUTE - выполняет запрос напрямую как PDO::exec($sql)
+ * Возвращается объект Zend\Db\Adapter\Driver\Pdo\Result, если не было выборки Select
+ * Возвращается объект Zend\Db\ResultSet\ResultSet после запроса выборки Select
+ */
+// прямой запрос
+$adapter->query('CREATE DATABASE test CHARACTER SET utf8 COLLATE utf8_general_ci', Adapter::QUERY_MODE_EXECUTE);
+// подготовленное выражение
+$adapter->query('SELECT * FROM `artist` WHERE `id` = ?', array(5));
+
+/*
+ * Другой (прямой и более быстрый) способ создания подготовленный запроса через метод:
+ * createStatement($initialSql = null, $initialParameters = null)
+ *  $initialSql - подготовленное выражение
+ *  $initialParameters - массив или объект контейнера Zend\Db\Adapter\ParameterContainer - класс-массив
+ * Возвращает объект Driver\StatementInterface, методами которого запускается и обрабатывается результат запроса
+ */
+$statement = $adapter->createStatement('SELECT * FROM `artist` WHERE `id` = ?', array(5)); // тестить вид массива $optionalParameters
+$result = $statement->execute();
 
 /*
  * При создании сервиса таблицы с помощью фабрики, напр AlbumTableGateway, в неё можно передавать адаптер
@@ -91,6 +112,7 @@ class AlbumTableGatewayFactory implements FactoryInterface{
 }	
 /*
  * 2.??? через автоматическую передачу адаптера в класс-фабрику с помощью AdapterAwareInterface-AdapterAwareTrait - тестировать!!!:
+ * Не работает!!! По-видимому не прописано соответствующее событие. Протесчено в модуле ZendDb на сервисе 'Zend\Db\Sql\Sql'
  * trait AdapterAwareTrait {
  *		protected $adapter = null;
  *		function setDbAdapter(Adapter $adapter){
