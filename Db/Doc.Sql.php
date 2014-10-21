@@ -47,11 +47,49 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
 	order($order);
 	limit($limit);
 	offset($offset);
+    prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer);
+    getSqlString(PlatformInterface $adapterPlatform = null)
 }
 
-// Для детального WHERE:
-class Predicate extends PredicateSet
-{
+class Insert implements SqlInterface, PreparableSqlInterface {
+    const VALUES_MERGE = 'merge';
+    const VALUES_SET   = 'set';
+
+    __construct($table = null);
+    into($table);
+    columns(array $columns);
+    values(array $values, $flag = self::VALUES_SET);
+    prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer) 
+    getSqlString(PlatformInterface $adapterPlatform = null) 
+}
+
+class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface {
+    const VALUES_MERGE = 'merge';
+    const VALUES_SET   = 'set';
+
+    public $where; // @param Where $where
+    __construct($table = null);
+    table($table);
+    set(array $values, $flag = self::VALUES_SET);
+    where($predicate, $combination = Predicate\PredicateSet::OP_AND);
+    prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer) 
+    getSqlString(PlatformInterface $adapterPlatform = null) 
+}
+
+class Delete {
+    public $where; // @param Where $where
+    __construct($table = null);
+    from($table);
+    where($predicate, $combination = Predicate\PredicateSet::OP_AND);
+    prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer) 
+    getSqlString(PlatformInterface $adapterPlatform = null) 
+}
+
+
+/*
+ *  Для детального WHERE надо использовать класс Predicate
+ */
+class Predicate extends PredicateSet {
     public $and;
     public $or;
     public $AND;
