@@ -89,11 +89,32 @@ $sql->setTable('Users');
 $insert = $sql->insert('Users');
 $insert = $sql->insert()->into('Users');  
 
-// ??? как использовать columns:
-////$insert->columns(array('login', 'password'))  // ??? как использовать
-$insert->values(['login'=>'Котов', 'password'=>'ddxvxv']);
-// ??? как использовать VALUES_MERGE
-////  $insert->values(['login'=>'Дубов', 'password'=>'ddxvxv'], $insert::VALUES_MERGE); 
+/* INSERT INTO users (login, password) VALUES ('Котов', '1233455') 
+ * работает только если сделать в файле Zend\Db\Sql\Inaert.php изменения:
+ * сделать дополнительный флаг VALUES_СOLUMNS и добавить дополнительный блок
+ * Но останется всё-равно проблема: нельзя в один запрс запихнуть несколько строк values():
+ * INSERT INTO users (login, password) VALUES 
+ *  ('Котов1', '1233455'), 
+ *  ('Котов2', '1233455'),
+ * Можно только в цикле вызывать каждый раз columns()-values() и передавать им значения колонок и вставки, что делает такой способ вставки неэффективным
+ */
+$insert->columns(array('login', 'password'));      
+$insert->values(array('Котов', '1233455'), $insert::VALUES_COLUMNS);
+
+// INSERT INTO `Users` VALUES (null, 'Котов', '1233455')
+$insert->values(array(null, 'Ежов', '12cfbcb5'));
+
+/* По умолчанию VALUES_SET:
+ * Должен формировать строку:
+ * INSERT INTO users SET login = 'Котов', password = '1233455'
+ * но формирует всё-равно строку:
+ * INSERT INTO users(login, password) VALUES ('Котов', '1233455')
+ */
+$insert->values(array('login'=> 'Кротов','password'=> '89hihnkkn'));
+
+// флаг VALUES_MERGE позволяет отдельно вносить (через отдельные вызовы values()) значения столбцов строки в таблицу 
+$insert->values(['login'=>'Дубов'])->values(['password'=>'ddxvxv'], $insert::VALUES_MERGE);
+
 
 // С вложенным запросом INSERT INTO SELECT - тестовый пример(не работате в данном контексте селекта)
 $select = $sql->select()->from('Users')->where(['id' => 3]);
@@ -105,6 +126,9 @@ $insert->select($select);
 $insertString = $sql->getSqlStringForSqlObject($insert);
 $result = $sql->getAdapter()->query($insertString, 'execute');
 
+// Сделать запрос, используя подготовленное выражение
+$statement = $sql->prepareStatementForSqlObject($insert)->execute();
+$result = $statement->getResource();
 
 /////////////////////////////////// Update ///////////////////////////////////////////////
 /** Задать имя таблицы **/
@@ -122,6 +146,9 @@ $update->set(['login' => 'algerd'])->where(['id' => 1]);
 $updateString = $sql->getSqlStringForSqlObject($update);
 $result = $sql->getAdapter()->query($updateString, 'execute');
 
+// Сделать запрос, используя подготовленное выражение
+$statement = $sql->prepareStatementForSqlObject($update)->execute();
+$result = $statement->getResource();
 
 /////////////////////////////////// Delete ///////////////////////////////////////////////
 /** Задать имя таблицы **/
