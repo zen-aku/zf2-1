@@ -1,8 +1,61 @@
 <?php
+------------------------
+	API Adapter
+------------------------
+class Adapter implements AdapterInterface, Profiler\ProfilerAwareInterface {	
+	const QUERY_MODE_EXECUTE = 'execute';
+    const QUERY_MODE_PREPARE = 'prepare';
+    const PREPARE_TYPE_POSITIONAL = 'positional';
+    const PREPARE_TYPE_NAMED = 'named';
+    const FUNCTION_FORMAT_PARAMETER_NAME = 'formatParameterName';
+    const FUNCTION_QUOTE_IDENTIFIER = 'quoteIdentifier';
+    const FUNCTION_QUOTE_VALUE = 'quoteValue';
+    const VALUE_QUOTE_SEPARATOR = 'quoteSeparator';
+	
+	__construct($driver, Platform\PlatformInterface $platform = null, ResultSet\ResultSetInterface $queryResultPrototype = null, Profiler\ProfilerInterface $profiler = null)
+	setProfiler(Profiler\ProfilerInterface $profiler)
+	getProfiler() ProfilerInterface
+	getDriver()	DriverInterface	
+	getPlatform()	PlatformInterface	
+	getQueryResultSetPrototype() ResultSetInterface	
+	getCurrentSchema()		
+	query($sql, $parametersOrQueryMode = self::QUERY_MODE_PREPARE, ResultSet\ResultSetInterface $resultPrototype = null)		
+	createStatement($initialSql = null, $initialParameters = null)
+	//getHelpers()	
+	__get($name)					
+}
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+interface PlatformInterface {
+	getName()
+	getQuoteIdentifierSymbol()
+	quoteIdentifier($identifier)
+	quoteIdentifierChain($identifierChain)
+	getQuoteValueSymbol()
+	quoteValue($value)
+	quoteTrustedValue($value)
+	quoteValueList($valueList)
+	getIdentifierSeparator()
+	quoteIdentifierInFragment($identifier, array $additionalSafeWords = array())
+}
 
+class Profiler implements ProfilerInterface {
+	profilerStart($target)
+	profilerFinish()
+	getLastProfile()
+	getProfiles()
+}
+
+interface DriverInterface {
+	const PARAMETERIZATION_POSITIONAL = 'positional';
+    const PARAMETERIZATION_NAMED = 'named';
+    const NAME_FORMAT_CAMELCASE = 'camelCase';
+    const NAME_FORMAT_NATURAL = 'natural';	
+	getDatabasePlatformName($nameFormat = self::NAME_FORMAT_CAMELCASE)
+	checkEnvironment()
+	getConnection()
+	createStatement($sqlOrResource = null)		
+	createResult($resource)
+	getPrepareType()
+	formatParameterName($name, $type = null)		
+	getLastGeneratedValue()		
+}

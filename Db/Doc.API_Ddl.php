@@ -14,7 +14,17 @@
 Нет возможности задания простого индекса колонки (INDEX или KEY).
 Нет проверки синтаксиса параметров методов, в которых задаюися ключевые DDL-слова: напр. в ForeignKey::setOnUpdateRule('CASCADE')  - надо задавать константы и проверять правильность их написания (как в моём HTML_Generator)    
 API DDL(как и API SQL) производит впечатление недоделанности и забагованности(класс Sql\Insert). Он нуждается в глубоком допиливании.  
-Или же попробовать написать свой API DDL(SQL) по примеру HTML_Generator  
+Или же попробовать написать свой API DDL(SQL) по примеру HTML_Generator
+		
+Нелогично сделано внедрение объекта DDL в метод объекта Sql::getSqlStringForSqlObject($ddl).
+Надо сделать эти два модуля независимыми, внедряя в DDL адаптер и создавая в нём свой метод getSqlStringForSqlObject() или
+ещё лучше вынести из DDL и Sql свойство адаптер, метод getSqlStringForSqlObject() и другое общее для них в абстракцию и унаследовать их от неё:
+1. Сделать класс DDL аналогичный классу Sql с методами сreateTable(), dropTable() и alterTable() 
+   по аналогии с Sql::select(), Sql::insert() 		
+2. Методы(напр) Ddl::сreateTable() возвращает объект CreateTable, через методы которого задаются параметры запроса
+3. Сделать общую абстракцию над классами DDL и Sql.		
+		
+Не работает в MySQL Ddl::dropConstraint().(неправильный синтаксис)		
 -------------------
     API DDL:
 -------------------    
@@ -74,7 +84,7 @@ class AlterTable extends AbstractSql implements SqlInterface {
     addColumn(Column\ColumnInterface $column)
     changeColumn($name, Column\ColumnInterface $column)
     dropColumn($name)
-    dropConstraint($name)
+    //dropConstraint($name) - не работает в MySQL, надо исправить (Неправильный синтаксис 'DROP CONSTRAINT %1$s')
     addConstraint(Constraint\ConstraintInterface $constraint)  
     getRawState($key = null)
     getSqlString(PlatformInterface $adapterPlatform = null)    
