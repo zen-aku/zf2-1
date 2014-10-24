@@ -1,0 +1,17 @@
+Временно закомментирован код в файлах
+Zend\Db\Query\Sql\Where
+Zend\Db\Query\Sql\Having
+
+AbstractCommandQuery добавлено:
+    свойство table
+    setTable()
+    getTable()
+
+    Убрать эти свойства и методы из всех классов ddl и sql унаследованных от AbstractCommandQuery,
+    В Select оставить from() со ссылкой на setTable()  в setTable() перенести код из from()
+    В setTable() сделать проверки(?) как в Select::from()
+
+    Оставить методы into, from, table со ссылкой на setTable()?
+
+В CreateTable сделать метод __call() или отдельные методы-команды addInteger(), addVarchar() (или просто integer(), varchar() по аналогии
+с классами Ddl и Sql и их методами-командами Ddl::createTable()
