@@ -44,7 +44,6 @@ abstract class AbstrHtmlElement {
     /**
      * Прикрепить к глобальному массиву разрешённых аттрибутов массив разрешённых локальных аттрибутов данного класса html-элемента
      * Задать закрывающую скобку элементу в зависимости от наличия закрывающего тега
-     * @param \Zend\View\Helper\HtmlPrototypes $htmlPrototypes
      */
     function __construct() {
         $this->accessAttributes = array_merge($this->accessAttributes, $this->accessLocalAttributes);        		
