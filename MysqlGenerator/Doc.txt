@@ -1,0 +1,72 @@
+
+Взять за основу Zend/Db и сделать свой модуль работы с бд, но под конкретный язык(напр MySQL)
+со значительным упрощением зендовского кода и исправления многочисленных ошибок. 
+Также использовать идеи из попытки исправления Zend/Db в моём модуле Zend_Db.
+
+Построение классов колонок в Zend/Db в корне неверное.
+Надо разбить все колонки на 3 абстракции - по мануалу MySql(которые должны наследоваться от общей абстракции AbstractColumn):
+- AbstractNumberColumn 
+- AbstractStringColumn
+- AbstractDateColumn
+Каждую абстракцию поместить в отдельную папку по названию абстракции и там разместить унаследованные от неё классы-колонки:
+
+    Column
+        AbstractColumn.php
+
+        NumberColumn
+            AbstractIntegerColumn.php
+            Integer.php
+            TinyInt.php
+            SmallInt.php
+            MediumInt.php
+            BigInt.php
+            Bit.php
+            Boolean.php
+
+            AbstractDecimalColumn.php
+            Decimal.php
+            Dec.php
+            Numeric.php
+            Fixed.php
+
+            AbstractRealColumn.php
+            Float.php
+            Double.php
+            DoublePrecission.php
+
+        StringColumn    
+            AbstractStringColumn.php
+            Binary.php
+            Char.php
+            Varbinary.php
+            Varchar.php
+    
+            AbstractTextColumn.php
+            Text.php
+            Blob.php
+            TinyText.php
+            TinyBlob.php
+            MediumText.php
+            MediumBlob.php
+            LongText.php
+            LongBlob.php
+
+            AbstractSetColumn.php
+            Enum.php
+            Set.php
+
+        DateColumn
+            AbstractDateColumn.php
+            Date.php
+            Time.php
+            Datatime.php
+            Timestamp.php
+
+            AbstractNumberDateColumn.php
+            Year.php
+
+
+!!! Общий вывод: груз плохого кода и неправильной структуры в Zend/Db настолько большой, что проще написать новый модуль работы с бд,
+    чем пытаться править старый. При этом код Zend/Db надо рассматривать как источник примеров и идей, требующий 
+    тщательного анализа перед включением в свой модуль.
+
