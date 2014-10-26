@@ -1,0 +1,234 @@
+1. Создать репозитарий в модуля на https://github.com/.
+    Путь модуля в репозитарии будет https://github.com/<логин>/<имя модуля в репозитарии>:
+        https://github.com/algerd/HtmlGenerator
+
+2. Клонировать модуль на локльный компьютер:
+   Путь модуля на локальном компьютере <лок директория>/<имя модуля>:
+        ...domains/HtmlGenerator
+
+3. В папке модуля создать следующие каталоги:
+    <имя модуля>
+        src
+            <имя модуля> - каталог самого модуля. Здесь будут все папки и файлы модуля
+        .gitignore
+        .gitattributes
+        composer.json - установится при инсталяции композера в модуль
+
+    HtmlGenerator
+        src
+            HtmlGenerator
+                <папки и файлы модуля HtmlGenerator>
+        tests
+        examples
+        .gitignore
+        .gitattributes        
+        composer.json
+
+4. Установить файл composer.json в модуль на локальном компьютере:
+    - в консоле перейти в директорию репозитария модуля и запустить установщик composer.json:
+        I:\OpenServer\domains\<имя модуля>>composer init
+        I:\OpenServer\domains\HtmlGenerator>composer init
+
+    Заполнить поля в composer.json:	
+ 
+    Package name (<vendor>/<name>) [Alex/test-loc]: <логин>/<имя-модуля-в-репозитарии>                                                                                                                                                                                                                           
+	Имя должно совпадать с полным именем репозитария на https://github.com/, 
+        причём верблюжью аннотацию имени модуля надо перевести в имя с дефисами:
+            https://github.com/algerd/HtmlGenerator
+            (<vendor>/<name>): algerd/html-generator
+                                                                                                           
+    Description []: test composer
+    Author: John Smith <john@example.com>
+        Имя-фамилия автора должнобыть в формате: John Smith <john@example.com> 
+    Minimum Stability []: "dev" - надо разобраться чтобы правильно считывало версию модуля при скачивании 	                                                                                                
+    License []: "MIT" - ??? см. в руководстве 
+                                                                                                                                                                                                                                
+    Define your dependencies. (подключение внешних модулей через поиск подключаемых модулей в интернете)                                                                                                                                                                                                                       
+    Would you like to define your dependencies (require) interactively [yes]? no                                            
+    Would you like to define your dev dependencies (require-dev) interactively [yes]? no 
+
+    Получим в проекте composer.json такого вида:
+            {                                                                                                                       
+                    "name": "algerd/html-generator",                                                                                   
+                    "description": "test composer",
+                    "minimum-stability": "dev",
+                    "license" : "MIT",
+                    "authors": [                                                                                                        
+                            {                                                                                                               
+                                    "name": "John Smith",                                                                                       
+                                    "email": "john@example.com"                                                                                 
+                            }                                                                                                               
+                    ],                                                                                                                  
+                    "require": {}                                                                                                       
+            } 
+            
+5. Далее необходимо установить сам Composer в проект, чтобы получить возможность пользоваться его автозагрузчиком классов. 
+	Для этого необходимо выполнить следующую команду:
+
+    I:\OpenServer\domains\test.loc>composer install
+
+    Таким образом Composer подтянет все зависимости, указанные в проекте (в данном случае ничего, т.к. секция require в composer.json пустая) и установит сам Composer как стороннюю библиотеку в проект. 
+    По умолчанию это папка vendor в корне проекта.
+    На просьбу игнарировать папку vendor в репозитарии отвечаем: yes
+
+   Прим: Инсталяцию(обновление) композера необязательно делать, если этот модуль не предназначен для самостоятельного использования, 
+   а встраивается в другой модуль (напр zf2), в котором есть свой composer. В этом случае надо будет
+   делать composer install (composer update) родительского композера (напр zf2).
+
+6. Далее надо вручную отредактировать composer.json, чтобы указать дополнительную инфу, автолоадер и версию.
+    Для внесения изменений надо вызвать команду composer install (composer update) - см.5.Прим. 
+
+    6.1. Доп. поля инфы:
+        "type": "library",
+
+    6.2. Версия (надо уточнить в мануале!!! чтобы правильно скачивался модуль)
+        "versions": "1.0.1", - ???
+        "extra": {
+            "branch-alias": {
+                "dev-master": "0.1.x-dev" - ??? (уточнить для чего этот модуль и как правильно выставлять его версию)
+            }
+        }
+
+    6.3. Автолоадер:
+        1.1) Автолоадер - PSR-0 
+        PSR-0 - Данный ключ позволяет нам обозначать корневые директории для неймспейсов (указывает в какой папке лежит папка неймспейса).
+            Названия пространств имён и папок в php-файлах и в composer.json - регистронезависимы!
+            Поэтому папки и файлы можно называть с маленьких букв, а пространства имён с больших.
+
+                "autoload": {
+                    "psr-0": {
+                        "<ПространствоИмён1>\\": "src/",
+                        "<ПространствоИмён2>\\":"src/<каталог>/"
+                    }
+                }
+            Эта запись значит:
+                ПространствоИмён1 лежит в директории src/ (src/ПространствоИмён1) относительно папки в которой находится composer.json (у нас это папка Composer)
+                ПространствоИмён2 лежит в директории src/<каталог>/ (src/<каталог>/ПространствоИмён2) относительно папки в которой находится composer.json (у нас это папка Composer):
+
+                Т.к. модуль лежит в директории "src/" репозитария, то надо прописать: (модуль - HtmlGenerator)  
+                "autoload": {
+                    "psr-0": {
+                        "HtmlGenerator\\": "src/",
+                    }
+                }
+                Неймспейс HtmlGenerator лежит в директории src/ (src/HtmlGenerator) относительно папки в которой находится composer.json (у нас это папка Composer)
+
+            Также для одного неймспейса можно задать более одной корневой папки:
+            "autoload": {
+                "psr-0": {
+                    "Model\\": ["src/", "src2/", "src3/"]
+                }
+            }    
+            И тогда класс из неймспеса Model будет по очереди искаться в директориях src/model/,  src2/model/ и src3/model/   
+
+            После подтверждения изменеий в composer.json командой composer install(composer update)-см.5.Прим. 
+            сгенерируется код неймспейсов модуля psr-0 в автогенерирующемся файле vendor/composer/autoload_namespaces.php:
+                $vendorDir = dirname(dirname(__FILE__));
+                $baseDir = dirname($vendorDir);
+                return array(
+                    'HtmlGenerator\\' => array($baseDir . '/src'),
+                ); 
+
+        1.2) Автолоадер - PSR-4 - Рекомендуется
+        PSR-4 - аналог PSR-0, в котором директорию пространства имён надо прописывать явно:
+            "autoload": {
+                "psr-4": {
+                    "<ПространствоИмён1>\\": "src/<ПространствоИмён1>",
+                    "<ПространствоИмён2>\\":"src/<каталог>/<ПространствоИмён2>"
+                }
+            }
+            Для нашего модуля HtmlGenerator:
+            "autoload": {
+                "psr-4": {
+                    "HtmlGenerator\\": "src/HtmlGenerator",
+                }
+            }
+
+        После подтверждения изменеий в composer.json командой composer install(composer update)- см.5.Прим. 
+        сгенерируется код неймспейсов модуля psr-4 в автогенерирующемся файле vendor/composer/autoload_psr4.php:   
+            $vendorDir = dirname(dirname(__FILE__));
+            $baseDir = dirname($vendorDir);
+            return array(
+                'HtmlGenerator\\' => array($baseDir . '/src/HtmlGenerator'),
+            );
+
+        2) Classmap - позволяет автозагрузчику работать с классами, не следующими PSR-0 соглашению:
+        
+            "classmap": ["classes/"]
+
+        Composer пропишет карту классов в файле vendor/composer/autoload_classmap.php:
+
+            $vendorDir = dirname(dirname(__FILE__));
+            $baseDir = dirname($vendorDir);
+            return array(
+                'Moder' => $baseDir . '/classes/moder.php',
+            );
+
+        Как происходит этот процесс добавления? Каждый раз, когда мы запускаем команду composer install или composer update, 
+        то Composer обращается к ключу classmap и сканирует все папки на наличие файлов с расширениями .php и .inc и ищет в них классы, 
+        параллельно заполняя саму карту в файле vendor/composer/autoload_classmap.php     
+
+        Плюсы: позволяет работать с библиотеками и классами, не следующими psr-0 соглашению (без пространств имён)
+        Минусы: необходима повторная генерация автолоад файла(обновлять composer) при добавлении каждого класса
+   
+
+        3) Files - осуществляет загрузку функций из файлов:
+
+            "files": ["functions/show.php", "functions/name.php"]
+
+        Composer пропишет загрузку файлов в файле vendor/composer/autoload_files.php:
+
+            $vendorDir = dirname(dirname(__FILE__));
+            $baseDir = dirname($vendorDir);
+            return array(
+                $baseDir . '/functions/show.php',
+                $baseDir . '/functions/name.php',
+            );  
+
+7. После всех изменеий в сomposer.json надо выполнить команду composer install (composer update) для генерации кода автозагрузчиков.
+   Но это необязательно - см.5.Прим.
+   !!! Закоммитить все изменения в git-репозитарии.
+
+8. Создать пакаж в https://packagist.org/ - репозитории Composer.
+    Зарегистрироваться и при внесении имени модуля использовать не имя git-репозитария с верблюжьей нотацией "algerd/HtmlGenerator",
+    а имя модуля в composer.json: "algerd/html-generator". 
+    В настройках профиля сделать связь с git-репозитарием и автообновление(?) и периодически обновлять пакаж.
+
+9. Установка модуля в ZF2:
+    1) Из директории ZF2 запускаем команду для подключения модуля в composer.json фреймворка:
+        I:\OpenServer\domains\zf2>composer require "algerd/html-generator":"dev-master"
+        (Надо разобраться как вместо "dev-master" указывать версию и что надо прописать для этого в composer.json модуля)
+        В zf2/composer.json пропишется зависимость:
+        "require": {
+            ...другие зависимости... ,
+            "algerd/html-generator": "dev-master"
+        }
+        
+    2) Для подключения зависимостей(инсталяции модуля и генерации автозагрузок) -  надо обязательно!!! выполнить команду: composer install(update)
+        I:\OpenServer\domains\zf2>composer install
+
+        Модуль установится в директорию: zf2\vendor и будет иметь каталог в соответствии с именем модуля в его composer.json:
+            zf2\vendor\algerd\html-generator
+
+        Автозагрузочные зависимости zf2 сгенерируются в зависимости от параметра "autoload" файла composer.json модуля в каталоге zf2/vendor/composer
+        в одном из подкаталогов (в каком см. 6.3):
+            autoload_classmap.php - автозагрузка классов не поддерживающих psr (карта классов)
+            autoload_files.php - автозагрузка функций  
+            autoload_namespaces.php - автозагрузка пространств имён psr-0
+            autoload_psr4.php - автозагрузка пространств имён psr-4
+
+10. Подключение стороннего модуля в ZF2:
+    В глобальном файле конфигурации /config/application.config.php прописать в 'modules' наш модуль ('HtmlGenerator')
+    Имя прописываемого модуля должно совпадать с именем пространства имён модуля (в composer.json модуля в параметре autoload).
+        'modules' => array(
+            'Application',
+            'HtmlGenerator'
+        ),
+        'module_paths' => array(
+            './module',
+            './vendor',   
+        ),
+    В 'module_paths' должна быть указана директория './vendor'.
+
+
+

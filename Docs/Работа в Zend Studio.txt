@@ -1,3 +1,0 @@
-
-Для привязки проекта к ZF2 надо:
-	ПКМ по проекту в самом низу Configure - Enable Zend Framework support
