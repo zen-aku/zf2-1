@@ -1,0 +1,44 @@
+Конфигурационные файлы загружаются в следующем порядке:
+1. Конфиги из модулей в порядке их записи в config/application.config.php
+   Если будут массивы с одинаковым именем, то будет доступен только последний.
+2. Конфиги из global.php
+3. Конфиги из local.php
+
+Таким образом, самый большой приоритет имеет local.php, затем global.php и только потом конфиги модулей.
+
+Первое обращение к фреймворку идёт в zf2/public/index.php, где запускается фреймворк:
+
+Zend\Mvc\Application::init(require 'config/application.config.php')->run();
+
+Но сначала передаётся туда массив конфиг настроек из 'config/application.config.php'.
+В каком порядке там стоят ключи, в таком порядке идёт загрузка конфигураций:
+return array(
+    // This should be an array of module namespaces used in the application.
+    'modules' => array(
+        // Загружаются конфиги модулей в порядке записи
+        'Application',
+		'Services',             
+		'Events',
+		'Plugins',
+		'Helpers',
+		'ZendDb',
+		'HtmlGenerator',
+		'DbGenerator',
+		'DbGen',
+		
+    ),
+   
+    'module_listener_options' => array(
+       
+        'module_paths' => array(
+            './module',
+            './vendor',
+        ),
+        // Загружаются конфиги global и local (local - последний)
+        'config_glob_paths' => array(
+            'config/autoload/{,*.}{global,local}.php',  //
+        ),
+    ),
+
+  
+);
