@@ -53,8 +53,7 @@ class SqlController extends AbstractActionController {
          */
         //$sql->setTable('Users');     
         //$select = $sql->select('Users');
-        //$select = $sql->select()->from('Users'); 
-		$select = $sql->select();
+        //$select = $sql->select()->from('Users');      
         
         /** from(): **/
         /* as a string: */

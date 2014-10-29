@@ -8,7 +8,8 @@ use Zend\Db\Query\Ddl\Column;
 use Zend\Db\Query\Ddl\Constraint;
 
 /**
- * Примеры использования Ddl-запросов пользовательского модуля Db
+ * Примеры использования Ddl-запросов пользовательского(моего) модуля Zend_Db(https://github.com/algerd/Zend_Db)
+ * Он был недоделан из-за огромного количества ошибок Zend\Db, на основе которого был сделан мой Zend_Db.
  */
 class MydbController extends AbstractActionController {
 
