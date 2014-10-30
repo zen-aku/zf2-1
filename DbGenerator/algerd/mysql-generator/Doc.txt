@@ -1,0 +1,74 @@
+Install: composer require "algerd/mysql-generator":"dev-master"
+
+------------------------------------------------------------------------------
+
+DropTable:
+
+$adapter = new Adapter($config);
+$sql = new Sql($adapter);
+$ddl = new Ddl\DropTable('book');
+
+$query = $sql->getSqlStringForSqlObject($ddl) 
+{
+    return $ddl->getSqlString($adapter) 
+    {
+        foreach ($this->specifications as $name => $specification) // protected $specifications = array( self::TABLE => 'DROP TABLE IF EXISTS %1$s'
+            $parameters[$name] = $this->{'process' . $name}() 
+            {
+                return $adapter->quoteIdentifier($name);
+            }
+        return implode(' ', $this->createSqlFromSpecificationAndParameters( $specification, $parameters[$name] ) 
+        {
+            // Возвращает строку со вставлеными в строки спецификаторов (self::TABLE => 'DROP TABLE IF EXISTS %1$s') параметров
+   <------- return vsprintf($specifications, $parameters);
+        }
+    } 
+}
+   
+$sql->getAdapter()->query($query,'execute');
+
+-------------------------------------------------------------------------------
+
+Insert:
+
+$adapter = new Adapter($config);
+$sql = new Sql($adapter);
+
+$insert = $sql->insert($table)->values($values); // return Insert
+
+$queryString = $sql->getSqlStringForSqlObject($insert) 
+{
+    return $insert->getSqlString($adapter) 
+    {
+        $values[] = $adapter->quoteValue($values);
+        $columns = array_map(array($adapter, 'quoteIdentifier'), $this->columns);
+        $table = $adapter->quoteIdentifier($table);
+<------ return sprintf(
+            $this->specifications[static::SPECIFICATION_INSERT],
+            $table,
+            $columns,
+            implode(', ', $values)
+        );
+    }
+}
+
+$result = $sql->getAdapter()->query($queryString, 'execute');
+
+--------------------------------------------------------------------------------
+
+В классах Ddl и в Select в методе getSqlString($adapter) для формирования строки запроса
+используется динамический вызов методов process (для получения квотированных параметров) 
+и метод createSqlFromSpecificationAndParameters() (для получения строки запроса в результате подстановки 
+параметров в спецификаторы).
+
+В Insert, Update и Delete используется другой механизм получения строки запроса:
+    - простой запрос без where - получаем строку напрямую через sprintf() с квотированными данными.
+    - сложный запрос с where (Update, Delete) - через метод processExpression($this->where, $adapter, 'where')
+    Методы process (для получения квотированных параметров) не используются вообще.
+
+Вывод: 
+    в zf2 используется 2 механизма формирования строки запроса:
+    - AbstractSql::createSqlFromSpecificationAndParameters() и методы process
+    - AbstractSql::processExpression()
+    Такое деление неправильно и свидетельствует о разработке модуля разными командами.
+    Надо привести в одному механизму!!!
