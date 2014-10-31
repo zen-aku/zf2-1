@@ -6,9 +6,6 @@ use Zend\View\Model\ViewModel;
 
 use MysqlGenerator\Sql\Predicate;
 
-/**
- *
- */
 class SqlController extends AbstractActionController {
 
 	/**
@@ -18,20 +15,19 @@ class SqlController extends AbstractActionController {
         
         $adapter = $this->getServiceLocator()->get('MysqlGenerator\Adapter\Adapter');
         		
-		$sql = new \MysqlGenerator\Sql\Sql($adapter);
-        //$sql = $this->getServiceLocator()->get('Zend\Db\Sql\Sql');
+		$sql = new \MysqlGenerator\Sql\Sql();
 		 
         $select = $sql->select();
         $select->from('users');
         $select->where( (new Predicate\Predicate())
 		 		->in('id', [1, 2, 3])
 				->between('id', 2, 5)
-				->like('login', 'Петр%')
-				->orPredicate(new Predicate\Like('login', 'Иван%'))
+				->like('name', 'Петр%')
+				->orPredicate(new Predicate\Like('name', 'Иван%'))
 		);
         
         // Сделать запрос, используя подготовленное выражение
-        $statement = $sql->prepareStatementForSqlObject($select)->execute();
+        $statement = $adapter->prepareStatementForSqlObject($select)->execute();
         $result = $statement->getResource()->fetchAll(\PDO::FETCH_ASSOC);
 		
 		

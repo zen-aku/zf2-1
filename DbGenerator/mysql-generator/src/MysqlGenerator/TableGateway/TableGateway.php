@@ -23,15 +23,9 @@ class TableGateway extends AbstractTableGateway
      */
     public function __construct($table, AdapterInterface $adapter, $features = null, ResultSetInterface $resultSetPrototype = null, Sql $sql = null)
     {
-        // table
         if (!(is_string($table) || $table instanceof TableIdentifier)) {
             throw new Exception\InvalidArgumentException('Table name must be a string or an instance of MysqlGenerator\Sql\TableIdentifier');
-        }
-        $this->table = $table;
-
-        // adapter
-        $this->adapter = $adapter;
-
+        }      
         // process features
         if ($features !== null) {
             if ($features instanceof Feature\AbstractFeature) {
@@ -49,18 +43,15 @@ class TableGateway extends AbstractTableGateway
         } else {
             $this->featureSet = new Feature\FeatureSet();
         }
-
-        // result prototype
-        $this->resultSetPrototype = ($resultSetPrototype) ?: new ResultSet;
-
-        // Sql object (factory for select, insert, update, delete)
-        $this->sql = ($sql) ?: new Sql($this->adapter, $this->table);
-
-        // check sql object bound to same table
-        if ($this->sql->getTable() != $this->table) {
+        $this->sql = ($sql) ?: new Sql($table);     
+        if ($this->sql->getTable() != $table) {
             throw new Exception\InvalidArgumentException('The table inside the provided Sql object must match the table of this TableGateway');
         }
-
+        // result prototype
+        $this->resultSetPrototype = ($resultSetPrototype) ?: new ResultSet;
+        $this->table = $table;
+        $this->adapter = $adapter;
+        
         $this->initialize();
     }
 }

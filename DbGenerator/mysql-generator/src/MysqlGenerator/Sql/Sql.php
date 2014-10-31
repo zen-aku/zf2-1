@@ -2,37 +2,20 @@
 
 namespace MysqlGenerator\Sql;
 
-use MysqlGenerator\Adapter\AdapterInterface;
-use MysqlGenerator\Adapter\Driver\StatementInterface;
-
 class Sql {
 	
-    /** 
-	 * @var AdapterInterface 
-	 */
-    protected $adapter = null;
-
     /** 
 	 * @var string|array|TableIdentifier 
 	 */
     protected $table = null;
 
 	/**
-	 * @param AdapterInterface $adapter
 	 * @param type $table
 	 */
-    public function __construct(AdapterInterface $adapter, $table = null) {
-        $this->adapter = $adapter;
+    public function __construct($table = null) {
         if ($table) {
             $this->setTable($table);
         }
-    }
-
-    /**
-     * @return null|\MysqlGenerator\Adapter\AdapterInterface
-     */
-    public function getAdapter(){
-        return $this->adapter;
     }
 
 	/**
@@ -123,26 +106,4 @@ class Sql {
         return new Delete(($table) ?: $this->table);
     }
 
-    /**
-     * @param PreparableSqlInterface $sqlObject
-     * @param StatementInterface|null $statement
-     * @return StatementInterface
-     */
-    public function prepareStatementForSqlObject( PreparableSqlInterface $sqlObject, StatementInterface $statement = null ) {
-        $statement = ($statement) ?: $this->adapter->createStatement();
-		$sqlObject->prepareStatement($this->adapter, $statement);
-        return $statement;
-    }
-
-    /**
-     * @param \MysqlGenerator\Sql\SqlInterface $sqlObject
-     * @param AdapterInterface $adapter
-     * @return type
-     */
-    public function getSqlStringForSqlObject( SqlInterface $sqlObject, AdapterInterface $adapter = null ){
-        $adapter = ($adapter) ?: $this->adapter;    
-        $sqlString = $sqlObject->getSqlString($adapter);      
-        return $sqlString;
-    }
-	
 }

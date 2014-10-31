@@ -1,6 +1,6 @@
 <?php
 
-namespace Zend\Db\Adapter\Exception;
+namespace MysqlGenerator\Adapter\Exception;
 
 use MysqlGenerator\Exception;
 

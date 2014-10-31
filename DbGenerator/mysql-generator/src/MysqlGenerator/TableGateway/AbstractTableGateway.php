@@ -103,7 +103,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         }
 
         if (!$this->sql instanceof Sql) {
-            $this->sql = new Sql($this->adapter, $this->table);
+            $this->sql = new Sql($this->table);
         }
 
         $this->featureSet->apply('postInitialize', array());
@@ -222,7 +222,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         $this->featureSet->apply('preSelect', array($select));
 
         // prepare and execute
-        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $statement = $this->adapter->prepareStatementForSqlObject($select);
         $result = $statement->execute();
 
         // build result set
@@ -280,7 +280,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         // apply preInsert features
         $this->featureSet->apply('preInsert', array($insert));
 
-        $statement = $this->sql->prepareStatementForSqlObject($insert);
+        $statement = $this->adapter->prepareStatementForSqlObject($insert);
         $result = $statement->execute();
         $this->lastInsertValue = $this->adapter->getLastGeneratedValue();
 
@@ -340,7 +340,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         // apply preUpdate features
         $this->featureSet->apply('preUpdate', array($update));
 
-        $statement = $this->sql->prepareStatementForSqlObject($update);
+        $statement = $this->adapter->prepareStatementForSqlObject($update);
         $result = $statement->execute();
 
         // apply postUpdate features
@@ -396,7 +396,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
         // pre delete update
         $this->featureSet->apply('preDelete', array($delete));
 
-        $statement = $this->sql->prepareStatementForSqlObject($delete);
+        $statement = $this->adapter->prepareStatementForSqlObject($delete);
         $result = $statement->execute();
 
         // apply postDelete features

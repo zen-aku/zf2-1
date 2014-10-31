@@ -18,14 +18,12 @@ class IndexController extends AbstractActionController {
         
         $adapter = $this->getServiceLocator()->get('MysqlGenerator\Adapter\Adapter');
 		
-		$sql = new \MysqlGenerator\Sql\Sql($adapter);
-        //$sql = $this->getServiceLocator()->get('Zend\Db\Sql\Sql');
-		 
-		 
+		$sql = new \MysqlGenerator\Sql\Sql();
+         
 		$multiQuery = 
-			$sql->getSqlStringForSqlObject(new Ddl\DropTable('book')). ";" .
-			$sql->getSqlStringForSqlObject(new Ddl\DropTable('author'));  
-        $sql->getAdapter()->query($multiQuery,'execute');
+			$adapter->getSqlStringForSqlObject(new Ddl\DropTable('book')). ";" .
+			$adapter->getSqlStringForSqlObject(new Ddl\DropTable('author'));  
+        $adapter->query($multiQuery,'execute');
 		
 		$ddl = new Ddl\CreateTable('author');
 		$ddl->addColumn(new Ddl\Column\Integer('id', false, null, ['autoincrement' => true, 'comment' => 'идентификатор автора']));
@@ -33,7 +31,7 @@ class IndexController extends AbstractActionController {
         $ddl->addConstraint(new Ddl\Constraint\PrimaryKey('id'));
         	
 		// Выполнить Ddl-запрос
-		$result = $sql->getAdapter()->query($sql->getSqlStringForSqlObject($ddl),'execute');
+		$result = $adapter->query($adapter->getSqlStringForSqlObject($ddl),'execute');
 		
         // Таблица 'book', связанная с таблицей 'author' внешним ключом
         $ddl = new Ddl\CreateTable('book');     
@@ -45,7 +43,7 @@ class IndexController extends AbstractActionController {
         $ddl->addConstraint(new Ddl\Constraint\ForeignKey('id_author', 'author_id', 'author', 'id', 'CASCADE', 'CASCADE'));
         
         // Выполнить Ddl-запрос
-		$result = $sql->getAdapter()->query($sql->getSqlStringForSqlObject($ddl),'execute');
+		$result = $adapter->query($adapter->getSqlStringForSqlObject($ddl),'execute');
 			
 		
     	return new ViewModel(

@@ -6,6 +6,9 @@ use MysqlGenerator\ResultSet;
 use MysqlGenerator\Adapter\Driver\Statement;
 use MysqlGenerator\Adapter\Driver\Result;
 use MysqlGenerator\Adapter\Driver\Feature\AbstractFeature;
+use MysqlGenerator\Sql\SqlInterface;
+use MysqlGenerator\Sql\PreparableSqlInterface;
+use MysqlGenerator\Adapter\Driver\StatementInterface;
 
 class Adapter implements AdapterInterface {
     
@@ -455,6 +458,29 @@ class Adapter implements AdapterInterface {
             return ':' . $name;
         }
         return '?';
+    }
+    
+    /**
+     * Возвращает объект Statement с подготовленной стркой запроса и параметрами в его свойстве-объекте ParameterContainer
+     * @param PreparableSqlInterface $sqlObject
+     * @param StatementInterface|null $statement
+     * @return StatementInterface
+     */
+    public function prepareStatementForSqlObject( PreparableSqlInterface $sqlObject, StatementInterface $statement = null ) {
+        $statement = ($statement) ?: $this->createStatement();
+		$sqlObject->prepareStatement($this, $statement);
+        return $statement;
+    }
+
+    /**
+     * @param \MysqlGenerator\Sql\SqlInterface $sqlObject
+     * @param AdapterInterface $adapter
+     * @return type
+     */
+    public function getSqlStringForSqlObject( SqlInterface $sqlObject, AdapterInterface $adapter = null ){
+        $adapter = ($adapter) ?: $this;    
+        $sqlString = $sqlObject->getSqlString($adapter);      
+        return $sqlString;
     }
        
 }

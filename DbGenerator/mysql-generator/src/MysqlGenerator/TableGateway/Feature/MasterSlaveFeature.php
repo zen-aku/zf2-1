@@ -5,8 +5,7 @@ namespace MysqlGenerator\TableGateway\Feature;
 use MysqlGenerator\Adapter\AdapterInterface;
 use MysqlGenerator\Sql\Sql;
 
-class MasterSlaveFeature extends AbstractFeature
-{
+class MasterSlaveFeature extends AbstractFeature {
 
     /**
      * @var AdapterInterface
@@ -29,38 +28,31 @@ class MasterSlaveFeature extends AbstractFeature
      * @param AdapterInterface $slaveAdapter
      * @param Sql|null $slaveSql
      */
-    public function __construct(AdapterInterface $slaveAdapter, Sql $slaveSql = null)
-    {
+    public function __construct(AdapterInterface $slaveAdapter, Sql $slaveSql = null){
         $this->slaveAdapter = $slaveAdapter;
         if ($slaveSql) {
             $this->slaveSql = $slaveSql;
         }
     }
 
-    public function getSlaveAdapter()
-    {
+    public function getSlaveAdapter(){
         return $this->slaveAdapter;
     }
 
     /**
      * @return Sql
      */
-    public function getSlaveSql()
-    {
+    public function getSlaveSql(){
         return $this->slaveSql;
     }
 
     /**
      * after initialization, retrieve the original adapter as "master"
      */
-    public function postInitialize()
-    {
+    public function postInitialize(){
         $this->masterSql = $this->tableGateway->sql;
         if ($this->slaveSql == null) {
-            $this->slaveSql = new Sql(
-                $this->slaveAdapter,
-                $this->tableGateway->sql->getTable()
-            );
+            $this->slaveSql = new Sql($this->tableGateway->sql->getTable());
         }
     }
 
@@ -68,8 +60,7 @@ class MasterSlaveFeature extends AbstractFeature
      * preSelect()
      * Replace adapter with slave temporarily
      */
-    public function preSelect()
-    {
+    public function preSelect(){
         $this->tableGateway->sql = $this->slaveSql;
     }
 
@@ -77,8 +68,7 @@ class MasterSlaveFeature extends AbstractFeature
      * postSelect()
      * Ensure to return to the master adapter
      */
-    public function postSelect()
-    {
+    public function postSelect(){
         $this->tableGateway->sql = $this->masterSql;
     }
 
