@@ -177,7 +177,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 				foreach ($value as $innerValue) {
 					if ( is_array($innerValue) ) {
 						$errorValues = true;
-						break;
+						break 2;
 					}
 				}		
 				$isTwoDimensArrayValues = true;			
