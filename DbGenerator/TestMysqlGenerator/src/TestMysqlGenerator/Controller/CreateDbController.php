@@ -41,8 +41,8 @@ class CreateDbController extends AbstractActionController {
 			->addColumn(new Sql\Column\Integer('id', false, null, ['autoincrement' => true]))
 			->addColumn(new Sql\Column\Varchar('name', 255))
 			->addColumn(new Sql\Column\Integer('age', false, 0))
-			->addConstraint(new Sql\Constraint\PrimaryKey('id'));	
-		;
+			->addConstraint(new Sql\Constraint\PrimaryKey('id'));	    
+        $adapter->execSqlObject($users);
 		
 		// Заполнить таблицу 'users' значениями
 		$insertUsers = new Sql\Insert('users');
@@ -54,16 +54,90 @@ class CreateDbController extends AbstractActionController {
 			->values([null, 'Kate', 30])
 			->values([null, 'Alex', 35])	
 		;
-	
-		$insertUsers->getValues();
+        // Выполнить запрос
+		$adapter->execSqlObject($insertUsers);
+        
+        
+       /*
+        *  INSERT INTO `users` (`name`, `age`) VALUES ('Nikole', '17')
+        *  через Insert::set()
+        */
+       $insertUsers = new Sql\Insert('users');
+       $insertUsers->set([
+           'name' => 'Nikole',
+           'age' => 17,
+       ]);    
+       $adapter->execSqlObject($insertUsers); 
+       
+       /*
+        *  INSERT INTO `users` (`name`, `age`) VALUES ('Nick', '19')
+        *  через Insert::values()
+        */
+       $insertUsers = new Sql\Insert('users');
+       $insertUsers->values([
+           'name' => 'Nick',
+           'age' => 19,
+       ]);    
+       $adapter->execSqlObject($insertUsers); 
+       
+         
+             
+        // SELECT `users`.`name` AS `name`, `users`.`age` AS `age` FROM `users` WHERE id = 3
+        $select = new Sql\Select('users');
+        $select->columns(['name', 'age']);
+        $select->where('id = 3');
+        // INSERT INTO `users` (`name`, `age`) SELECT `users`.`name` AS `name`, `users`.`age` AS `age` FROM `users` WHERE id = 3
+        $insertUsers = new Sql\Insert('users');
+        $insertUsers->columns(['name', 'age']);
+        $insertUsers->select($select);       
+        //$result = $adapter->execSqlObject($insertUsers);
+        
+                    
+        /*
+         * INSERT INTO `users` (`name`, `age`) VALUES 
+         *      (SELECT `users2`.`name` AS `name` FROM `users` WHERE id = 5, '33'), 
+         *      (SELECT `users2`.`name` AS `name` FROM `users` WHERE id = 4, '44')
+         * Создать таблицу 'users2'
+         */
+        // Создать таблицу 'users2'
+		$users2 = new Sql\CreateTable('users2');
+		$users2
+			->addColumn(new Sql\Column\Integer('id', false, null, ['autoincrement' => true]))
+			->addColumn(new Sql\Column\Varchar('name', 255))
+			->addColumn(new Sql\Column\Integer('age', false, 0))
+			->addConstraint(new Sql\Constraint\PrimaryKey('id'));	       
+		// Заполнить таблицу 'users' значениями
+		$insertUsers2 = new Sql\Insert('users2');
+		$insertUsers2->values(array(
+			[null, 'John', 15],
+			[null, 'Mike', 20],
+		));
+        //$adapter->execSqlObject([$users2, $insertUsers2]);
+         
+        $selectName1 = new Sql\Select('users2');
+        $selectName1->columns(['name'])->where('id = 1');
+        $selectName2 = new Sql\Select('users2');
+        $selectName2->columns(['name'])->where('id = 2');
+        
+        $insertUsers = new Sql\Insert('users');
+        $insertUsers->columns(['name', 'age'])->values([
+            [$selectName1, 33],
+            [$selectName2, 44],
+        ]);
+        //$result = $adapter->execSqlObject($insertUsers);
+		
+        
+        
+        /*
+        echo '<pre>';
+        echo $insertUsers->getSqlString($adapter);
+		exit;
+        */
+        
 		
 		
 		
-		// Выполнить мультизапрос
-		$result = $adapter->execSqlObject([
-			$users,
-			$insertUsers
-		]);
+		
 		
 		
 		/*

@@ -27,17 +27,17 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
     /**
      * @var string|TableIdentifier
      */
-    protected $table            = null;
+    protected $table = null;
 	
 	/**
 	 * @var array 
 	 */
-    protected $columns          = array();
+    protected $columns = array();
 
     /**
      * @var array|Select
      */
-    protected $values           = null;
+    //protected $values = null;
 
     /**
      * Constructor
@@ -74,7 +74,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @throws Exception\InvalidArgumentException
      * @return Insert
      */
-    public function values($values, $flag = self::VALUES_SET){
+    /*public function values($values, $flag = self::VALUES_SET){
         if (!is_array($values) && !$values instanceof Select) {
             throw new Exception\InvalidArgumentException('values() expects an array of values or MysqlGenerator\Sql\Select instance');
         }
@@ -94,7 +94,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($flag == self::VALUES_SET) {
             $this->columns = array();
             $this->values = array();
-        } elseif ($this->values instanceof Select) {
+        } 
+		elseif ($this->values instanceof Select) {
             throw new Exception\InvalidArgumentException(
                 'An array of values cannot be provided with the merge flag when a MysqlGenerator\Sql\Select'
                 . ' instance already exists as the value source.'
@@ -104,18 +105,140 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
             foreach ($keys as $key) {
                 if (($index = array_search($key, $this->columns)) !== false) {
                     $this->values[$index] = $values[$key];
-                } else {
+                } 
+				else {
                     $this->columns[] = $key;
                     $this->values[] = $values[$key];
                 }
             }
-        } elseif (is_int($firstKey)) {
+        } 
+		elseif (is_int($firstKey)) {
             // determine if count of columns should match count of values
             $this->values = array_merge($this->values, array_values($values));
         }
         return $this;
     }
-
+	*/
+	
+	//////////////////////////////////////////////////////////////////////
+	
+	/**
+     * @var array $values = [ [...], [...], [...], ... ]
+     */
+    protected $values = array();
+	
+	/**
+	 * @return array
+	 */
+	public function getColumns() {
+		return $this->columns;
+	}
+	/**
+	 * @return array
+	 */
+	public function getValues() {
+			
+		echo '<pre>';
+		print_r($this->values);
+		exit;
+		
+		return $this->values;
+	}
+	
+	
+	/**
+	 * Для задания значений VALUES() выражения INSERT INTO tbl_name() VALUES():
+	 * 1. без предварительного задания столбцов через Insert::columns() ($this->columns = пустой array())
+	 *		INSERT INTO tbl_name VALUES(null,2,3);
+	 *		$values = [null,2,3]
+     *		INSERT INTO tbl_name VALUES(null,2,3),(null,5,6),(null,8,9);
+	 *		$values = [[null,2,3], [null,5,6], [null,8,9]]
+	 * 2. c предварительным заданием столбцов через Insert::columns(['a','b','c'])
+	 *		INSERT INTO tbl_name (a,b,c) VALUES(1,2,3);
+	 *		$values = [1,2,3]
+	 *		INSERT INTO tbl_name (a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9);
+	 *		$values = [[null,2,3], [null,5,6], [null,8,9]]
+	 * @param  array $values
+	 * @return $this
+	 */
+	public function values(array $values) {
+		
+		$errorValues = false;
+		$isOneDimensArrayValues = false;
+		$isTwoDimensArrayValues = false;	
+		
+		// check arg $values
+		foreach ( $values as $key => $value ) {
+			if ( is_array($value) ) {
+				if ($isOneDimensArrayValues) {
+					$errorValues = true;
+					break;
+				}
+				foreach ($value as $innerValue) {
+					if ( is_array($innerValue) ) {
+						$errorValues = true;
+						break 2;
+					}
+				}		
+				$isTwoDimensArrayValues = true;			
+			}	
+			elseif (is_int($key)) {
+				if ($isTwoDimensArrayValues) {
+					$errorValues = true;
+					break;
+				}
+				$isOneDimensArrayValues = true;				
+			}				
+			else {
+				$errorValues = true;
+				break;		
+			}		
+		}		
+		if ($errorValues) {
+			throw new Exception\InvalidArgumentException(
+				'В MysqlGenerator\Sql\Insert::values($values) неправильно задан аргумент $values.
+				 Аргумент $values может быть только одномерным или двумерным числовым массивом.'
+			);
+		}
+		
+		if ($isOneDimensArrayValues) {			
+			$this->values[] = $values;
+		}	
+		elseif ($isTwoDimensArrayValues) {
+			foreach ($values as $value) {
+				$this->values[] = $value;
+			}
+		}	
+		return $this;	
+	}
+	
+	
+	/**
+	 * Для задания выражения INSERT INTO tbl_name SET a=1, b=2, c=3
+	 * $values = [['a'=> 1], ['b'=> 2], ['c'=> 3]]
+	 * Получится шаблон : INSERT INTO tbl_name (a,b,c) VALUES(1,2,3)
+	 * @param  array $values
+	 * @return $this
+	 */
+	public function set( array $values ) {
+		
+		
+		
+	}
+	
+	
+	/**
+	 * Для задания выражения INSERT INTO tbl_name() SELECT...
+	 * c предварительным или без заданием колонок столбцов через Insert::columns()
+	 * @param Select $select
+	 * @return $this
+	 */
+	//public function select(Select $select) {
+	//}
+	
+	
+	
+	
     /**
      * Create INTO SELECT clause
      * @param Select $select
@@ -170,15 +293,18 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if (is_array($this->values)) {
             foreach ($this->columns as $cIndex => $column) {
                 $columns[$cIndex] = $adapter->quoteIdentifier($column);
-                if (isset($this->values[$cIndex]) && $this->values[$cIndex] instanceof Expression) {
+				
+                if ( isset($this->values[$cIndex]) && $this->values[$cIndex] instanceof Expression ) {
                     $exprData = $this->processExpression($this->values[$cIndex], $adapter, true);
                     $values[$cIndex] = $exprData->getSql();
                     $parameterContainer->merge($exprData->getParameterContainer());
-                } else {
+                } 
+				else {
                     $values[$cIndex] = $adapter->formatParameterName($column);
                     if (isset($this->values[$cIndex])) {
                         $parameterContainer->offsetSet($column, $this->values[$cIndex]);
-                    } else {
+                    } 
+					else {
                         $parameterContainer->offsetSet($column, null);
                     }
                 }
@@ -189,7 +315,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 implode(', ', $columns),
                 implode(', ', $values)
             );		
-        } elseif ($this->values instanceof Select) {
+        } 
+		elseif ($this->values instanceof Select) {
             $this->values->prepareStatement($adapter, $statementContainer);
 
             $columns = array_map(array($adapter, 'quoteIdentifier'), $this->columns);
@@ -201,9 +328,11 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $columns ? "($columns)" : "",
                 $statementContainer->getSql()
             );
-        } else {
+        } 
+		else {
             throw new Exception\InvalidArgumentException('values or select should be present');
         }
+		
         $statementContainer->setSql($sql);
     }
 
@@ -245,8 +374,9 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $table,
                 $columns,
                 implode(', ', $values)
-            );
-        } elseif ($this->values instanceof Select) {
+            );			
+        } 
+		elseif ($this->values instanceof Select) {
             $selectString = $this->values->getSqlString($adapter);
             if ($columns) {
                 $columns = "($columns)";
@@ -256,8 +386,9 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $table,
                 $columns,
                 $selectString
-            );
-        } else {
+            );			
+        }
+		else {
             throw new Exception\InvalidArgumentException('values or select should be present');
         }
     }

@@ -24,6 +24,9 @@ abstract class AbstractSql {
     protected $instanceParameterIndex = array();
 
 	/**
+	 * Из объекта ExpressionInterface $expression (Expression или Predicate объект) получить объект StatementContainer, 
+	 * в котором будут храниться подготовленная ($bind = true) или чистая ($bind = false) строка запроса 
+	 * и свойство-объект ParameterContainer с параметрами для подготовленной строки.
      * @staticvar int $runtimeExpressionPrefix
      * @param ExpressionInterface $expression
      * @param AdapterInterface  $adapter

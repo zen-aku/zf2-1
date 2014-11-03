@@ -113,3 +113,12 @@ Insert::getSqlString() 231 - 249 и
 Insert::prepareStatement() 170 - 195
 полностью переделать, чтобы была возможность формировать строку запроса из множества значений полей 
 (сделать проверку на двумерный массив и если да - формировать строку из подмножества массива)
+
+??? Надо ли автоматически очищать объект Insert после выполнения вставки в бд?
+
+!!! В AbstractTableGateway::executeInsert(Insert $insert) и SequenceFeature::preInsert() используется метод 
+Insert::getRawState(), значения которого изменились с изменением класса Insert. 
+Надо исправить методы AbstractTableGateway::executeInsert() и Insert::getRawState(), чтобы 
+TableGateway работал правильно!!!
+Аналогично и для select, delete, update - при изменении этих классов следить за соответствующим
+методом AbstractTableGateway::execute... и ...::getRawState()

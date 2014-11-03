@@ -9,22 +9,6 @@ use MysqlGenerator\Adapter\AdapterInterface;
 class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface {
 	
     /**
-     * @const
-     */
-    const SPECIFICATION_INSERT = 'insert';
-    const SPECIFICATION_SELECT = 'select';
-    const VALUES_MERGE = 'merge';
-    const VALUES_SET   = 'set';
-
-    /**
-     * @var array Specification array
-     */
-    protected $specifications = array(
-        self::SPECIFICATION_INSERT => 'INSERT INTO %1$s (%2$s) VALUES (%3$s)',
-        self::SPECIFICATION_SELECT => 'INSERT INTO %1$s %2$s %3$s',
-    );
-
-    /**
      * @var string|TableIdentifier
      */
     protected $table = null;
@@ -35,12 +19,6 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
     protected $columns = array();
 
     /**
-     * @var array|Select
-     */
-    //protected $values = null;
-
-    /**
-     * Constructor
      * @param  null|string|TableIdentifier $table
      */
     public function __construct($table = null){
@@ -67,84 +45,44 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return $this;
     }
 
-    /**
-     * Specify values to insert
-     * @param  array|Select $values
-     * @param  string $flag one of VALUES_MERGE or VALUES_SET; defaults to VALUES_SET
-     * @throws Exception\InvalidArgumentException
-     * @return Insert
-     */
-    /*public function values($values, $flag = self::VALUES_SET){
-        if (!is_array($values) && !$values instanceof Select) {
-            throw new Exception\InvalidArgumentException('values() expects an array of values or MysqlGenerator\Sql\Select instance');
-        }
-        if ($values instanceof Select) {
-            if ($flag == self::VALUES_MERGE && (is_array($this->values) && !empty($this->values))) {
-                throw new Exception\InvalidArgumentException(
-                    'A MysqlGenerator\Sql\Select instance cannot be provided with the merge flag when values already exist.'
-                );
-            }
-            $this->values = $values;
-            return $this;
-        }
-        // determine if this is assoc or a set of values
-        $keys = array_keys($values);
-        $firstKey = current($keys);
-
-        if ($flag == self::VALUES_SET) {
-            $this->columns = array();
-            $this->values = array();
-        } 
-		elseif ($this->values instanceof Select) {
-            throw new Exception\InvalidArgumentException(
-                'An array of values cannot be provided with the merge flag when a MysqlGenerator\Sql\Select'
-                . ' instance already exists as the value source.'
-            );
-        }
-        if (is_string($firstKey)) {
-            foreach ($keys as $key) {
-                if (($index = array_search($key, $this->columns)) !== false) {
-                    $this->values[$index] = $values[$key];
-                } 
-				else {
-                    $this->columns[] = $key;
-                    $this->values[] = $values[$key];
-                }
-            }
-        } 
-		elseif (is_int($firstKey)) {
-            // determine if count of columns should match count of values
-            $this->values = array_merge($this->values, array_values($values));
-        }
-        return $this;
-    }
-	*/
-	
+    
 	//////////////////////////////////////////////////////////////////////
 	
-	/**
-     * @var array $values = [ [...], [...], [...], ... ]
+    /**
+     * @const
      */
-    protected $values = array();
-	
+    const SPECIFICATION_INSERT = 'insert';
+    
+    /**
+     * %1$s - <schema.table>
+     * %2$s - <columns> ()
+     * %3$s - VALUES (),(),...
+     *      - SELECT ...
+     * @var array Specification array
+     */
+    protected $specifications = array(
+        self::SPECIFICATION_INSERT => 'INSERT INTO %1$s %2$s %3$s',
+    );
+    
 	/**
-	 * @return array
-	 */
-	public function getColumns() {
-		return $this->columns;
-	}
-	/**
-	 * @return array
-	 */
-	public function getValues() {
-			
-		echo '<pre>';
-		print_r($this->values);
-		exit;
-		
-		return $this->values;
-	}
-	
+     * @var array|Select 
+     *      $values = []
+     *      $values = [ [...], [...], [...], ... ]
+     *      $values = ['col1'=>'val1', 'col2'=>'val2', ...]
+     *      $values = new Select()
+     */
+    protected $values = null;
+       	
+    /**
+     * Для задания выражения INSERT INTO tbl_name() SELECT...
+	 * c предварительным или без заданием колонок столбцов через Insert::columns()
+     * @param Select $select
+     * @return self
+     */
+    public function select( Select $select ){
+        $this->values = $select;
+        return $this;
+    }
 	
 	/**
 	 * Для задания значений VALUES() выражения INSERT INTO tbl_name() VALUES():
@@ -154,20 +92,33 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      *		INSERT INTO tbl_name VALUES(null,2,3),(null,5,6),(null,8,9);
 	 *		$values = [[null,2,3], [null,5,6], [null,8,9]]
 	 * 2. c предварительным заданием столбцов через Insert::columns(['a','b','c'])
-	 *		INSERT INTO tbl_name (a,b,c) VALUES(1,2,3);
+	 *		INSERT INTO tbl_name(a,b,c) VALUES(1,2,3);
 	 *		$values = [1,2,3]
-	 *		INSERT INTO tbl_name (a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9);
+	 *		INSERT INTO tbl_name(a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9);
 	 *		$values = [[null,2,3], [null,5,6], [null,8,9]]
-	 * @param  array $values
+     * 3. c указанием столбцов вместе со значениями как в INSERT INTO tbl_name SET a=1, b=2, c=3
+     *      INSERT INTO tbl_name(a,b,c) VALUES(1,2,3);
+	 *		$values = ['a' => 1, 'b' => 2, 'c' => 3] 
+     * 4. Для задания выражения INSERT INTO tbl_name() SELECT...
+     *      $values = new Select();
+     *      INSERT INTO `users` (`name`, `age`) SELECT `name` , `age` FROM `users` WHERE id = 3
+	 * @param  array|Select $values
 	 * @return $this
 	 */
-	public function values(array $values) {
-		
+	public function values( $values ) {
+        
+        if (!is_array($values) && !$values instanceof Select) {
+            throw new Exception\InvalidArgumentException('values() expects an array of values or Zend\Db\Sql\Select instance');
+        }       
+        if ($values instanceof Select) {
+            $this->values = $values;
+            return $this;
+        }		     
 		$errorValues = false;
 		$isOneDimensArrayValues = false;
-		$isTwoDimensArrayValues = false;	
-		
-		// check arg $values
+		$isTwoDimensArrayValues = false;
+        
+        // check argument $values
 		foreach ( $values as $key => $value ) {
 			if ( is_array($value) ) {
 				if ($isOneDimensArrayValues) {
@@ -188,7 +139,14 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 					break;
 				}
 				$isOneDimensArrayValues = true;				
-			}				
+			}
+            elseif (is_string($key)) {
+                if ($isOneDimensArrayValues || $isTwoDimensArrayValues) {
+                    $errorValues = true;
+					break;
+                }
+                return $this->set($values);
+            }
 			else {
 				$errorValues = true;
 				break;		
@@ -196,8 +154,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 		}		
 		if ($errorValues) {
 			throw new Exception\InvalidArgumentException(
-				'В MysqlGenerator\Sql\Insert::values($values) неправильно задан аргумент $values.
-				 Аргумент $values может быть только одномерным или двумерным числовым массивом.'
+				'В MysqlGenerator\Sql\Insert::values($values) неправильно задан аргумент $values. '
 			);
 		}
 		
@@ -212,47 +169,107 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 		return $this;	
 	}
 	
-	
 	/**
-	 * Для задания выражения INSERT INTO tbl_name SET a=1, b=2, c=3
-	 * $values = [['a'=> 1], ['b'=> 2], ['c'=> 3]]
-	 * Получится шаблон : INSERT INTO tbl_name (a,b,c) VALUES(1,2,3)
+	 * Для задания выражения вида INSERT INTO tbl_name SET a=1, b=2, c=3
+	 * $values = ['a'=> 1, 'b'=> 2, 'c'=> 3]
+	 * В Insert::getSqlString() преобразуется в шаблон : INSERT INTO tbl_name (a,b,c) VALUES(1,2,3)
 	 * @param  array $values
 	 * @return $this
 	 */
-	public function set( array $values ) {
-		
-		
-		
-	}
-	
-	
-	/**
-	 * Для задания выражения INSERT INTO tbl_name() SELECT...
-	 * c предварительным или без заданием колонок столбцов через Insert::columns()
-	 * @param Select $select
-	 * @return $this
-	 */
-	//public function select(Select $select) {
-	//}
-	
-	
-	
-	
+	public function set( array $values ) {	        
+        $this->values = null;       
+        $this->columns = [];
+        
+        foreach ($values as $key => $value) {
+            if (!is_string($key)) {
+                throw new Exception\InvalidArgumentException(
+                    'В MysqlGenerator\Sql\Insert::set($values) неправильно задан аргумент $values. '
+                    .'Аргумент $values может быть только одномерным accоциативным массивом.'
+                );
+            } 
+            $columns[] = $key;
+            $data[] = $value;          
+        }
+        $this->columns = $columns;
+        $this->values[] = $data;
+        return $this;
+    }   
+    
     /**
-     * Create INTO SELECT clause
-     * @param Select $select
-     * @return self
+     * Get SQL string for this statement:
+     *  "INSERT INTO tbl_name VALUES(null,2,3),(null,5,6),(null,8,9),..."
+     *  "INSERT INTO tbl_name(a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9),..."
+     *  "INSERT INTO tbl_name (a,b) VALUES((SELECT...), (SELECT...)), ((SELECT...), (SELECT...)), ..."
+     *  "INSERT INTO tbl_name(a,b,c) SELECT ...
+     * @param AdapterInterface $adapter
+     * @return string
      */
-    public function select(Select $select){
-        return $this->values($select);
+    public function getSqlString(AdapterInterface $adapter){
+        
+        // $table = " `schema`.`table` "
+        if ($table instanceof TableIdentifier) {
+            $table = $adapter->quoteIdentifier($table->getSchema()) . '.' 
+                . $adapter->quoteIdentifier($table->getTable());
+        }
+        else {
+            $table = $adapter->quoteIdentifier($this->table);
+        } 
+        
+        // $columns = " (`column1`, `column2`, `column3` ...)" 
+        $columns = '';
+        if (count($this->columns) > 0) {
+            $columns = '(' . implode( ', ', array_map(array($adapter, 'quoteIdentifier'), $this->columns) ) . ')';
+        }    
+        
+        // $sqlString = " VALUES (...), (...), ..." или " SELECT ... "
+        $rowString = [];
+        if ( is_array($this->values) ) {
+            foreach ($this->values as $row) {
+                $values = [];
+                foreach ($row as $value) {             
+                    if ($value instanceof Expression) {
+                        $values[] = $this->processExpression($value, $adapter)->getSql();
+                    }
+                    elseif ($value instanceof Select) {
+                        $values[] = '(' . $value->getSqlString($adapter) . ')';
+                    } 
+                    elseif ($value === null) {
+                        $values[] = 'NULL';
+                    } 
+                    else {
+                        $values[] = $adapter->quoteValue($value);
+                    }                     
+                }
+                $rowString[] = '(' . implode(', ', $values) . ')';        
+            }
+            $valuesString = 'VALUES ' . implode(', ', $rowString);       	
+        }
+        elseif ($this->values instanceof Select) {
+            $valuesString = $this->values->getSqlString($adapter);        			
+        }
+        else {
+            throw new Exception\InvalidArgumentException('values or select should be present');
+        }
+        
+        // sqlString = "INSERT INTO tbl_name(a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9),..." или "INSERT INTO tbl_name(a,b,c) SELECT ..."
+        return sprintf(
+            $this->specifications[static::SPECIFICATION_INSERT],
+            $table,
+            $columns,
+            $valuesString
+        );
     }
+
+    				
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	
 
     /**
      * Get raw state
      * @param string $key
      * @return mixed
      */
+//???
     public function getRawState($key = null){
         $rawState = array(
             'table' => $this->table,
@@ -268,6 +285,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @param  StatementContainerInterface $statementContainer
      * @return void
      */
+//???
     public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
         $parameterContainer = $statementContainer->getParameterContainer();
 
@@ -337,69 +355,13 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
     }
 
     /**
-     * Get SQL string for this statement
-     * @param AdapterInterface $adapter
-     * @return string
-     */
-    public function getSqlString(AdapterInterface $adapter){
-        $table = $this->table;
-        $schema = null;
-
-        // create quoted table name to use in insert processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
-        $table = $adapter->quoteIdentifier($table);
-
-        if ($schema) {
-            $table = $adapter->quoteIdentifier($schema) . '.' . $table;
-        }
-        $columns = array_map(array($adapter, 'quoteIdentifier'), $this->columns);
-        $columns = implode(', ', $columns);
-
-        if (is_array($this->values)) {
-            $values = array();
-            foreach ($this->values as $value) {
-                if ($value instanceof Expression) {
-                    $exprData = $this->processExpression($value, $adapter);
-                    $values[] = $exprData->getSql();
-                } elseif ($value === null) {
-                    $values[] = 'NULL';
-                } else {
-                    $values[] = $adapter->quoteValue($value);
-                }
-            }
-            return sprintf(
-                $this->specifications[static::SPECIFICATION_INSERT],
-                $table,
-                $columns,
-                implode(', ', $values)
-            );			
-        } 
-		elseif ($this->values instanceof Select) {
-            $selectString = $this->values->getSqlString($adapter);
-            if ($columns) {
-                $columns = "($columns)";
-            }
-            return sprintf(
-                $this->specifications[static::SPECIFICATION_SELECT],
-                $table,
-                $columns,
-                $selectString
-            );			
-        }
-		else {
-            throw new Exception\InvalidArgumentException('values or select should be present');
-        }
-    }
-
-    /**
      * Overloading: variable setting
      * Proxies to values, using VALUES_MERGE strategy
      * @param  string $name
      * @param  mixed $value
      * @return Insert
      */
+//Убрать вообще???
     public function __set($name, $value){
         $values = array($name => $value);
         $this->values($values, self::VALUES_MERGE);
@@ -413,6 +375,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @throws Exception\InvalidArgumentException
      * @return void
      */
+//Убрать вообще???
     public function __unset($name){
         if (($position = array_search($name, $this->columns)) === false) {
             throw new Exception\InvalidArgumentException('The key ' . $name . ' was not found in this objects column list');
@@ -429,6 +392,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @param  string $name
      * @return bool
      */
+//Убрать вообще???
     public function __isset($name){
         return in_array($name, $this->columns);
     }
@@ -440,6 +404,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @throws Exception\InvalidArgumentException
      * @return mixed
      */
+//Убрать вообще???
     public function __get($name){
         if (!is_array($this->values)) {
             return null;
