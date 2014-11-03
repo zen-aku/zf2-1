@@ -23,34 +23,42 @@ abstract class AbstractSql {
      */
     protected $instanceParameterIndex = array();
 
-    /**
+	/**
+	 * Из объекта ExpressionInterface $expression (Expression или Predicate объект) получить объект StatementContainer, 
+	 * в котором будут храниться подготовленная ($bind = true) или чистая ($bind = false) строка запроса 
+	 * и свойство-объект ParameterContainer с параметрами для подготовленной строки.
      * @staticvar int $runtimeExpressionPrefix
-     * @param \MysqlGenerator\Sql\ExpressionInterface $expression
+     * @param ExpressionInterface $expression
      * @param AdapterInterface  $adapter
+	 * @param boolean $bind : 
+	 *		true - подготавливать bind-параметры для statement из $expression 
+	 *		false - передавать строку запроса из $expression в statement без bind-параметров
      * @param type $namedParameterPrefix
      * @return StatementContainer
      * @throws Exception\RuntimeException
      */
-    protected function processExpression( ExpressionInterface $expression, AdapterInterface $adapter = null, $namedParameterPrefix = null ) {
+	protected function processExpression (
+		ExpressionInterface $expression, 
+		AdapterInterface $adapter, 
+		$bind = false, 
+		$namedParameterPrefix = null 
+	) {
+		// initialize variables
+		$sql = '';
         // static counter for the number of times this method was invoked across the PHP runtime
         static $runtimeExpressionPrefix = 0;
 
-        if ($adapter && ((!is_string($namedParameterPrefix) || $namedParameterPrefix == ''))) {
+        if ($bind && ((!is_string($namedParameterPrefix) || $namedParameterPrefix == ''))) {
             $namedParameterPrefix = sprintf('expr%04dParam', ++$runtimeExpressionPrefix);
         }
-
-        $sql = '';
-        $statementContainer = new StatementContainer;
-        $parameterContainer = $statementContainer->getParameterContainer();
-
-        // initialize variables
-        $parts = $expression->getExpressionData();
-
         if (!isset($this->instanceParameterIndex[$namedParameterPrefix])) {
             $this->instanceParameterIndex[$namedParameterPrefix] = 1;
         }
-        $expressionParamIndex = &$this->instanceParameterIndex[$namedParameterPrefix];
-
+        $expressionParamIndex = &$this->instanceParameterIndex[$namedParameterPrefix];		
+		$statementContainer = new StatementContainer;
+        $parameterContainer = $statementContainer->getParameterContainer();
+		
+		$parts = $expression->getExpressionData();		
         foreach ($parts as $part) {
             // if it is a string, simply tack it onto the return sql "specification" string
             if (is_string($part)) {
@@ -63,44 +71,87 @@ abstract class AbstractSql {
             // process values and types (the middle and last position of the expression data)
             $values = $part[1];
             $types = (isset($part[2])) ? $part[2] : array();
-            foreach ($values as $vIndex => $value) {
-                if (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_IDENTIFIER) {
-                    $values[$vIndex] = $adapter->quoteIdentifierInFragment($value);
-                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_VALUE && $value instanceof Select) {
-                    // process sub-select              
-                    $values[$vIndex] = '(' . $this->processSubSelect($value, $adapter, $parameterContainer) . ')';                   
-                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_VALUE && $value instanceof ExpressionInterface) {
-                    // recursive call to satisfy nested expressions
-                    $innerStatementContainer = $this->processExpression($value, $adapter, $namedParameterPrefix . $vIndex . 'subpart');
-                    $values[$vIndex] = $innerStatementContainer->getSql();
-                    if ($adapter) {
-                        $parameterContainer->merge($innerStatementContainer->getParameterContainer());
-                    }
-                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_VALUE) {
-
-                    // if prepareType is set, it means that this particular value must be
-                    // passed back to the statement in a way it can be used as a placeholder value
-                    if ($adapter) {
-                        $name = $namedParameterPrefix . $expressionParamIndex++;
-                        $parameterContainer->offsetSet($name, $value);
-                        $values[$vIndex] = $adapter->formatParameterName($name);
-                        continue;
-                    }
-
-                    // if not a preparable statement, simply quote the value and move on
-                    $values[$vIndex] = $adapter->quoteValue($value);
-                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_LITERAL) {
-                    $values[$vIndex] = $value;
-                }
-            }
-
+			
+            foreach ($values as $vIndex => $value) {				
+				if ( isset($types[$vIndex]) ) {
+					switch ( $types[$vIndex] ) {						
+						case ExpressionInterface::TYPE_IDENTIFIER : {
+							$values[$vIndex] = $adapter->quoteIdentifierInFragment($value);
+							break;
+						}
+						case ExpressionInterface::TYPE_LITERAL : {
+							$values[$vIndex] = $value;
+							break;
+						}
+						case ExpressionInterface::TYPE_VALUE : {
+							if ($value instanceof Select) {
+								// process sub-select
+								if ($bind) {
+									$values[$vIndex] = '(' . $this->processSubSelect($value, $adapter, $parameterContainer) . ')';
+								} else {
+									$values[$vIndex] = '(' . $value->getSqlString($adapter) . ')';
+								}
+							}
+							elseif ($value instanceof ExpressionInterface) {
+								// recursive call to satisfy nested expressions
+								$innerStatementContainer = $this->processExpression($value, $adapter, $bind, $namedParameterPrefix . $vIndex . 'subpart');
+								$values[$vIndex] = $innerStatementContainer->getSql();
+								if ($bind) {
+									$parameterContainer->merge($innerStatementContainer->getParameterContainer());
+								}					
+							}
+							else {
+								// if prepareType is set, it means that this particular value must be passed back to the statement in a way it can be used as a placeholder value
+								if ($bind) {
+									$name = $namedParameterPrefix . $expressionParamIndex++;
+									$parameterContainer->offsetSet($name, $value);
+									$values[$vIndex] = $adapter->formatParameterName($name);
+									continue; 
+								}
+								// if not a preparable statement, simply quote the value and move on
+								$values[$vIndex] = $adapter->quoteValue($value);							
+							}
+						}
+					}
+				}		
+            }			
             // after looping the values, interpolate them into the sql string (they might be placeholder names, or values)
             $sql .= vsprintf($part[0], $values);
         }
         $statementContainer->setSql($sql);
         return $statementContainer;
     }
+	
+	/**
+	 * @param \MysqlGenerator\Sql\Select $subselect
+	 * @param AdapterInterface $adapter
+	 * @param boolean $bind : 
+	 *		true - подготавливать bind-параметры для statement из $expression 
+	 *		false - передавать строку запроса из $expression в statement без bind-параметров
+	 * @param ParameterContainer $parameterContainer
+	 * @return type
+	 */
+    protected function processSubSelect(
+		Select $subselect, 
+		AdapterInterface $adapter, 
+		ParameterContainer $parameterContainer
+	) {		
+		
+		$stmtContainer = new StatementContainer;
 
+		// Track subselect prefix and count for parameters
+		$this->processInfo['subselectCount']++;
+		$subselect->processInfo['subselectCount'] = $this->processInfo['subselectCount'];
+		$subselect->processInfo['paramPrefix'] = 'subselect' . $subselect->processInfo['subselectCount'];
+		$subselect->prepareStatement($adapter, $stmtContainer);
+
+		// copy count
+		$this->processInfo['subselectCount'] = $subselect->processInfo['subselectCount'];
+		$parameterContainer->merge($stmtContainer->getParameterContainer()->getNamedArray());
+        
+        return $stmtContainer->getSql();
+    }
+	
     /**
      * @param $specifications
      * @param $parameters
@@ -152,30 +203,4 @@ abstract class AbstractSql {
         return vsprintf($specificationString, $topParameters);
     }
 
-	/**
-	 * @param \MysqlGenerator\Sql\Select $subselect
-	 * @param AdapterInterface $adapter
-	 * @param ParameterContainer $parameterContainer
-	 * @return type
-	 */
-    protected function processSubSelect(Select $subselect, AdapterInterface $adapter = null, ParameterContainer $parameterContainer = null) {
-        if ($adapter) {
-            $stmtContainer = new StatementContainer;
-
-            // Track subselect prefix and count for parameters
-            $this->processInfo['subselectCount']++;
-            $subselect->processInfo['subselectCount'] = $this->processInfo['subselectCount'];
-            $subselect->processInfo['paramPrefix'] = 'subselect' . $subselect->processInfo['subselectCount'];
-			$subselect->prepareStatement(new \MysqlGenerator\Adapter\Adapter($adapter), $stmtContainer);
-         
-            // copy count
-            $this->processInfo['subselectCount'] = $subselect->processInfo['subselectCount'];
-            $parameterContainer->merge($stmtContainer->getParameterContainer()->getNamedArray());
-            $sql = $stmtContainer->getSql();
-        } 
-		else {         
-            $sql = $subselect->getSqlString($adapter);         
-        }
-        return $sql;
-    }
 }
