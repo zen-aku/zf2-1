@@ -44,17 +44,22 @@ class CreateDbController extends AbstractActionController {
 			->addConstraint(new Sql\Constraint\PrimaryKey('id'));	    
         $adapter->execSqlObject($users);
 		
-		// Заполнить таблицу 'users' значениями
+		/*
+		 * Заполнить таблицу 'users' значениями двумя способами:
+		 * двумерным массивом(списком) или одномерным массивом(построчно) в values()
+		 */
 		$insertUsers = new Sql\Insert('users');
+		// Списком: INSERT INTO users VALUES(null, 'John', 15),(null, 'Mike', 20),(null, 'Mary', 25);
 		$insertUsers->values(array(
 			[null, 'John', 15],
 			[null, 'Mike', 20],
 			[null, 'Mary', 25],
-		))	
+		))
+		// Построчно: INSERT INTO users VALUES(null, 'Kate', 30)	
 			->values([null, 'Kate', 30])
+		// Построчно: INSERT INTO users VALUES(null, 'Alex', 35)		
 			->values([null, 'Alex', 35])	
-		;
-        // Выполнить запрос
+		;	
 		$adapter->execSqlObject($insertUsers);
         
         
@@ -67,7 +72,7 @@ class CreateDbController extends AbstractActionController {
            'name' => 'Nikole',
            'age' => 17,
        ]);    
-       $adapter->execSqlObject($insertUsers); 
+       //$adapter->execSqlObject($insertUsers); 
        
        /*
         *  INSERT INTO `users` (`name`, `age`) VALUES ('Nick', '19')
@@ -77,11 +82,13 @@ class CreateDbController extends AbstractActionController {
        $insertUsers->values([
            'name' => 'Nick',
            'age' => 19,
-       ]);    
-       $adapter->execSqlObject($insertUsers); 
+       ]);     
+       //$adapter->execSqlObject($insertUsers); 
        
          
-             
+        /*
+		 * INSERT INTO table SELECT 
+		 */     
         // SELECT `users`.`name` AS `name`, `users`.`age` AS `age` FROM `users` WHERE id = 3
         $select = new Sql\Select('users');
         $select->columns(['name', 'age']);
@@ -90,7 +97,7 @@ class CreateDbController extends AbstractActionController {
         $insertUsers = new Sql\Insert('users');
         $insertUsers->columns(['name', 'age']);
         $insertUsers->select($select);       
-        //$result = $adapter->execSqlObject($insertUsers);
+        //$adapter->execSqlObject($insertUsers);
         
                     
         /*
@@ -112,7 +119,7 @@ class CreateDbController extends AbstractActionController {
 			[null, 'John', 15],
 			[null, 'Mike', 20],
 		));
-        //$adapter->execSqlObject([$users2, $insertUsers2]);
+        $adapter->execSqlObject([$users2, $insertUsers2]);
          
         $selectName1 = new Sql\Select('users2');
         $selectName1->columns(['name'])->where('id = 1');
@@ -124,25 +131,17 @@ class CreateDbController extends AbstractActionController {
             [$selectName1, 33],
             [$selectName2, 44],
         ]);
-        //$result = $adapter->execSqlObject($insertUsers);
+        //$adapter->execSqlObject($insertUsers);
 		
-        
-        
+		
+		
         /*
         echo '<pre>';
         echo $insertUsers->getSqlString($adapter);
 		exit;
         */
-        
-		
-		
-		
-		
-		
-		
+       
 		/*
-		
-		
 		$sql = "
 			CREATE TABLE users (
 				id           INT         NOT NULL AUTO_INCREMENT,
