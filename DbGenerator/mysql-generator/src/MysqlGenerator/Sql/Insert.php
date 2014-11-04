@@ -9,35 +9,6 @@ use MysqlGenerator\Adapter\AdapterInterface;
 class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface {
 	
     /**
-     * @var string|TableIdentifier
-     */
-    protected $table = null;
-	
-	/**
-	 * @var array 
-	 */
-    protected $columns = array();
-
-    /**
-     * @param  null|string|TableIdentifier $table
-     */
-    public function __construct($table = null){
-        $this->table = $table;
-    }
-
-    /**
-     * Create INTO clause
-     * @param  string|TableIdentifier $table
-     * @return Insert
-     */
-    public function into($table){
-        $this->table = $table;
-        return $this;
-    }
-    
-	//////////////////////////////////////////////////////////////////////
-	
-    /**
      * @const
      */
     const SPECIFICATION_INSERT = 'insert';
@@ -52,6 +23,21 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
     protected $specifications = array(
         self::SPECIFICATION_INSERT => 'INSERT INTO %1$s %2$s %3$s',
     );
+     
+    /**
+     * @var string|TableIdentifier
+     */
+    protected $table = null;
+    
+    /**
+	 * @var array 
+	 */
+    protected $columns = array();
+    
+    /**
+	 * @var int $countColumns
+	 */
+    protected $countColumns = 0;
     
 	/**
      * @var array
@@ -73,8 +59,25 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 	 * @var boolean  
 	 */
 	protected $isAssocArrayValues = false;
-     
-	/**
+        
+    /**
+     * @param  null|string|TableIdentifier $table
+     */
+    public function __construct($table = null){
+        $this->table = $table;
+    }
+
+    /**
+     * Create INTO clause
+     * @param  string|TableIdentifier $table
+     * @return Insert
+     */
+    public function into($table){
+        $this->table = $table;
+        return $this;
+    }
+    
+    /**
 	 * !!! При задании колонок очищаются $this->values и $this->select, поэтому важен порядок задания команд:
      * сначала задаются колонки, потом добавляемые в дб значения.
      * @param  array $columns
@@ -84,6 +87,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 		$this->values = null;
 		$this->select = null;
         $this->columns = $columns;
+        $this->countColumns = count($this->columns);
         return $this;
     }
 
@@ -162,18 +166,27 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 			$this->isAssocArrayValues = false;
 		}
 		
-		if ($isOneDimensArrayValues) {			
+		if ($isOneDimensArrayValues) {	
+            if ($this->countColumns and count($values) !== $this->countColumns) {
+                throw new Exception\InvalidArgumentException(
+                    'Количество заданных колонок не соответствует количеству значений для вставки в бд'
+                );
+            }
 			$this->values[] = $values;
 		}	
 		elseif ($isTwoDimensArrayValues) {
 			foreach ($values as $value) {
+                if ($this->countColumns and count($value) !== $this->countColumns) {
+                    throw new Exception\InvalidArgumentException(
+                        'Количество заданных колонок не соответствует количеству значений для вставки в бд'
+                    );
+                }
 				$this->values[] = $value;
 			}
 		}	
 		return $this;	
 	}
-	
-	
+		
 	/**
 	 * Для задания выражения вида INSERT INTO tbl_name SET a=1, b=2, c=3
 	 * $values = ['a'=> 1, 'b'=> 2, 'c'=> 3]
@@ -213,23 +226,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @return string
      */
     public function getSqlString(AdapterInterface $adapter){
-        
-        // $table = " `schema`.`table` "
-        if ($table instanceof TableIdentifier) {
-            $table = $adapter->quoteIdentifier($table->getSchema()) . '.' 
-                . $adapter->quoteIdentifier($table->getTable());
-        }
-        else {
-            $table = $adapter->quoteIdentifier($this->table);
-        } 
-        
-        // $columns = " (`column1`, `column2`, `column3` ...)" 
-        $columns = '';
-        if (count($this->columns) > 0) {
-            $columns = '(' . implode( ', ', array_map(array($adapter, 'quoteIdentifier'), $this->columns) ) . ')';
-        }    
-             	
-		// $valuesString = " VALUES (...), (...), ..."
+            	
 		$rowString = [];
         if ( is_array($this->values) ) {
             foreach ($this->values as $row) {
@@ -252,23 +249,84 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
             }
             $valuesString = 'VALUES ' . implode(', ', $rowString);       	
         }
-		// $valuesString = " SELECT ... "
         elseif ($this->select instanceof Select) {
             $valuesString = $this->select->getSqlString($adapter);        			
         }
         else {
             throw new Exception\InvalidArgumentException('values or select should be present');
-        }
-        
-        // sqlString = "INSERT INTO tbl_name(a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9),..." или "INSERT INTO tbl_name(a,b,c) SELECT ..."
+        }       
         return sprintf(
-            $this->specifications[static::SPECIFICATION_INSERT],
-            $table,
-            $columns,
-            $valuesString
+            $this->specifications[static::SPECIFICATION_INSERT],    // "INSERT INTO %1$s %2$s %3$s"
+            $adapter->getQuoteSchemaTable( $this->table ),          // " `schema`.`table` "
+            '('.$adapter->getQuoteList( $this->columns ).')',       // "`column1`, `column2`, `column3` ..."
+            $valuesString                                           // " VALUES (...), (...), ..." | "SELECT ..."
         );
     }
-   				
+   		  
+    /**
+     * Prepare statement
+     * @param  AdapterInterface $adapter
+     * @param  StatementContainerInterface $statementContainer
+     * @return void
+     */
+    public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
+        
+        // ParameterContainer
+        $parameterContainer = $statementContainer->getParameterContainer();
+        if (!$parameterContainer instanceof ParameterContainer) {
+            $parameterContainer = new ParameterContainer();
+            $statementContainer->setParameterContainer($parameterContainer);
+        }
+         
+        $keyBindName = 0;
+        $index = 0;
+        $rowString = [];
+        if (is_array($this->values)) {            
+            foreach ($this->values as $row) {             
+                $values = [];
+                foreach ($row as $key => $value) { 
+                    if ($value instanceof Expression) {
+                        $exprData = $this->processExpression($value, $adapter, true);
+                        $values[] = $exprData->getSql();
+                        $parameterContainer->merge($exprData->getParameterContainer());
+                    }
+                    elseif ($value instanceof Select) {
+                        $value->prepareStatement($adapter, $statementContainer); 
+                        $values[] =  '(' . $statementContainer->getSql() . ')';
+                    }
+                    else {
+                        if ( isset($this->columns[$key]) ) {
+                            $values[] = $bindName = ':' . $this->columns[$key] . ++$keyBindName;
+                        }
+                        else {    
+                            $values[] = $bindName = '?';        
+                            $index++;
+                        }
+                        $parameterContainer->offsetSet($bindName, $value);
+                    }
+                }          
+                $rowString[] = '(' . implode(', ', $values) . ')';
+            }            
+            $valuesString = 'VALUES ' . implode(', ', $rowString); 
+        } 
+		elseif ($this->select instanceof Select) {
+            $this->select->prepareStatement($adapter, $statementContainer);
+            $valuesString = $statementContainer->getSql();
+        } 
+		else {
+            throw new Exception\InvalidArgumentException('values or select should be present');
+        }
+      
+        $sql = sprintf(
+            $this->specifications[static::SPECIFICATION_INSERT],    // "INSERT INTO %1$s %2$s %3$s"
+            $adapter->getQuoteSchemaTable( $this->table ),          // " `schema`.`table` "
+            '('.$adapter->getQuoteList( $this->columns ).')',       // "`column1`, `column2`, `column3` ..."
+            $valuesString                                           // " VALUES (?, ?,...), (?, ?,...), ..." | "SELECT ..."
+        );
+        
+        $statementContainer->setSql($sql);
+    }
+     
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	
 
@@ -277,7 +335,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @param string $key
      * @return mixed
      */
-//???
+//??? А не лучше ли заменить на 3 гетметода: getTable(), getColumns(), getValues()
     public function getRawState($key = null){
         $rawState = array(
             'table' => $this->table,
@@ -285,81 +343,6 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
             'values' => $this->values
         );
         return (isset($key) && array_key_exists($key, $rawState)) ? $rawState[$key] : $rawState;
-    }
-
-    /**
-     * Prepare statement
-     * @param  AdapterInterface $adapter
-     * @param  StatementContainerInterface $statementContainer
-     * @return void
-     */
-//???
-    public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
-        $parameterContainer = $statementContainer->getParameterContainer();
-
-        if (!$parameterContainer instanceof ParameterContainer) {
-            $parameterContainer = new ParameterContainer();
-            $statementContainer->setParameterContainer($parameterContainer);
-        }
-        $table = $this->table;
-        $schema = null;
-
-        // create quoted table name to use in insert processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
-        $table = $adapter->quoteIdentifier($table);
-
-        if ($schema) {
-            $table = $adapter->quoteIdentifier($schema) . '.' . $table;
-        }
-        $columns = array();
-        $values  = array();
-
-        if (is_array($this->values)) {
-            foreach ($this->columns as $cIndex => $column) {
-                $columns[$cIndex] = $adapter->quoteIdentifier($column);
-				
-                if ( isset($this->values[$cIndex]) && $this->values[$cIndex] instanceof Expression ) {
-                    $exprData = $this->processExpression($this->values[$cIndex], $adapter, true);
-                    $values[$cIndex] = $exprData->getSql();
-                    $parameterContainer->merge($exprData->getParameterContainer());
-                } 
-				else {
-                    $values[$cIndex] = $adapter->formatParameterName($column);
-                    if (isset($this->values[$cIndex])) {
-                        $parameterContainer->offsetSet($column, $this->values[$cIndex]);
-                    } 
-					else {
-                        $parameterContainer->offsetSet($column, null);
-                    }
-                }
-            }
-            $sql = sprintf(
-                $this->specifications[static::SPECIFICATION_INSERT],
-                $table,
-                implode(', ', $columns),
-                implode(', ', $values)
-            );		
-        } 
-		elseif ($this->values instanceof Select) {
-            $this->values->prepareStatement($adapter, $statementContainer);
-
-            $columns = array_map(array($adapter, 'quoteIdentifier'), $this->columns);
-            $columns = implode(', ', $columns);
-
-            $sql = sprintf(
-                $this->specifications[static::SPECIFICATION_SELECT],
-                $table,
-                $columns ? "($columns)" : "",
-                $statementContainer->getSql()
-            );
-        } 
-		else {
-            throw new Exception\InvalidArgumentException('values or select should be present');
-        }
-		
-        $statementContainer->setSql($sql);
     }
 
     /**

@@ -7,6 +7,34 @@ namespace MysqlGenerator\Adapter\AdapterTrait;
  */
 trait QuoteTrait {
     
+    ///////////////////////////////////////////////////////
+    
+    /**
+     * @param string|TableIdentifier $table
+     * @return string  "`schema`.`table`"
+     */
+    public function getQuoteSchemaTable( $table ) {
+        if ($table instanceof TableIdentifier) {
+            return $this->quoteIdentifier($this->getSchema()) . '.' 
+                . $this->quoteIdentifier($this->getTable());
+        }
+        else {
+            return $this->quoteIdentifier($table);
+        } 
+    }
+    
+    /**
+     * @param array $list [elemen1, elemen2, ...]
+     * @return string  "`elemen1`, `elemen2`, ..."
+     */
+    public function getQuoteList( array $list ) {
+       return implode( ', ', array_map( array($this, 'quoteIdentifier'), $list) );        
+    }
+    
+    
+    
+    //////////////////////////////////////////////////////
+    
     /**
      * Quote identifier
      * @param  string $identifier

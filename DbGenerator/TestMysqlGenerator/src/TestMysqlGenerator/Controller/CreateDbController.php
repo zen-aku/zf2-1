@@ -31,7 +31,7 @@ class CreateDbController extends AbstractActionController {
 		$sql = "CREATE DATABASE test CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$adapter->query( $sql, 'execute');
 		
-	
+	/////
 		// Подключаемся к бд через сервис в сервис-манагере (зарегистрировать)
 		$adapter = $this->getServiceLocator()->get('MysqlGenerator\Adapter\Adapter');
 		
@@ -44,7 +44,8 @@ class CreateDbController extends AbstractActionController {
 			->addConstraint(new Sql\Constraint\PrimaryKey('id'));	    
         $adapter->execSqlObject($users);
 		
-		/*
+	/////
+        /*
 		 * Заполнить таблицу 'users' значениями двумя способами:
 		 * двумерным массивом(списком) или одномерным массивом(построчно) в values()
 		 */
@@ -61,8 +62,28 @@ class CreateDbController extends AbstractActionController {
 			->values([null, 'Alex', 35])	
 		;	
 		$adapter->execSqlObject($insertUsers);
-        
-        
+        //$adapter->execPrepareStatement($insertUsers);
+          
+    /////    
+        /*
+         * Задать столбцы и заполнить таблицу с заданием столбцов
+         */
+        $insertUsers = new Sql\Insert('users');
+        // INSERT INTO users(name, age) VALUES('John', 15),('Mike', 20),('Mary', 25);
+        $insertUsers->columns(['name', 'age'])->values(array(
+			['John', 15],
+			['Mike', 20],
+			['Mary', 25],
+		))
+		// Построчно: INSERT INTO users(name, age) VALUES('Kate', 30)	
+			->values(['Kate', 30])
+		// Построчно: INSERT INTO users(name, age) VALUES('Alex', 35)		
+			->values(['Alex', 35])	
+		;	
+        //$result = $adapter->execSqlObject($insertUsers);    
+        //$result = $adapter->execPrepareStatement($insertUsers);
+         
+    /////    
        /*
         *  INSERT INTO `users` (`name`, `age`) VALUES ('Nikole', '17')
         *  через Insert::set()
@@ -73,6 +94,7 @@ class CreateDbController extends AbstractActionController {
            'age' => 17,
        ]);    
        //$adapter->execSqlObject($insertUsers); 
+       //$adapter->execPrepareStatement($insertUsers);
        
        /*
         *  INSERT INTO `users` (`name`, `age`) VALUES ('Nick', '19')
@@ -84,8 +106,9 @@ class CreateDbController extends AbstractActionController {
            'age' => 19,
        ]);     
        //$adapter->execSqlObject($insertUsers); 
-       
+       //$adapter->execPrepareStatement($insertUsers);
          
+    /////           
         /*
 		 * INSERT INTO table SELECT 
 		 */     
@@ -98,12 +121,13 @@ class CreateDbController extends AbstractActionController {
         $insertUsers->columns(['name', 'age']);
         $insertUsers->select($select);       
         //$adapter->execSqlObject($insertUsers);
+        //$adapter->execPrepareStatement($insertUsers);
         
-                    
+    /////                
         /*
          * INSERT INTO `users` (`name`, `age`) VALUES 
-         *      (SELECT `users2`.`name` AS `name` FROM `users` WHERE id = 5, '33'), 
-         *      (SELECT `users2`.`name` AS `name` FROM `users` WHERE id = 4, '44')
+         *      ((SELECT `users2`.`name` AS `name` FROM `users` WHERE id = 1), '33'), 
+         *      ((SELECT `users2`.`name` AS `name` FROM `users` WHERE id = 2), '44')
          * Создать таблицу 'users2'
          */
         // Создать таблицу 'users2'
@@ -118,8 +142,7 @@ class CreateDbController extends AbstractActionController {
 		$insertUsers2->values(array(
 			[null, 'John', 15],
 			[null, 'Mike', 20],
-		));
-        $adapter->execSqlObject([$users2, $insertUsers2]);
+		));   
          
         $selectName1 = new Sql\Select('users2');
         $selectName1->columns(['name'])->where('id = 1');
@@ -128,18 +151,20 @@ class CreateDbController extends AbstractActionController {
         
         $insertUsers = new Sql\Insert('users');
         $insertUsers->columns(['name', 'age'])->values([
+            ['Olya', 9],
             [$selectName1, 33],
             [$selectName2, 44],
         ]);
+        $adapter->execSqlObject([$users2, $insertUsers2]);
         //$adapter->execSqlObject($insertUsers);
+		$result = $adapter->execPrepareStatement($insertUsers);
+////////        
 		
-		
-		
-        /*
-        echo '<pre>';
-        echo $insertUsers->getSqlString($adapter);
-		exit;
-        */
+        
+        //echo '<pre>';
+        //echo $insertUsers->getSqlString($adapter);
+		//exit;
+        
        
 		/*
 		$sql = "
