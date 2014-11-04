@@ -34,17 +34,6 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         $this->table = $table;
         return $this;
     }
-
-    /**
-     * Specify columns
-     * @param  array $columns
-     * @return Insert
-     */
-    public function columns(array $columns){
-        $this->columns = $columns;
-        return $this;
-    }
-
     
 	//////////////////////////////////////////////////////////////////////
 	
@@ -65,22 +54,50 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
     );
     
 	/**
-     * @var array|Select 
+     * @var array
      *      $values = []
      *      $values = [ [...], [...], [...], ... ]
      *      $values = ['col1'=>'val1', 'col2'=>'val2', ...]
-     *      $values = new Select()
      */
     protected $values = null;
-       	
+	
+	/**
+	 * @var Select 
+	 */
+	protected $select = null;
+	
+	/**
+	 * Флаг: 
+	 *	true - значения были переданы в виде ассоциативного массива $values = ['col1'=>'val1', 'col2'=>'val2', ...]
+	 *	false - значения были переданы в виде числового массива $values = [] или [ [...], [...], [...], ... ]
+	 * @var boolean  
+	 */
+	protected $isAssocArrayValues = false;
+     
+	/**
+	 * !!! При задании колонок очищаются $this->values и $this->select, поэтому важен порядок задания команд:
+     * сначала задаются колонки, потом добавляемые в дб значения.
+     * @param  array $columns
+     * @return Insert
+     */
+    public function columns(array $columns){
+		$this->values = null;
+		$this->select = null;
+        $this->columns = $columns;
+        return $this;
+    }
+
     /**
-     * Для задания выражения INSERT INTO tbl_name() SELECT...
+	 * Для задания выражения INSERT INTO tbl_name() SELECT...
+     *      $select = new Select();
+     *      INSERT INTO `users` (`name`, `age`) SELECT `name` , `age` FROM `users` WHERE id = 3
 	 * c предварительным или без заданием колонок столбцов через Insert::columns()
      * @param Select $select
      * @return self
      */
     public function select( Select $select ){
-        $this->values = $select;
+		$this->values = null;
+        $this->select = $select;
         return $this;
     }
 	
@@ -99,22 +116,13 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * 3. c указанием столбцов вместе со значениями как в INSERT INTO tbl_name SET a=1, b=2, c=3
      *      INSERT INTO tbl_name(a,b,c) VALUES(1,2,3);
 	 *		$values = ['a' => 1, 'b' => 2, 'c' => 3] 
-     * 4. Для задания выражения INSERT INTO tbl_name() SELECT...
-     *      $values = new Select();
-     *      INSERT INTO `users` (`name`, `age`) SELECT `name` , `age` FROM `users` WHERE id = 3
-	 * @param  array|Select $values
+	 *		В этом случае все предыдущие добавления values() до выполнения запроса в бд будут обнулены. 
+	 * @param  array $values
 	 * @return $this
 	 */
-	public function values( $values ) {
-        
-        if (!is_array($values) && !$values instanceof Select) {
-            throw new Exception\InvalidArgumentException('values() expects an array of values or Zend\Db\Sql\Select instance');
-        }       
-        if ($values instanceof Select) {
-            $this->values = $values;
-            return $this;
-        }		     
-		$errorValues = false;
+	public function values( array $values ) {
+		
+		$this->select = null;	     
 		$isOneDimensArrayValues = false;
 		$isTwoDimensArrayValues = false;
         
@@ -122,40 +130,36 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 		foreach ( $values as $key => $value ) {
 			if ( is_array($value) ) {
 				if ($isOneDimensArrayValues) {
-					$errorValues = true;
-					break;
+					throw new Exception\InvalidArgumentException('В MysqlGenerator\Sql\Insert::values() неправильно задан аргумент.');
 				}
 				foreach ($value as $innerValue) {
 					if ( is_array($innerValue) ) {
-						$errorValues = true;
-						break 2;
+						throw new Exception\InvalidArgumentException('В MysqlGenerator\Sql\Insert::values() неправильно задан аргумент.');
 					}
 				}		
 				$isTwoDimensArrayValues = true;			
 			}	
 			elseif (is_int($key)) {
 				if ($isTwoDimensArrayValues) {
-					$errorValues = true;
-					break;
+					throw new Exception\InvalidArgumentException('В MysqlGenerator\Sql\Insert::values() неправильно задан аргумент.');
 				}
 				$isOneDimensArrayValues = true;				
 			}
             elseif (is_string($key)) {
                 if ($isOneDimensArrayValues || $isTwoDimensArrayValues) {
-                    $errorValues = true;
-					break;
+                    throw new Exception\InvalidArgumentException('В MysqlGenerator\Sql\Insert::values() неправильно задан аргумент.');
                 }
                 return $this->set($values);
             }
 			else {
-				$errorValues = true;
-				break;		
+				throw new Exception\InvalidArgumentException('В MysqlGenerator\Sql\Insert::values() неправильно задан аргумент.');
 			}		
 		}		
-		if ($errorValues) {
-			throw new Exception\InvalidArgumentException(
-				'В MysqlGenerator\Sql\Insert::values($values) неправильно задан аргумент $values. '
-			);
+		
+		if ($this->isAssocArrayValues) {
+			$this->columns = [];
+			$this->values = null;
+			$this->isAssocArrayValues = false;
 		}
 		
 		if ($isOneDimensArrayValues) {			
@@ -169,6 +173,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 		return $this;	
 	}
 	
+	
 	/**
 	 * Для задания выражения вида INSERT INTO tbl_name SET a=1, b=2, c=3
 	 * $values = ['a'=> 1, 'b'=> 2, 'c'=> 3]
@@ -176,7 +181,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 	 * @param  array $values
 	 * @return $this
 	 */
-	public function set( array $values ) {	        
+	public function set( array $values ) {	
+		$this->select = null;
         $this->values = null;       
         $this->columns = [];
         
@@ -192,6 +198,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         }
         $this->columns = $columns;
         $this->values[] = $data;
+		$this->isAssocArrayValues = true;
+		
         return $this;
     }   
     
@@ -220,9 +228,9 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if (count($this->columns) > 0) {
             $columns = '(' . implode( ', ', array_map(array($adapter, 'quoteIdentifier'), $this->columns) ) . ')';
         }    
-        
-        // $sqlString = " VALUES (...), (...), ..." или " SELECT ... "
-        $rowString = [];
+             	
+		// $valuesString = " VALUES (...), (...), ..."
+		$rowString = [];
         if ( is_array($this->values) ) {
             foreach ($this->values as $row) {
                 $values = [];
@@ -244,8 +252,9 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
             }
             $valuesString = 'VALUES ' . implode(', ', $rowString);       	
         }
-        elseif ($this->values instanceof Select) {
-            $valuesString = $this->values->getSqlString($adapter);        			
+		// $valuesString = " SELECT ... "
+        elseif ($this->select instanceof Select) {
+            $valuesString = $this->select->getSqlString($adapter);        			
         }
         else {
             throw new Exception\InvalidArgumentException('values or select should be present');
@@ -259,8 +268,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
             $valuesString
         );
     }
-
-    				
+   				
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	
 
