@@ -87,6 +87,20 @@ return array(
 					),
 				),
 			),
+			
+			'testmysqlgenerator-insert' => array(
+				'type'    => 'Segment',
+				'options' => array(
+					'route'    => '/testmysqlgenerator/insert[/:action]',
+					'defaults' => array(
+						'controller' => 'TestMysqlGenerator\Controller\Insert',
+						'action' => 'index',
+					),
+					'constraints' => array(
+						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+					),
+				),
+			),
             
 			
 

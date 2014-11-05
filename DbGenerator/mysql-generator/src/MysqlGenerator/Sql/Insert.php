@@ -271,18 +271,18 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      */
     public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
         
-        // ParameterContainer
+        ///// ParameterContainer вынести в AbstractSql::prepareStatementContainer()
         $parameterContainer = $statementContainer->getParameterContainer();
         if (!$parameterContainer instanceof ParameterContainer) {
             $parameterContainer = new ParameterContainer();
             $statementContainer->setParameterContainer($parameterContainer);
         }
+		/////
          
-        $keyBindName = 0;
         $index = 0;
         $rowString = [];
         if (is_array($this->values)) {            
-            foreach ($this->values as $row) {             
+            foreach ($this->values as $outerKey => $row) {             
                 $values = [];
                 foreach ($row as $key => $value) { 
                     if ($value instanceof Expression) {
@@ -296,11 +296,12 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
                     }
                     else {
                         if ( isset($this->columns[$key]) ) {
-                            $values[] = $bindName = ':' . $this->columns[$key] . ++$keyBindName;
+							$k = $outerKey+1;
+                            $values[] = $bindName = ':' . $this->columns[$key] . $k;
                         }
                         else {    
-                            $values[] = $bindName = '?';        
-                            $index++;
+                            $values[] = '?';        
+                            $bindName = $index++;
                         }
                         $parameterContainer->offsetSet($bindName, $value);
                     }
@@ -325,6 +326,11 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         );
         
         $statementContainer->setSql($sql);
+		/*
+		echo '<pre>';
+		print_r($statementContainer);
+		exit;
+		*/
     }
      
 	////////////////////////////////////////////////////////////////////////////////////////////////

@@ -10,6 +10,8 @@ return array(
 	'TestMysqlGenerator\Controller\DriverController' => __DIR__.'/src/TestMysqlGenerator/Controller/DriverController.php',
 	'TestMysqlGenerator\Controller\SqlController' => __DIR__.'/src/TestMysqlGenerator/Controller/SqlController.php',
     'TestMysqlGenerator\Controller\CreateDbController' => __DIR__.'/src/TestMysqlGenerator/Controller/CreateDbController.php',
+	'TestMysqlGenerator\Controller\InsertController' => __DIR__.'/src/TestMysqlGenerator/Controller/InsertController.php',
+	
 	
 	// services
 	

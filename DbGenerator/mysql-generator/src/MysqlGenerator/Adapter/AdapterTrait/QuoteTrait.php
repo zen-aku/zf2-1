@@ -3,7 +3,7 @@
 namespace MysqlGenerator\Adapter\AdapterTrait;
 
 /** 
- * 
+ * вынести отдельные методы как статические в класс Quote
  */
 trait QuoteTrait {
     
@@ -14,7 +14,7 @@ trait QuoteTrait {
      * @return string  "`schema`.`table`"
      */
     public function getQuoteSchemaTable( $table ) {
-        if ($table instanceof TableIdentifier) {
+        if ($table instanceof \MysqlGenerator\Sql\TableIdentifier) {
             return $this->quoteIdentifier($this->getSchema()) . '.' 
                 . $this->quoteIdentifier($this->getTable());
         }

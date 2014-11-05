@@ -10,6 +10,8 @@ return array(
 		'TestMysqlGenerator\Controller\Driver' => 'TestMysqlGenerator\Controller\DriverController',
 		'TestMysqlGenerator\Controller\Sql' => 'TestMysqlGenerator\Controller\SqlController',
 		'TestMysqlGenerator\Controller\CreateDb' => 'TestMysqlGenerator\Controller\CreateDbController',
+		'TestMysqlGenerator\Controller\Insert' => 'TestMysqlGenerator\Controller\InsertController',
+		
         
 	),
 	
