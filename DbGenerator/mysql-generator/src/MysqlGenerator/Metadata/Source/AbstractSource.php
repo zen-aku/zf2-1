@@ -6,69 +6,54 @@ use MysqlGenerator\Adapter\AdapterInterface;
 use MysqlGenerator\Metadata\MetadataInterface;
 use MysqlGenerator\Metadata\Object;
 
-abstract class AbstractSource implements MetadataInterface
-{
+abstract class AbstractSource implements MetadataInterface {
+    
     const DEFAULT_SCHEMA = '__DEFAULT_SCHEMA__';
 
     /**
-     *
      * @var AdapterInterface
      */
     protected $adapter = null;
 
     /**
-     *
      * @var string
      */
     protected $defaultSchema = null;
 
     /**
-     *
      * @var array
      */
     protected $data = array();
 
     /**
-     * Constructor
-     *
      * @param AdapterInterface $adapter
      */
-    public function __construct(AdapterInterface $adapter)
-    {
+    public function __construct(AdapterInterface $adapter){
         $this->adapter = $adapter;
         $this->defaultSchema = ($adapter->getCurrentSchema()) ?: self::DEFAULT_SCHEMA;
     }
 
     /**
      * Get schemas
-     *
      */
-    public function getSchemas()
-    {
+    public function getSchemas(){
         $this->loadSchemaData();
-
         return $this->data['schemas'];
     }
 
     /**
-     * Get table names
-     *
      * @param  string $schema
      * @param  bool   $includeViews
      * @return string[]
      */
-    public function getTableNames($schema = null, $includeViews = false)
-    {
+    public function getTableNames($schema = null, $includeViews = false){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadTableNameData($schema);
-
         if ($includeViews) {
             return array_keys($this->data['table_names'][$schema]);
         }
-
         $tableNames = array();
         foreach ($this->data['table_names'][$schema] as $tableName => $data) {
             if ('BASE TABLE' == $data['table_type']) {
@@ -80,18 +65,14 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get tables
-     *
      * @param  string $schema
      * @param  bool   $includeViews
      * @return Object\TableObject[]
      */
-    public function getTables($schema = null, $includeViews = false)
-    {
+    public function getTables($schema = null, $includeViews = false){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $tables = array();
         foreach ($this->getTableNames($schema, $includeViews) as $tableName) {
             $tables[] = $this->getTable($tableName, $schema);
@@ -100,18 +81,14 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get table
-     *
      * @param  string $tableName
      * @param  string $schema
      * @return Object\TableObject
      */
-    public function getTable($tableName, $schema = null)
-    {
+    public function getTable($tableName, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadTableNameData($schema);
 
         if (!isset($this->data['table_names'][$schema][$tableName])) {
@@ -138,17 +115,13 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get view names
-     *
      * @param string $schema
      * @return array
      */
-    public function getViewNames($schema = null)
-    {
+    public function getViewNames($schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadTableNameData($schema);
 
         $viewNames = array();
@@ -161,17 +134,13 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get views
-     *
      * @param string $schema
      * @return array
      */
-    public function getViews($schema = null)
-    {
+    public function getViews($schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $views = array();
         foreach ($this->getViewNames($schema) as $tableName) {
             $views[] = $this->getTable($tableName, $schema);
@@ -180,18 +149,14 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get view
-     *
      * @param string $viewName
      * @param string $schema
      * @return \MysqlGenerator\Metadata\Object\TableObject
      */
-    public function getView($viewName, $schema = null)
-    {
+    public function getView($viewName, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadTableNameData($schema);
 
         $tableNames = $this->data['table_names'][$schema];
@@ -202,18 +167,14 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Gt column names
-     *
      * @param  string $table
      * @param  string $schema
      * @return array
      */
-    public function getColumnNames($table, $schema = null)
-    {
+    public function getColumnNames($table, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadColumnData($table, $schema);
 
         if (!isset($this->data['columns'][$schema][$table])) {
@@ -224,18 +185,14 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get columns
-     *
      * @param  string $table
      * @param  string $schema
      * @return array
      */
-    public function getColumns($table, $schema = null)
-    {
+    public function getColumns($table, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadColumnData($table, $schema);
 
         $columns = array();
@@ -246,27 +203,21 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get column
-     *
      * @param  string $columnName
      * @param  string $table
      * @param  string $schema
      * @return Object\ColumnObject
      */
-    public function getColumn($columnName, $table, $schema = null)
-    {
+    public function getColumn($columnName, $table, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadColumnData($table, $schema);
 
         if (!isset($this->data['columns'][$schema][$table][$columnName])) {
             throw new \Exception('A column by that name was not found.');
         }
-
         $info = $this->data['columns'][$schema][$table][$columnName];
-
         $column = new Object\ColumnObject($columnName, $table, $schema);
         $props = array(
             'ordinal_position', 'column_default', 'is_nullable',
@@ -295,48 +246,38 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get constraints
-     *
      * @param  string $table
      * @param  string $schema
      * @return array
      */
-    public function getConstraints($table, $schema = null)
-    {
+    public function getConstraints($table, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadConstraintData($table, $schema);
 
         $constraints = array();
         foreach (array_keys($this->data['constraints'][$schema][$table]) as $constraintName) {
             $constraints[] = $this->getConstraint($constraintName, $table, $schema);
         }
-
         return $constraints;
     }
 
     /**
-     * Get constraint
-     *
      * @param  string $constraintName
      * @param  string $table
      * @param  string $schema
      * @return Object\ConstraintObject
      */
-    public function getConstraint($constraintName, $table, $schema = null)
-    {
+    public function getConstraint($constraintName, $table, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadConstraintData($table, $schema);
 
         if (!isset($this->data['constraints'][$schema][$table][$constraintName])) {
             throw new \Exception('Cannot find a constraint by that name in this table');
         }
-
         $info = $this->data['constraints'][$schema][$table][$constraintName];
         $constraint = new Object\ConstraintObject($constraintName, $table, $schema);
 
@@ -355,24 +296,19 @@ abstract class AbstractSource implements MetadataInterface
                 $constraint->{$setMethod}($info[$key]);
             }
         }
-
         return $constraint;
     }
 
     /**
-     * Get constraint keys
-     *
      * @param  string $constraint
      * @param  string $table
      * @param  string $schema
      * @return array
      */
-    public function getConstraintKeys($constraint, $table, $schema = null)
-    {
+    public function getConstraintKeys($constraint, $table, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadConstraintReferences($table, $schema);
 
         // organize references first
@@ -382,7 +318,6 @@ abstract class AbstractSource implements MetadataInterface
                 $references[$refKeyInfo['constraint_name']] = $refKeyInfo;
             }
         }
-
         $this->loadConstraintDataKeys($schema);
 
         $keys = array();
@@ -400,39 +335,29 @@ abstract class AbstractSource implements MetadataInterface
                 }
             }
         }
-
         return $keys;
     }
 
     /**
-     * Get trigger names
-     *
      * @param string $schema
      * @return array
      */
-    public function getTriggerNames($schema = null)
-    {
+    public function getTriggerNames($schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadTriggerData($schema);
-
         return array_keys($this->data['triggers'][$schema]);
     }
 
     /**
-     * Get triggers
-     *
      * @param string $schema
      * @return array
      */
-    public function getTriggers($schema = null)
-    {
+    public function getTriggers($schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $triggers = array();
         foreach ($this->getTriggerNames($schema) as $triggerName) {
             $triggers[] = $this->getTrigger($triggerName, $schema);
@@ -441,28 +366,22 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Get trigger
-     *
      * @param string $triggerName
      * @param string $schema
      * @return Object\TriggerObject
      */
-    public function getTrigger($triggerName, $schema = null)
-    {
+    public function getTrigger($triggerName, $schema = null){
         if ($schema === null) {
             $schema = $this->defaultSchema;
         }
-
         $this->loadTriggerData($schema);
 
         if (!isset($this->data['triggers'][$schema][$triggerName])) {
             throw new \Exception('Trigger "' . $triggerName . '" does not exist');
         }
-
         $info = $this->data['triggers'][$schema][$triggerName];
 
         $trigger = new Object\TriggerObject();
-
         $trigger->setName($triggerName);
         $trigger->setEventManipulation($info['event_manipulation']);
         $trigger->setEventObjectCatalog($info['event_object_catalog']);
@@ -483,13 +402,10 @@ abstract class AbstractSource implements MetadataInterface
     }
 
     /**
-     * Prepare data hierarchy
-     *
      * @param string $type
      * @param string $key ...
      */
-    protected function prepareDataHierarchy($type)
-    {
+    protected function prepareDataHierarchy($type){
         $data = &$this->data;
         foreach (func_get_args() as $key) {
             if (!isset($data[$key])) {
@@ -502,94 +418,91 @@ abstract class AbstractSource implements MetadataInterface
     /**
      * Load schema data
      */
-    protected function loadSchemaData()
-    {
-    }
+    protected function loadSchemaData(){}
 
     /**
-     * Load table name data
-     *
      * @param string $schema
      */
-    protected function loadTableNameData($schema)
-    {
+    protected function loadTableNameData($schema){
         if (isset($this->data['table_names'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('table_names', $schema);
     }
 
     /**
-     * Load column data
-     *
      * @param string $table
      * @param string $schema
      */
-    protected function loadColumnData($table, $schema)
-    {
+    protected function loadColumnData($table, $schema){
         if (isset($this->data['columns'][$schema][$table])) {
             return;
         }
-
         $this->prepareDataHierarchy('columns', $schema, $table);
     }
 
     /**
      * Load constraint data
-     *
      * @param string $table
      * @param string $schema
      */
-    protected function loadConstraintData($table, $schema)
-    {
+    protected function loadConstraintData($table, $schema){
         if (isset($this->data['constraints'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('constraints', $schema);
     }
 
     /**
      * Load constraint data keys
-     *
      * @param string $schema
      */
-    protected function loadConstraintDataKeys($schema)
-    {
+    protected function loadConstraintDataKeys($schema){
         if (isset($this->data['constraint_keys'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('constraint_keys', $schema);
     }
 
     /**
-     * Load constraint references
-     *
      * @param string $table
      * @param string $schema
      */
-    protected function loadConstraintReferences($table, $schema)
-    {
+    protected function loadConstraintReferences($table, $schema){
         if (isset($this->data['constraint_references'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('constraint_references', $schema);
     }
 
     /**
-     * Load trigger data
-     *
      * @param string $schema
      */
-    protected function loadTriggerData($schema)
-    {
+    protected function loadTriggerData($schema){
         if (isset($this->data['triggers'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('triggers', $schema);
     }
+    
+    /**
+     * @param string|string[] $identifierChain
+     * @return string
+     */
+    public function quoteIdentifierChain($identifierChain) {
+        $identifierChain = str_replace('`', '``', $identifierChain);
+        if (is_array($identifierChain)) {
+            $identifierChain = implode('`.`', $identifierChain);
+        }
+        return '`' . $identifierChain . '`';
+    }
+    
+    /**
+     * @param  string $identifier
+     * @return string
+     */
+    public function quoteIdentifier($identifier) {
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+    
 }

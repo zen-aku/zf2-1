@@ -1,0 +1,124 @@
+Install: composer require "algerd/mysql-generator":"dev-master"
+
+------------------------------------------------------------------------------
+
+DropTable:
+
+$adapter = new Adapter($config);
+$sql = new Sql($adapter);
+$ddl = new Ddl\DropTable('book');
+
+$query = $sql->getSqlStringForSqlObject($ddl) 
+{
+    return $ddl->getSqlString($adapter) 
+    {
+        foreach ($this->specifications as $name => $specification) // protected $specifications = array( self::TABLE => 'DROP TABLE IF EXISTS %1$s'
+            $parameters[$name] = $this->{'process' . $name}() 
+            {
+                return $adapter->quoteIdentifier($name);
+            }
+        return implode(' ', $this->createSqlFromSpecificationAndParameters( $specification, $parameters[$name] ) 
+        {
+            // Возвращает строку со вставлеными в строки спецификаторов (self::TABLE => 'DROP TABLE IF EXISTS %1$s') параметров
+   <------- return vsprintf($specifications, $parameters);
+        }
+    } 
+}
+   
+$sql->getAdapter()->query($query,'execute');
+
+-------------------------------------------------------------------------------
+
+Insert:
+
+$adapter = new Adapter($config);
+$sql = new Sql($adapter);
+
+$insert = $sql->insert($table)->values($values); // return Insert
+
+$queryString = $sql->getSqlStringForSqlObject($insert) 
+{
+    return $insert->getSqlString($adapter) 
+    {
+        $values[] = $adapter->quoteValue($values);
+        $columns = array_map(array($adapter, 'quoteIdentifier'), $this->columns);
+        $table = $adapter->quoteIdentifier($table);
+<------ return sprintf(
+            $this->specifications[static::SPECIFICATION_INSERT],
+            $table,
+            $columns,
+            implode(', ', $values)
+        );
+    }
+}
+
+$result = $sql->getAdapter()->query($queryString, 'execute');
+
+--------------------------------------------------------------------------------
+
+В классах Ddl и в Select в методе getSqlString($adapter) для формирования строки запроса
+используется динамический вызов методов process (для получения квотированных параметров) 
+и метод createSqlFromSpecificationAndParameters() (для получения строки запроса в результате подстановки 
+параметров в спецификаторы).
+
+В Insert, Update и Delete используется другой механизм получения строки запроса:
+    - простой запрос без where - получаем строку напрямую через sprintf() с квотированными данными.
+    - сложный запрос с where (Update, Delete) - через метод processExpression($this->where, $adapter, 'where')
+    Методы process (для получения квотированных параметров) не используются вообще.
+
+Для получения сложных строк внутри запроса в некоторыз методах process (Selrct, CreateTable) 
+используется processExpression
+
+
+
+Не работает мультизапрос с подготовленными выражениями. 
+Надо каждый отдельный запрос мультизапроса запускать самостоятельно как подготовленный запрос.
+Проблема с реализацией мультизапроса подготовленного выражения в том,
+что названия вставляемых переменных в подготовленый запрос могут дублироваться в другом запросе,
+надо делать уникальность имён переменных, что существенно усложняет код.
+
+
+В CreateTable надо сделать возможность задавать engine!!!
+В Sql\Column\Integer('age', false, 11) - дефолтное значение (11) вызывает ошибку - баг!!!
+
+AbstractSql::processExpression(ExpressionInterface $expression, PlatformInterface $platform, DriverInterface $driver = null, $namedParameterPrefix = null)
+AbstractSql::processSubSelect(Select $subselect, PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+Третий параметр $driver указывает создавать ли prepareStatement. 
+
+Надо сделать 
+processExpression(ExpressionInterface $expression, AdapterInterface $adapter, $bind = false, $namedParameterPrefix = null)
+processSubSelect(Select $subselect, AdapterInterface $adapter, $bind = false, ParameterContainer $parameterContainer = null)
+boolean $bind: 
+    true - подготавливать bind-параметры для statement из $expression 
+    false - передавать строку запроса из $expression в statement без bind-параметров
+
+Select::processCombine ???? : 
+if ($driver) {
+    $sql = $this->processSubSelect($this->combine['select'], $platform, $driver, $parameterContainer);
+    return array($type, $sql);
+}
+
+Убрать в getSqlString и PrepareStatement в process{name}() лишние параметры.
+
+Insert не позволяет за один запрос заносить сразу несколько записей. 
+Только по одной записи отправлять в бд, надо исправлять!!!
+
+Insert::values($value) - должна загонять массив значения в двумерный!!! массив $this->value
+И сделать возможность передачи в $value двумерного массива значений с последующим добавлением его в $this->value
+При каждом последующем вызове Insert::values($value) у объекта значения $value должны мержиться 
+в двумерный массив $this->value.
+Фактически прийдётся полностью переписать Insert::values($value) 
+
+Insert::getSqlString() 231 - 249 и
+Insert::prepareStatement() 170 - 195
+полностью переделать, чтобы была возможность формировать строку запроса из множества значений полей 
+(сделать проверку на двумерный массив и если да - формировать строку из подмножества массива)
+
+??? Надо ли автоматически очищать объект Insert после выполнения вставки в бд?
+
+!!! В AbstractTableGateway::executeInsert(Insert $insert) и SequenceFeature::preInsert() используется метод 
+Insert::getRawState(), значения которого изменились с изменением класса Insert. 
+Надо исправить методы AbstractTableGateway::executeInsert() и Insert::getRawState(), чтобы 
+TableGateway работал правильно!!!
+Аналогично и для select, delete, update - при изменении этих классов следить за соответствующим
+методом AbstractTableGateway::execute... и ...::getRawState()

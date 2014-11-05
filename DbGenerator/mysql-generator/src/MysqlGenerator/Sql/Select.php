@@ -571,13 +571,13 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             if ($table instanceof Select) {
                 $table = '(' . $this->processSubselect($table, $adapter, $parameterContainer) . ')';
             } else {
-                $table = $adapter->quoteIdentifier($table);
+                $table = $this->quoteIdentifier($table);
             }
             if ($schema) {
-                $table = $adapter->quoteIdentifier($schema) . '.' . $table;
+                $table = $this->quoteIdentifier($schema) . '.' . $table;
             }
             if ($alias) {
-                $fromTable = $adapter->quoteIdentifier($alias);
+                $fromTable = $this->quoteIdentifier($alias);
                 $table = $this->renderTable($table, $fromTable);
             } else {
                 $fromTable = $table;
@@ -612,14 +612,14 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 }
                 $columnName .= $columnParts->getSql();
             } else {
-                $columnName .= $fromTable . $adapter->quoteIdentifier($column);
+                $columnName .= $fromTable . $this->quoteIdentifier($column);
             }
 
             // process As portion
             if (is_string($columnIndexOrAs)) {
-                $columnAs = $adapter->quoteIdentifier($columnIndexOrAs);
+                $columnAs = $this->quoteIdentifier($columnIndexOrAs);
             } elseif (stripos($columnName, ' as ') === false) {
-                $columnAs = (is_string($column)) ? $adapter->quoteIdentifier($column) : 'Expression' . $expr++;
+                $columnAs = (is_string($column)) ? $this->quoteIdentifier($column) : 'Expression' . $expr++;
             }
             $columns[] = (isset($columnAs)) ? array($columnName, $columnAs) : array($columnName);
         }
@@ -642,16 +642,16 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 } else {
                     $name = (is_array($join['name'])) ? key($join['name']) : $name = $join['name'];
                     if ($name instanceof TableIdentifier) {
-                        $name = ($name->hasSchema() ? $adapter->quoteIdentifier($name->getSchema()) . '.' : '') . $adapter->quoteIdentifier($name->getTable());
+                        $name = ($name->hasSchema() ? $this->quoteIdentifier($name->getSchema()) . '.' : '') . $this->quoteIdentifier($name->getTable());
                     } else {
-                        $name = $adapter->quoteIdentifier($name);
+                        $name = $this->quoteIdentifier($name);
                     }
-                    $jColumns[] = $name . '.' . $adapter->quoteIdentifierInFragment($jColumn);
+                    $jColumns[] = $name . '.' . $this->quoteIdentifierInFragment($jColumn);
                 }
                 if (is_string($jKey)) {
-                    $jColumns[] = $adapter->quoteIdentifier($jKey);
+                    $jColumns[] = $this->quoteIdentifier($jKey);
                 } elseif ($jColumn !== self::SQL_STAR) {
-                    $jColumns[] = $adapter->quoteIdentifier($jColumn);
+                    $jColumns[] = $this->quoteIdentifier($jColumn);
                 }
                 $columns[] = $jColumns;
             }
@@ -698,7 +698,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             // table name
             if (is_array($join['name'])) {
                 $joinName = current($join['name']);
-                $joinAs = $adapter->quoteIdentifier(key($join['name']));
+                $joinAs = $this->quoteIdentifier(key($join['name']));
             } else {
                 $joinName = $join['name'];
             }
@@ -706,12 +706,12 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $joinName = $joinName->getExpression();
             } elseif ($joinName instanceof TableIdentifier) {
                 $joinName = $joinName->getTableAndSchema();
-                $joinName = ($joinName[1] ? $adapter->quoteIdentifier($joinName[1]) . '.' : '') . $adapter->quoteIdentifier($joinName[0]);
+                $joinName = ($joinName[1] ? $this->quoteIdentifier($joinName[1]) . '.' : '') . $this->quoteIdentifier($joinName[0]);
             } else {
                 if ($joinName instanceof Select) {
                     $joinName = '(' . $this->processSubSelect($joinName, $adapter, $parameterContainer) . ')';
                 } else {
-                    $joinName = $adapter->quoteIdentifier($joinName);
+                    $joinName = $this->quoteIdentifier($joinName);
                 }
             }
             $joinSpecArgArray[$j][] = (isset($joinAs)) ? $joinName . ' AS ' . $joinAs : $joinName;
@@ -720,7 +720,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
             // note: for Expression objects, pass them to processExpression with a prefix specific to each join (used for named parameters)
             $joinSpecArgArray[$j][] = ($join['on'] instanceof ExpressionInterface)
                 ? $this->processExpression($join['on'], $adapter, true, $this->processInfo['paramPrefix'] . 'join' . ($j+1) . 'part')
-                : $adapter->quoteIdentifierInFragment($join['on'], array('=', 'AND', 'OR', '(', ')', 'BETWEEN', '<', '>')); // on
+                : $this->quoteIdentifierInFragment($join['on'], array('=', 'AND', 'OR', '(', ')', 'BETWEEN', '<', '>')); // on
             if ($joinSpecArgArray[$j][2] instanceof StatementContainerInterface) {
                 if ($parameterContainer) {
                     $parameterContainer->merge($joinSpecArgArray[$j][2]->getParameterContainer());
@@ -765,7 +765,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 }
                 $columnSql .= $columnParts->getSql();
             } else {
-                $columnSql .= $adapter->quoteIdentifierInFragment($column);
+                $columnSql .= $this->quoteIdentifierInFragment($column);
             }
             $groups[] = $columnSql;
         }
@@ -815,9 +815,9 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 }
             }
             if (strtoupper($v) == self::ORDER_DESCENDING) {
-                $orders[] = array($adapter->quoteIdentifierInFragment($k), self::ORDER_DESCENDING);
+                $orders[] = array($this->quoteIdentifierInFragment($k), self::ORDER_DESCENDING);
             } else {
-                $orders[] = array($adapter->quoteIdentifierInFragment($k), self::ORDER_ASCENDING);
+                $orders[] = array($this->quoteIdentifierInFragment($k), self::ORDER_ASCENDING);
             }
         }
         return array($orders);
@@ -834,7 +834,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($this->limit === null) {
             return null;
         }
-        if ($adapter) {
+        if ($parameterContainer instanceof ParameterContainer) {
             $sql = $adapter->formatParameterName('limit');
             $parameterContainer->offsetSet('limit', $this->limit, ParameterContainer::TYPE_INTEGER);
         } else {
@@ -851,7 +851,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($this->offset === null) {
             return null;
         }
-        if ($adapter) {
+        if ($parameterContainer instanceof ParameterContainer) {
             $parameterContainer->offsetSet('offset', $this->offset, ParameterContainer::TYPE_INTEGER);
             return array($adapter->formatParameterName('offset'));
         }
@@ -875,8 +875,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ( $parameterContainer instanceof ParameterContainer ) {
             $sql = $this->processSubSelect($this->combine['select'], $adapter, $parameterContainer);
             return array($type, $sql);
-        }
-		
+        }	
         return array(
             $type,
 			$this->combine['select']->getSqlString($adapter)

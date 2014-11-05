@@ -257,8 +257,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         }       
         return sprintf(
             $this->specifications[static::SPECIFICATION_INSERT],    // "INSERT INTO %1$s %2$s %3$s"
-            $adapter->getQuoteSchemaTable( $this->table ),          // " `schema`.`table` "
-            '('.$adapter->getQuoteList( $this->columns ).')',       // "`column1`, `column2`, `column3` ..."
+            $this->getQuoteSchemaTable( $this->table ),             // " `schema`.`table` "
+            '('.$this->getQuoteList( $this->columns ).')',          // "`column1`, `column2`, `column3` ..."
             $valuesString                                           // " VALUES (...), (...), ..." | "SELECT ..."
         );
     }
@@ -320,8 +320,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
       
         $sql = sprintf(
             $this->specifications[static::SPECIFICATION_INSERT],    // "INSERT INTO %1$s %2$s %3$s"
-            $adapter->getQuoteSchemaTable( $this->table ),          // " `schema`.`table` "
-            '('.$adapter->getQuoteList( $this->columns ).')',       // "`column1`, `column2`, `column3` ..."
+            $this->getQuoteSchemaTable( $this->table ),             // " `schema`.`table` "
+            '('.$this->getQuoteList( $this->columns ).')',          // "`column1`, `column2`, `column3` ..."
             $valuesString                                           // " VALUES (?, ?,...), (?, ?,...), ..." | "SELECT ..."
         );
         

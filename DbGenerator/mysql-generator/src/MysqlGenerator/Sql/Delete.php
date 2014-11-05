@@ -114,10 +114,10 @@ class Delete extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($table instanceof TableIdentifier) {
             list($table, $schema) = $table->getTableAndSchema();
         }
-        $table = $adapter->quoteIdentifier($table);
+        $table = $this->quoteIdentifier($table);
 
         if ($schema) {
-            $table = $adapter->quoteIdentifier($schema) . '.' . $table;
+            $table = $this->quoteIdentifier($schema) . '.' . $table;
         }
         $sql = sprintf($this->specifications[static::SPECIFICATION_DELETE], $table);
 
@@ -143,10 +143,10 @@ class Delete extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($table instanceof TableIdentifier) {
             list($table, $schema) = $table->getTableAndSchema();
         }
-        $table = $adapter->quoteIdentifier($table);
+        $table = $this->quoteIdentifier($table);
 
         if ($schema) {
-            $table = $adapter->quoteIdentifier($schema) . '.' . $table;
+            $table = $this->quoteIdentifier($schema) . '.' . $table;
         }
         $sql = sprintf($this->specifications[static::SPECIFICATION_DELETE], $table);
 

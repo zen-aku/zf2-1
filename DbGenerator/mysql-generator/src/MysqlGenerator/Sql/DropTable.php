@@ -47,11 +47,10 @@ class DropTable extends AbstractSql implements SqlInterface {
     }
 
     /**
-     * @param AdapterInterface $adapter
      * @return array
      */
-    protected function processTable(AdapterInterface $adapter){
-        return array($adapter->quoteIdentifier($this->table));
+    protected function processTable(){
+        return array($this->quoteIdentifier($this->table));
     }
 	
 }

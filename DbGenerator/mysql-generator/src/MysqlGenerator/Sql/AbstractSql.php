@@ -76,7 +76,7 @@ abstract class AbstractSql {
 				if ( isset($types[$vIndex]) ) {
 					switch ( $types[$vIndex] ) {						
 						case ExpressionInterface::TYPE_IDENTIFIER : {
-							$values[$vIndex] = $adapter->quoteIdentifierInFragment($value);
+							$values[$vIndex] = $this->quoteIdentifierInFragment($value);
 							break;
 						}
 						case ExpressionInterface::TYPE_LITERAL : {
@@ -202,5 +202,71 @@ abstract class AbstractSql {
         }
         return vsprintf($specificationString, $topParameters);
     }
+    
+    /**
+     * Quote identifier
+     * @param  string $identifier
+     * @return string
+     */
+    public function quoteIdentifier($identifier) {
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+    
+    //////////////////////////////////
+    /**
+     * Quote identifier in fragment
+     * @param  string $identifier
+     * @param  array $safeWords
+     * @return string
+     */
+    public function quoteIdentifierInFragment($identifier, array $safeWords = array()) {
+        // regex taken from @link http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+        $parts = preg_split('#([^0-9,a-z,A-Z$_])#', $identifier, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        if ($safeWords) {
+            $safeWords = array_flip($safeWords);
+            $safeWords = array_change_key_case($safeWords, CASE_LOWER);
+        }
+        foreach ($parts as $i => $part) {
+            if ($safeWords && isset($safeWords[strtolower($part)])) {
+                continue;
+            }
+            switch ($part) {
+                case ' ':
+                case '.':
+                case '*':
+                case 'AS':
+                case 'As':
+                case 'aS':
+                case 'as':
+                    break;
+                default:
+                    $parts[$i] = '`' . str_replace('`', '``', $part) . '`';
+            }
+        }
+        return implode('', $parts);
+    }
+    
+    /**
+     * @param string|TableIdentifier $table
+     * @return string  "`schema`.`table`"
+     */
+    public function getQuoteSchemaTable( $table ) {
+        if ($table instanceof \MysqlGenerator\Sql\TableIdentifier) {
+            return $this->quoteIdentifier($table->getSchema()) . '.' 
+                . $this->quoteIdentifier($table->getTable());
+        }
+        else {
+            return $this->quoteIdentifier($table);
+        } 
+    }
+    
+    /**
+     * @param array $list [elemen1, elemen2, ...]
+     * @return string  "`elemen1`, `elemen2`, ..."
+     */
+    public function getQuoteList( array $list ) {
+       return implode( ', ', array_map( array($this, 'quoteIdentifier'), $list) );        
+    }
+    
 
 }

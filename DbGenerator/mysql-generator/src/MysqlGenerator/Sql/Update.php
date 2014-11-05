@@ -146,20 +146,20 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
             list($table, $schema) = $table->getTableAndSchema();
         }
 
-        $table = $adapter->quoteIdentifier($table);
+        $table = $this->quoteIdentifier($table);
 
         if ($schema) {
-            $table = $adapter->quoteIdentifier($schema) . '.' . $table;
+            $table = $this->quoteIdentifier($schema) . '.' . $table;
         }
 
         $setSql = array();
         foreach ($this->set as $column => $value) {
             if ($value instanceof Expression) {
                 $exprData = $this->processExpression($value, $adapter, true);
-                $setSql[] = $adapter->quoteIdentifier($column) . ' = ' . $exprData->getSql();
+                $setSql[] = $this->quoteIdentifier($column) . ' = ' . $exprData->getSql();
                 $parameterContainer->merge($exprData->getParameterContainer());
             } else {
-                $setSql[] = $adapter->quoteIdentifier($column) . ' = ' . $adapter->formatParameterName($column);
+                $setSql[] = $this->quoteIdentifier($column) . ' = ' . $adapter->formatParameterName($column);
                 $parameterContainer->offsetSet($column, $value);
             }
         }
@@ -189,20 +189,20 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
         if ($table instanceof TableIdentifier) {
             list($table, $schema) = $table->getTableAndSchema();
         }
-        $table = $adapter->quoteIdentifier($table);
+        $table = $this->quoteIdentifier($table);
 
         if ($schema) {
-            $table = $adapter->quoteIdentifier($schema) . '.' . $table;
+            $table = $this->quoteIdentifier($schema) . '.' . $table;
         }
         $setSql = array();
         foreach ($this->set as $column => $value) {
             if ($value instanceof ExpressionInterface) {
                 $exprData = $this->processExpression($value, $adapter);
-                $setSql[] = $adapter->quoteIdentifier($column) . ' = ' . $exprData->getSql();
+                $setSql[] = $this->quoteIdentifier($column) . ' = ' . $exprData->getSql();
             } elseif ($value === null) {
-                $setSql[] = $adapter->quoteIdentifier($column) . ' = NULL';
+                $setSql[] = $this->quoteIdentifier($column) . ' = NULL';
             } else {
-                $setSql[] = $adapter->quoteIdentifier($column) . ' = ' . $adapter->quoteValue($value);
+                $setSql[] = $this->quoteIdentifier($column) . ' = ' . $adapter->quoteValue($value);
             }
         }
         $set = implode(', ', $setSql);

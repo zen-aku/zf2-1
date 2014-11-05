@@ -3,74 +3,67 @@
 namespace MysqlGenerator\Metadata\Source;
 
 use MysqlGenerator\Adapter\Adapter;
-/**
- * 
- */
-class MysqlMetadata extends AbstractSource
-{
-    protected function loadSchemaData()
-    {
+
+class MysqlMetadata extends AbstractSource {
+    
+    /**
+     * init $this->data['schemas']
+     */
+    protected function loadSchemaData() {
         if (isset($this->data['schemas'])) {
             return;
         }
         $this->prepareDataHierarchy('schemas');
-
-        $p = $this->adapter;
-
-        $sql = 'SELECT ' . $p->quoteIdentifier('SCHEMA_NAME')
-             . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'SCHEMATA'))
-             . ' WHERE ' . $p->quoteIdentifier('SCHEMA_NAME')
+        $sql = 'SELECT ' . $this->quoteIdentifier('SCHEMA_NAME')
+             . ' FROM '  . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'SCHEMATA'))
+             . ' WHERE ' . $this->quoteIdentifier('SCHEMA_NAME')
              . ' != \'INFORMATION_SCHEMA\'';
 
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-
         $schemas = array();
         foreach ($results->toArray() as $row) {
             $schemas[] = $row['SCHEMA_NAME'];
         }
-
         $this->data['schemas'] = $schemas;
     }
 
-    protected function loadTableNameData($schema)
-    {
+    /**
+     * init $this->data['table_names'][$schema]
+     * @param type $schema
+     * @return type
+     */
+    protected function loadTableNameData($schema) {
         if (isset($this->data['table_names'][$schema])) {
             return;
         }
         $this->prepareDataHierarchy('table_names', $schema);
-
-        $p = $this->adapter;
-
         $isColumns = array(
             array('T', 'TABLE_NAME'),
             array('T', 'TABLE_TYPE'),
             array('V', 'VIEW_DEFINITION'),
             array('V', 'CHECK_OPTION'),
             array('V', 'IS_UPDATABLE'),
-        );
-
+        );     
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) { $c = $p->quoteIdentifierChain($c); });
 
-        $sql = 'SELECT ' . implode(', ', $isColumns)
-             . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
-
-             . ' LEFT JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'VIEWS')) . ' V'
-             . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-             . '  = ' . $p->quoteIdentifierChain(array('V', 'TABLE_SCHEMA'))
-             . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-             . '  = ' . $p->quoteIdentifierChain(array('V', 'TABLE_NAME'))
-
-             . ' WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+        $sql = 'SELECT '    . implode(', ', $isColumns)
+             . ' FROM '     . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
+             . ' LEFT JOIN '. $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'VIEWS')) . ' V'
+             . ' ON '       . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+             . '  = '       . $this->quoteIdentifierChain(array('V', 'TABLE_SCHEMA'))
+             . ' AND '      . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+             . '  = '       . $this->quoteIdentifierChain(array('V', 'TABLE_NAME'))
+             . ' WHERE '    . $this->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
              . ' IN (\'BASE TABLE\', \'VIEW\')';
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-                  . ' = ' . $p->quoteValue($schema);
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+                  . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
                   . ' != \'INFORMATION_SCHEMA\'';
         }
-
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $tables = array();
@@ -82,18 +75,20 @@ class MysqlMetadata extends AbstractSource
                 'is_updatable' => ('YES' == $row['IS_UPDATABLE']),
             );
         }
-
         $this->data['table_names'][$schema] = $tables;
     }
 
-    protected function loadColumnData($table, $schema)
-    {
+    /**
+     * init $this->data['columns'][$schema][$table]
+     * @param type $table
+     * @param type $schema
+     * @return type
+     */
+    protected function loadColumnData($table, $schema) {
         if (isset($this->data['columns'][$schema][$table])) {
             return;
         }
         $this->prepareDataHierarchy('columns', $schema, $table);
-        $p = $this->adapter;
-
         $isColumns = array(
             array('C', 'ORDINAL_POSITION'),
             array('C', 'COLUMN_DEFAULT'),
@@ -107,28 +102,28 @@ class MysqlMetadata extends AbstractSource
             array('C', 'COLUMN_TYPE'),
         );
 
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) { $c = $p->quoteIdentifierChain($c); });
 
         $sql = 'SELECT ' . implode(', ', $isColumns)
-             . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
-             . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'COLUMNS')) . 'C'
-             . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-             . '  = ' . $p->quoteIdentifierChain(array('C', 'TABLE_SCHEMA'))
-             . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-             . '  = ' . $p->quoteIdentifierChain(array('C', 'TABLE_NAME'))
-             . ' WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+             . ' FROM ' . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
+             . ' INNER JOIN ' . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'COLUMNS')) . 'C'
+             . ' ON ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+             . '  = ' . $this->quoteIdentifierChain(array('C', 'TABLE_SCHEMA'))
+             . ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+             . '  = ' . $this->quoteIdentifierChain(array('C', 'TABLE_NAME'))
+             . ' WHERE ' . $this->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
              . ' IN (\'BASE TABLE\', \'VIEW\')'
-             . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-             . '  = ' . $p->quoteValue($table);
+             . ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+             . '  = ' . $this->adapter->quoteValue($table);
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-                  . ' = ' . $p->quoteValue($schema);
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+                  . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
                   . ' != \'INFORMATION_SCHEMA\'';
         }
-
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
         $columns = array();
         foreach ($results->toArray() as $row) {
@@ -156,18 +151,20 @@ class MysqlMetadata extends AbstractSource
                 'erratas'                   => $erratas,
             );
         }
-
         $this->data['columns'][$schema][$table] = $columns;
     }
 
-    protected function loadConstraintData($table, $schema)
-    {
+    /**
+     * init $this->data['constraints'][$schema][$table]
+     * @param type $table
+     * @param type $schema
+     * @return type
+     */
+    protected function loadConstraintData($table, $schema){
         if (isset($this->data['constraints'][$schema][$table])) {
             return;
         }
-
         $this->prepareDataHierarchy('constraints', $schema, $table);
-
         $isColumns = array(
             array('T', 'TABLE_NAME'),
             array('TC', 'CONSTRAINT_NAME'),
@@ -180,60 +177,51 @@ class MysqlMetadata extends AbstractSource
             array('KCU', 'REFERENCED_TABLE_NAME'),
             array('KCU', 'REFERENCED_COLUMN_NAME'),
         );
-
-        $p = $this->adapter;
-
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) {
             $c = $p->quoteIdentifierChain($c);
         });
 
-        $sql = 'SELECT ' . implode(', ', $isColumns)
-             . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . ' T'
-
-             . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLE_CONSTRAINTS')) . ' TC'
-             . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-             . '  = ' . $p->quoteIdentifierChain(array('TC', 'TABLE_SCHEMA'))
-             . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-             . '  = ' . $p->quoteIdentifierChain(array('TC', 'TABLE_NAME'))
-
-             . ' LEFT JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'KEY_COLUMN_USAGE')) . ' KCU'
-             . ' ON ' . $p->quoteIdentifierChain(array('TC', 'TABLE_SCHEMA'))
-             . '  = ' . $p->quoteIdentifierChain(array('KCU', 'TABLE_SCHEMA'))
-             . ' AND ' . $p->quoteIdentifierChain(array('TC', 'TABLE_NAME'))
-             . '  = ' . $p->quoteIdentifierChain(array('KCU', 'TABLE_NAME'))
-             . ' AND ' . $p->quoteIdentifierChain(array('TC', 'CONSTRAINT_NAME'))
-             . '  = ' . $p->quoteIdentifierChain(array('KCU', 'CONSTRAINT_NAME'))
-
-             . ' LEFT JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'REFERENTIAL_CONSTRAINTS')) . ' RC'
-             . ' ON ' . $p->quoteIdentifierChain(array('TC', 'CONSTRAINT_SCHEMA'))
-             . '  = ' . $p->quoteIdentifierChain(array('RC', 'CONSTRAINT_SCHEMA'))
-             . ' AND ' . $p->quoteIdentifierChain(array('TC', 'CONSTRAINT_NAME'))
-             . '  = ' . $p->quoteIdentifierChain(array('RC', 'CONSTRAINT_NAME'))
-
-             . ' WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-             . ' = ' . $p->quoteValue($table)
-             . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+        $sql = 'SELECT '        . implode(', ', $isColumns)
+             . ' FROM '         . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . ' T'
+             . ' INNER JOIN '   . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLE_CONSTRAINTS')) . ' TC'
+             . ' ON '           . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+             . '  = '           . $this->quoteIdentifierChain(array('TC', 'TABLE_SCHEMA'))
+             . ' AND '          . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+             . '  = '           . $this->quoteIdentifierChain(array('TC', 'TABLE_NAME'))
+             . ' LEFT JOIN '    . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'KEY_COLUMN_USAGE')) . ' KCU'
+             . ' ON '           . $this->quoteIdentifierChain(array('TC', 'TABLE_SCHEMA'))
+             . '  = '           . $this->quoteIdentifierChain(array('KCU', 'TABLE_SCHEMA'))
+             . ' AND '          . $this->quoteIdentifierChain(array('TC', 'TABLE_NAME'))
+             . '  = '           . $this->quoteIdentifierChain(array('KCU', 'TABLE_NAME'))
+             . ' AND '          . $this->quoteIdentifierChain(array('TC', 'CONSTRAINT_NAME'))
+             . '  = '           . $this->quoteIdentifierChain(array('KCU', 'CONSTRAINT_NAME'))
+             . ' LEFT JOIN '    . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'REFERENTIAL_CONSTRAINTS')) . ' RC'
+             . ' ON '           . $this->quoteIdentifierChain(array('TC', 'CONSTRAINT_SCHEMA'))
+             . '  = '           . $this->quoteIdentifierChain(array('RC', 'CONSTRAINT_SCHEMA'))
+             . ' AND '          . $this->quoteIdentifierChain(array('TC', 'CONSTRAINT_NAME'))
+             . '  = '           . $this->quoteIdentifierChain(array('RC', 'CONSTRAINT_NAME'))
+             . ' WHERE '        . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+             . ' = '            . $this->adapter->quoteValue($table)
+             . ' AND '          . $this->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
              . ' IN (\'BASE TABLE\', \'VIEW\')';
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-            . ' = ' . $p->quoteValue($schema);
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
             . ' != \'INFORMATION_SCHEMA\'';
         }
-
-        $sql .= ' ORDER BY CASE ' . $p->quoteIdentifierChain(array('TC', 'CONSTRAINT_TYPE'))
+        $sql .= ' ORDER BY CASE ' . $this->quoteIdentifierChain(array('TC', 'CONSTRAINT_TYPE'))
               . " WHEN 'PRIMARY KEY' THEN 1"
               . " WHEN 'UNIQUE' THEN 2"
               . " WHEN 'FOREIGN KEY' THEN 3"
               . " ELSE 4 END"
-
-              . ', ' . $p->quoteIdentifierChain(array('TC', 'CONSTRAINT_NAME'))
-              . ', ' . $p->quoteIdentifierChain(array('KCU', 'ORDINAL_POSITION'));
+              . ', ' . $this->quoteIdentifierChain(array('TC', 'CONSTRAINT_NAME'))
+              . ', ' . $this->quoteIdentifierChain(array('KCU', 'ORDINAL_POSITION'));
 
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-
         $realName = null;
         $constraints = array();
         foreach ($results->toArray() as $row) {
@@ -265,115 +253,108 @@ class MysqlMetadata extends AbstractSource
                 $constraints[$name]['referenced_columns'][] = $row['REFERENCED_COLUMN_NAME'];
             }
         }
-
         $this->data['constraints'][$schema][$table] = $constraints;
     }
-
-    protected function loadConstraintDataNames($schema)
-    {
+    
+    /**
+     * init $this->data['constraint_names'][$schema]
+     * @param type $schema
+     * @return type
+     */
+    protected function loadConstraintDataNames($schema){
         if (isset($this->data['constraint_names'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('constraint_names', $schema);
-
-        $p = $this->adapter;
-
         $isColumns = array(
             array('TC', 'TABLE_NAME'),
             array('TC', 'CONSTRAINT_NAME'),
             array('TC', 'CONSTRAINT_TYPE'),
         );
-
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) {
             $c = $p->quoteIdentifierChain($c);
         });
 
-        $sql = 'SELECT ' . implode(', ', $isColumns)
-        . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
-        . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLE_CONSTRAINTS')) . 'TC'
-        . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-        . '  = ' . $p->quoteIdentifierChain(array('TC', 'TABLE_SCHEMA'))
-        . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-        . '  = ' . $p->quoteIdentifierChain(array('TC', 'TABLE_NAME'))
-        . ' WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+        $sql = 'SELECT '. implode(', ', $isColumns)
+        . ' FROM '      . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
+        . ' INNER JOIN '. $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLE_CONSTRAINTS')) . 'TC'
+        . ' ON '        . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+        . '  = '        . $this->quoteIdentifierChain(array('TC', 'TABLE_SCHEMA'))
+        . ' AND '       . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+        . '  = '        . $this->quoteIdentifierChain(array('TC', 'TABLE_NAME'))
+        . ' WHERE '     . $this->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
         . ' IN (\'BASE TABLE\', \'VIEW\')';
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-            . ' = ' . $p->quoteValue($schema);
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
             . ' != \'INFORMATION_SCHEMA\'';
         }
-
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
 
         $data = array();
         foreach ($results->toArray() as $row) {
             $data[] = array_change_key_case($row, CASE_LOWER);
         }
-
         $this->data['constraint_names'][$schema] = $data;
     }
 
-    protected function loadConstraintDataKeys($schema)
-    {
+    /**
+     * init $this->data['constraint_keys'][$schema]
+     * @param type $schema
+     * @return type
+     */
+    protected function loadConstraintDataKeys($schema){
         if (isset($this->data['constraint_keys'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('constraint_keys', $schema);
-
-        $p = $this->adapter;
-
         $isColumns = array(
             array('T', 'TABLE_NAME'),
             array('KCU', 'CONSTRAINT_NAME'),
             array('KCU', 'COLUMN_NAME'),
             array('KCU', 'ORDINAL_POSITION'),
         );
-
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) {
             $c = $p->quoteIdentifierChain($c);
         });
 
-        $sql = 'SELECT ' . implode(', ', $isColumns)
-        . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
-
-        . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'KEY_COLUMN_USAGE')) . 'KCU'
-        . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-        . '  = ' . $p->quoteIdentifierChain(array('KCU', 'TABLE_SCHEMA'))
-        . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-        . '  = ' . $p->quoteIdentifierChain(array('KCU', 'TABLE_NAME'))
-
-        . ' WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+        $sql = 'SELECT '. implode(', ', $isColumns)
+        . ' FROM '      . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
+        . ' INNER JOIN '. $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'KEY_COLUMN_USAGE')) . 'KCU'
+        . ' ON '        . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+        . '  = '        . $this->quoteIdentifierChain(array('KCU', 'TABLE_SCHEMA'))
+        . ' AND '       . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+        . '  = '        . $this->quoteIdentifierChain(array('KCU', 'TABLE_NAME'))
+        . ' WHERE '     . $this->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
         . ' IN (\'BASE TABLE\', \'VIEW\')';
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-            . ' = ' . $p->quoteValue($schema);
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
             . ' != \'INFORMATION_SCHEMA\'';
         }
-
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-
         $data = array();
         foreach ($results->toArray() as $row) {
             $data[] = array_change_key_case($row, CASE_LOWER);
         }
-
         $this->data['constraint_keys'][$schema] = $data;
     }
 
-    protected function loadConstraintReferences($table, $schema)
-    {
+    /**
+     * init $this->data['constraint_references'][$schema]
+     * @param type $table
+     * @param type $schema
+     */
+    protected function loadConstraintReferences($table, $schema) {
         parent::loadConstraintReferences($table, $schema);
-
-        $p = $this->adapter;
-
         $isColumns = array(
             array('RC', 'TABLE_NAME'),
             array('RC', 'CONSTRAINT_NAME'),
@@ -383,59 +364,54 @@ class MysqlMetadata extends AbstractSource
             array('KCU', 'REFERENCED_TABLE_NAME'),
             array('KCU', 'REFERENCED_COLUMN_NAME'),
         );
-
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) {
             $c = $p->quoteIdentifierChain($c);
         });
 
-        $sql = 'SELECT ' . implode(', ', $isColumns)
-        . 'FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
-
-        . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'REFERENTIAL_CONSTRAINTS')) . 'RC'
-        . ' ON ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-        . '  = ' . $p->quoteIdentifierChain(array('RC', 'CONSTRAINT_SCHEMA'))
-        . ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_NAME'))
-        . '  = ' . $p->quoteIdentifierChain(array('RC', 'TABLE_NAME'))
-
-        . ' INNER JOIN ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'KEY_COLUMN_USAGE')) . 'KCU'
-        . ' ON ' . $p->quoteIdentifierChain(array('RC', 'CONSTRAINT_SCHEMA'))
-        . '  = ' . $p->quoteIdentifierChain(array('KCU', 'TABLE_SCHEMA'))
-        . ' AND ' . $p->quoteIdentifierChain(array('RC', 'TABLE_NAME'))
-        . '  = ' . $p->quoteIdentifierChain(array('KCU', 'TABLE_NAME'))
-        . ' AND ' . $p->quoteIdentifierChain(array('RC', 'CONSTRAINT_NAME'))
-        . '  = ' . $p->quoteIdentifierChain(array('KCU', 'CONSTRAINT_NAME'))
-
-        . 'WHERE ' . $p->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
+        $sql = 'SELECT '. implode(', ', $isColumns)
+        . 'FROM '       . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TABLES')) . 'T'
+        . ' INNER JOIN '. $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'REFERENTIAL_CONSTRAINTS')) . 'RC'
+        . ' ON '        . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+        . '  = '        . $this->quoteIdentifierChain(array('RC', 'CONSTRAINT_SCHEMA'))
+        . ' AND '       . $this->quoteIdentifierChain(array('T', 'TABLE_NAME'))
+        . '  = '        . $this->quoteIdentifierChain(array('RC', 'TABLE_NAME'))
+        . ' INNER JOIN '. $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'KEY_COLUMN_USAGE')) . 'KCU'
+        . ' ON '        . $this->quoteIdentifierChain(array('RC', 'CONSTRAINT_SCHEMA'))
+        . '  = '        . $this->quoteIdentifierChain(array('KCU', 'TABLE_SCHEMA'))
+        . ' AND '       . $this->quoteIdentifierChain(array('RC', 'TABLE_NAME'))
+        . '  = '        . $this->quoteIdentifierChain(array('KCU', 'TABLE_NAME'))
+        . ' AND '       . $this->quoteIdentifierChain(array('RC', 'CONSTRAINT_NAME'))
+        . '  = '        . $this->quoteIdentifierChain(array('KCU', 'CONSTRAINT_NAME'))
+        . 'WHERE '      . $this->quoteIdentifierChain(array('T', 'TABLE_TYPE'))
         . ' IN (\'BASE TABLE\', \'VIEW\')';
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
-            . ' = ' . $p->quoteValue($schema);
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= ' AND ' . $p->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
+            $sql .= ' AND ' . $this->quoteIdentifierChain(array('T', 'TABLE_SCHEMA'))
             . ' != \'INFORMATION_SCHEMA\'';
         }
 
         $results = $this->adapter->query($sql, Adapter::QUERY_MODE_EXECUTE);
-
         $data = array();
         foreach ($results->toArray() as $row) {
             $data[] = array_change_key_case($row, CASE_LOWER);
         }
-
         $this->data['constraint_references'][$schema] = $data;
     }
 
-    protected function loadTriggerData($schema)
-    {
+    /**
+     * $this->data['triggers'][$schema]
+     * @param type $schema
+     * @return type
+     */
+    protected function loadTriggerData($schema) {
         if (isset($this->data['triggers'][$schema])) {
             return;
         }
-
         $this->prepareDataHierarchy('triggers', $schema);
-
-        $p = $this->adapter;
-
         $isColumns = array(
 //            'TRIGGER_CATALOG',
 //            'TRIGGER_SCHEMA',
@@ -455,20 +431,20 @@ class MysqlMetadata extends AbstractSource
             'ACTION_REFERENCE_NEW_ROW',
             'CREATED',
         );
-
+        $p = $this;
         array_walk($isColumns, function (&$c) use ($p) {
             $c = $p->quoteIdentifier($c);
         });
 
         $sql = 'SELECT ' . implode(', ', $isColumns)
-        . ' FROM ' . $p->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TRIGGERS'))
+        . ' FROM ' . $this->quoteIdentifierChain(array('INFORMATION_SCHEMA', 'TRIGGERS'))
         . ' WHERE ';
 
         if ($schema != self::DEFAULT_SCHEMA) {
-            $sql .= $p->quoteIdentifier('TRIGGER_SCHEMA')
-            . ' = ' . $p->quoteValue($schema);
+            $sql .= $this->quoteIdentifier('TRIGGER_SCHEMA')
+            . ' = ' . $this->adapter->quoteValue($schema);
         } else {
-            $sql .= $p->quoteIdentifier('TRIGGER_SCHEMA')
+            $sql .= $this->quoteIdentifier('TRIGGER_SCHEMA')
             . ' != \'INFORMATION_SCHEMA\'';
         }
 
@@ -482,7 +458,6 @@ class MysqlMetadata extends AbstractSource
             }
             $data[$row['trigger_name']] = $row;
         }
-
         $this->data['triggers'][$schema] = $data;
     }
 }

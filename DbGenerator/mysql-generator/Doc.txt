@@ -122,3 +122,10 @@ Insert::getRawState(), значения которого изменились с
 TableGateway работал правильно!!!
 Аналогично и для select, delete, update - при изменении этих классов следить за соответствующим
 методом AbstractTableGateway::execute... и ...::getRawState()
+
+
+
+Adapter::quoteIdentifierInFragment() применяется только в классах от AbsreactSql. --->AbsreactSql
+Adapter::quoteIdentifierChain() применяется только в классе MysqlMetadata         --->MysqlMetadata
+Adapter::quoteIdentifier() применяется только в AbsreactSql и MysqlMetadata       --->AbsreactSql и MysqlMetadata
+Adapter::getQuoteSchemaTable() и Adapter::getQuoteList() только в классах от AbsreactSql --->AbsreactSql

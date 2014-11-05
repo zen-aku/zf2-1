@@ -177,11 +177,10 @@ class AlterTable extends AbstractSql implements SqlInterface
     }
 
     /** 
-     * @param AdapterInterface $adapter
      * @return type
      */
-    protected function processTable(AdapterInterface $adapter){
-        return array($adapter->quoteIdentifier($this->table));
+    protected function processTable(){
+        return array($this->quoteIdentifier($this->table));
     }
 
     /**
@@ -204,7 +203,7 @@ class AlterTable extends AbstractSql implements SqlInterface
         $sqls = array();
         foreach ($this->changeColumns as $name => $column) {
             $sqls[] = array(
-                $adapter->quoteIdentifier($name),
+                $this->quoteIdentifier($name),
                 $this->processExpression($column, $adapter)->getSql()
             );
         }
@@ -212,13 +211,12 @@ class AlterTable extends AbstractSql implements SqlInterface
     }
 
     /**
-     * @param AdapterInterface $adapter
      * @return type
      */
-    protected function processDropColumns(AdapterInterface $adapter){
+    protected function processDropColumns(){
         $sqls = array();
         foreach ($this->dropColumns as $column) {
-             $sqls[] = $adapter->quoteIdentifier($column);
+             $sqls[] = $this->quoteIdentifier($column);
         }
         return array($sqls);
     }
@@ -236,13 +234,12 @@ class AlterTable extends AbstractSql implements SqlInterface
     }
 
     /**
-     * @param AdapterInterface $adapter
      * @return array
      */
-    protected function processDropConstraints(AdapterInterface $adapter){
+    protected function processDropConstraints(){
         $sqls = array();
         foreach ($this->dropConstraints as $constraint) {
-            $sqls[] = $adapter->quoteIdentifier($constraint);
+            $sqls[] = $this->quoteIdentifier($constraint);
         }
         return array($sqls);
     }
