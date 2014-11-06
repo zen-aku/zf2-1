@@ -70,3 +70,15 @@
     чем пытаться править старый. При этом код Zend/Db надо рассматривать как источник примеров и идей, требующий 
     тщательного анализа перед включением в свой модуль.
 
+
+Expression:
+$expr = "age > ? and hight > ?";
+$params = [15, 170];
+$type = [Expression::TYPE_VALUE, Expression::TYPE_VALUE];
+
+$select = new Select();
+$select->from('users')->where(new Expression($expr, $params, $type));
+или можно без типов:
+$select->from('users')->where(
+    new Expression('age > ? and hight > ?', [15, 170]);
+);

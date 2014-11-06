@@ -105,26 +105,21 @@ INSERT HIGH_PRIORITY IGNORE
       col_name=expr
         [, col_name=expr] ... 
 
+Порядок разложения выражения INSERT на части
 
+Массив элементов класса Insert:
+1. INSERT
+2. PRIORITY
+3. IGNORE
+4. INTO tbl_name
+5. PARTITION (partition_name,...) 
+6. (col_name,...)
+7. 1) VALUES ({expr | DEFAULT},...),(...),...
+   2) SET col_name={expr | DEFAULT}, ...
+   3) SELECT ...
+8. ON DUPLICATE KEY UPDATE col_name=expr [, col_name=expr]
+   
+В 7-й элемент массива заносится либо 1), либо 2), либо 3) - только один элемент
 
-1) Сделать шаблон добавления INSERT INTO tbl_name() VALUES(): 
-    INSERT INTO tbl_name VALUES(null,2,3);
-    INSERT INTO tbl_name VALUES(null,2,3),(null,5,6),(null,8,9);
+7.1, 7.2, 7.3 можно представить как отдельные свойства-объекты???
 
-    INSERT INTO tbl_name (a,b,c) VALUES(1,2,3);
-    INSERT INTO tbl_name (a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9);
-
-    INSERT INTO tbl_name (a,b,c) VALUES((SELECT...), (SELECT...), (SELECT...));
-    INSERT INTO tbl_name (a,b,c) VALUES
-        ((SELECT...), (SELECT...), (SELECT...)),
-        ((SELECT...), (SELECT...), (SELECT...)),    
-        ((SELECT...), (SELECT...), (SELECT...));
-
-    INSERT INTO tbl_name (a,b,c) VALUES(1,2,3) аналогичен выражению 
-    INSERT INTO tbl_name SET a=1, b=2, c=3 , поэтому нет смысла делать отдельный шаблон для INSERT SET
-    Но для задания значения типа [['a'=> 1], ['b'=> 2], ['c'=> 3]] использовать отдельный методв Insert::set(array)
-
-    Шаблон INSERT должен базироваться только на выражении:
-    INSERT INTO tbl_name() VALUES();
-
-2) Сделать шаблон добавления INSERT INTO tbl_name() SELECT...
