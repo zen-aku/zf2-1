@@ -257,7 +257,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
         }       
         return sprintf(
             $this->specifications[static::SPECIFICATION_INSERT],    // "INSERT INTO %1$s %2$s %3$s"
-            $this->getQuoteSchemaTable( $this->table ),             // " `schema`.`table` "
+            $this->getQuoteSchemaTable(),							// " `schema`.`table` "
             '('.$this->getQuoteList( $this->columns ).')',          // "`column1`, `column2`, `column3` ..."
             $valuesString                                           // " VALUES (...), (...), ..." | "SELECT ..."
         );
@@ -271,14 +271,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      */
     public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
         
-        ///// ParameterContainer вынести в AbstractSql::prepareStatementContainer()
         $parameterContainer = $statementContainer->getParameterContainer();
-        if (!$parameterContainer instanceof ParameterContainer) {
-            $parameterContainer = new ParameterContainer();
-            $statementContainer->setParameterContainer($parameterContainer);
-        }
-		/////
-         
+             
         $index = 0;
         $rowString = [];
         if (is_array($this->values)) {            
@@ -320,22 +314,13 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
       
         $sql = sprintf(
             $this->specifications[static::SPECIFICATION_INSERT],    // "INSERT INTO %1$s %2$s %3$s"
-            $this->getQuoteSchemaTable( $this->table ),             // " `schema`.`table` "
+            $this->getQuoteSchemaTable(),							// " `schema`.`table` "
             '('.$this->getQuoteList( $this->columns ).')',          // "`column1`, `column2`, `column3` ..."
             $valuesString                                           // " VALUES (?, ?,...), (?, ?,...), ..." | "SELECT ..."
-        );
-        
+        );     
         $statementContainer->setSql($sql);
-		/*
-		echo '<pre>';
-		print_r($statementContainer);
-		exit;
-		*/
     }
-     
-	////////////////////////////////////////////////////////////////////////////////////////////////
 	
-
     /**
      * Get raw state
      * @param string $key

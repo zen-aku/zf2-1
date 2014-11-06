@@ -131,26 +131,8 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @return void
      */
     public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
-        $parameterContainer = $statementContainer->getParameterContainer();
-
-        if (!$parameterContainer instanceof ParameterContainer) {
-            $parameterContainer = new ParameterContainer();
-            $statementContainer->setParameterContainer($parameterContainer);
-        }
-
-        $table = $this->table;
-        $schema = null;
-
-        // create quoted table name to use in update processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
-
-        $table = $this->quoteIdentifier($table);
-
-        if ($schema) {
-            $table = $this->quoteIdentifier($schema) . '.' . $table;
-        }
+        
+		$parameterContainer = $statementContainer->getParameterContainer();
 
         $setSql = array();
         foreach ($this->set as $column => $value) {
@@ -163,15 +145,18 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $parameterContainer->offsetSet($column, $value);
             }
         }
-        $set = implode(', ', $setSql);
-
-        $sql = sprintf($this->specifications[static::SPECIFICATION_UPDATE], $table, $set);
-
-        // process where
+        $sql = sprintf(
+			$this->specifications[static::SPECIFICATION_UPDATE], 
+			$this->getQuoteSchemaTable(),							// " `schema`.`table` "
+			implode(', ', $setSql)
+		);
         if ($this->where->count() > 0) {
             $whereParts = $this->processExpression($this->where, $adapter, true, 'where');
             $parameterContainer->merge($whereParts->getParameterContainer());
-            $sql .= ' ' . sprintf($this->specifications[static::SPECIFICATION_WHERE], $whereParts->getSql());
+            $sql .= ' ' . sprintf(
+				$this->specifications[static::SPECIFICATION_WHERE], 
+				$whereParts->getSql()
+			);
         }
         $statementContainer->setSql($sql);
     }
@@ -182,18 +167,7 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @return string
      */
     public function getSqlString(AdapterInterface $adapter){
-        $table = $this->table;
-        $schema = null;
-
-        // create quoted table name to use in update processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
-        $table = $this->quoteIdentifier($table);
-
-        if ($schema) {
-            $table = $this->quoteIdentifier($schema) . '.' . $table;
-        }
+		
         $setSql = array();
         foreach ($this->set as $column => $value) {
             if ($value instanceof ExpressionInterface) {
@@ -205,12 +179,17 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $setSql[] = $this->quoteIdentifier($column) . ' = ' . $adapter->quoteValue($value);
             }
         }
-        $set = implode(', ', $setSql);
-
-        $sql = sprintf($this->specifications[static::SPECIFICATION_UPDATE], $table, $set);
+        $sql = sprintf(
+			$this->specifications[static::SPECIFICATION_UPDATE], 
+			$this->getQuoteSchemaTable(),							// " `schema`.`table` " 
+			implode(', ', $setSql)
+		);
         if ($this->where->count() > 0) {
             $whereParts = $this->processExpression($this->where, $adapter, false, 'where');
-            $sql .= ' ' . sprintf($this->specifications[static::SPECIFICATION_WHERE], $whereParts->getSql());
+            $sql .= ' ' . sprintf(
+				$this->specifications[static::SPECIFICATION_WHERE], 
+				$whereParts->getSql()
+			);
         }
         return $sql;
     }

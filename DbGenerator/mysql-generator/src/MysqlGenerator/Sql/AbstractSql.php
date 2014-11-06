@@ -55,7 +55,7 @@ abstract class AbstractSql {
             $this->instanceParameterIndex[$namedParameterPrefix] = 1;
         }
         $expressionParamIndex = &$this->instanceParameterIndex[$namedParameterPrefix];		
-		$statementContainer = new StatementContainer;
+		$statementContainer = new StatementContainer();
         $parameterContainer = $statementContainer->getParameterContainer();
 		
 		$parts = $expression->getExpressionData();		
@@ -247,16 +247,15 @@ abstract class AbstractSql {
     }
     
     /**
-     * @param string|TableIdentifier $table
      * @return string  "`schema`.`table`"
      */
-    public function getQuoteSchemaTable( $table ) {
-        if ($table instanceof \MysqlGenerator\Sql\TableIdentifier) {
-            return $this->quoteIdentifier($table->getSchema()) . '.' 
-                . $this->quoteIdentifier($table->getTable());
+    public function getQuoteSchemaTable() {
+        if ($this->table instanceof \MysqlGenerator\Sql\TableIdentifier) {
+            return $this->quoteIdentifier($this->table->getSchema()) . '.' 
+                . $this->quoteIdentifier($this->table->getTable());
         }
         else {
-            return $this->quoteIdentifier($table);
+            return $this->quoteIdentifier($this->table);
         } 
     }
     

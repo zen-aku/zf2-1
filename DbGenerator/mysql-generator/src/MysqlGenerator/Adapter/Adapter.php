@@ -475,7 +475,10 @@ class Adapter implements AdapterInterface {
      * @return StatementInterface
      */
     public function prepareStatementForSqlObject( PreparableSqlInterface $sqlObject, StatementInterface $statement = null ) {
-        $statement = ($statement) ?: $this->createStatement();
+        $statement = ($statement) ?: $this->createStatement();	
+		if (!$statement->getParameterContainer() instanceof ParameterContainer) {
+            $statement->setParameterContainer(new ParameterContainer());
+        }	
 		$sqlObject->prepareStatement($this, $statement);	
         return $statement;
     }

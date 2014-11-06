@@ -101,31 +101,18 @@ class Delete extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @return void
      */
     public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
-        $parameterContainer = $statementContainer->getParameterContainer();
-
-        if (!$parameterContainer instanceof ParameterContainer) {
-            $parameterContainer = new ParameterContainer();
-            $statementContainer->setParameterContainer($parameterContainer);
-        }
-        $table = $this->table;
-        $schema = null;
-
-        // create quoted table name to use in delete processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
-        $table = $this->quoteIdentifier($table);
-
-        if ($schema) {
-            $table = $this->quoteIdentifier($schema) . '.' . $table;
-        }
-        $sql = sprintf($this->specifications[static::SPECIFICATION_DELETE], $table);
-
-        // process where
+         	
+        $sql = sprintf(
+			$this->specifications[static::SPECIFICATION_DELETE], 
+			$this->getQuoteSchemaTable()							// " `schema`.`table` "
+		);
         if ($this->where->count() > 0) {
             $whereParts = $this->processExpression($this->where, $adapter, true, 'where');
-            $parameterContainer->merge($whereParts->getParameterContainer());
-            $sql .= ' ' . sprintf($this->specifications[static::SPECIFICATION_WHERE], $whereParts->getSql());
+            $statementContainer->getParameterContainer()->merge($whereParts->getParameterContainer());
+            $sql .= ' ' . sprintf(
+				$this->specifications[static::SPECIFICATION_WHERE], 
+				$whereParts->getSql()
+			);
         }
         $statementContainer->setSql($sql);
     }
@@ -136,20 +123,11 @@ class Delete extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @return string
      */
     public function getSqlString(AdapterInterface $adapter){
-        $table = $this->table;
-        $schema = null;
-
-        // create quoted table name to use in delete processing
-        if ($table instanceof TableIdentifier) {
-            list($table, $schema) = $table->getTableAndSchema();
-        }
-        $table = $this->quoteIdentifier($table);
-
-        if ($schema) {
-            $table = $this->quoteIdentifier($schema) . '.' . $table;
-        }
-        $sql = sprintf($this->specifications[static::SPECIFICATION_DELETE], $table);
-
+       	
+        $sql = sprintf(
+			$this->specifications[static::SPECIFICATION_DELETE], 
+			$this->getQuoteSchemaTable()							// " `schema`.`table` "
+		);
         if ($this->where->count() > 0) {
             $whereParts = $this->processExpression($this->where, $adapter, false, 'where');
             $sql .= ' ' . sprintf($this->specifications[static::SPECIFICATION_WHERE], $whereParts->getSql());

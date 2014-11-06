@@ -457,12 +457,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @return void
      */
     public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
-        // ensure statement has a ParameterContainer
-        $parameterContainer = $statementContainer->getParameterContainer();
-        if (!$parameterContainer instanceof ParameterContainer) {
-            $parameterContainer = new ParameterContainer();
-            $statementContainer->setParameterContainer($parameterContainer);
-        }		
+        	
 		if ($this->limit === null && $this->offset !== null) {
             $this->specifications[self::LIMIT] = 'LIMIT 18446744073709551615';
         }
@@ -470,7 +465,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
 		$sqls = array();
         $parameters = array();
         foreach ($this->specifications as $name => $specification) {
-            $parameters[$name] = $this->{'process' . $name}($adapter, $parameterContainer);
+            $parameters[$name] = $this->{'process' . $name}($adapter, $statementContainer->getParameterContainer());
             if ($specification && is_array($parameters[$name])) {
                 $sqls[$name] = $this->createSqlFromSpecificationAndParameters($specification, $parameters[$name]);
             }
@@ -528,20 +523,18 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     }
     
     /**
-     * @param AdapterInterface $adapter
      * @return string
      */
-    protected function processStatementStart(AdapterInterface $adapter = null, ParameterContainer $parameterContainer = null){
+    protected function processStatementStart(){
         if ($this->combine !== array()) {
             return array('(');
         }
     }
 
     /**
-     * @param AdapterInterface $adapter
      * @return string
      */
-    protected function processStatementEnd(AdapterInterface $adapter = null, ParameterContainer $parameterContainer = null){
+    protected function processStatementEnd(){
         if ($this->combine !== array()) {
             return array(')');
         }
