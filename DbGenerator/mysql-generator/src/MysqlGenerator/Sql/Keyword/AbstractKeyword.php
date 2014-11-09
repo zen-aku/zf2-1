@@ -10,5 +10,6 @@ abstract class AbstractKeyword {
      */
     public function quoteIdentifier($identifier) {
         return '`' . str_replace('`', '``', $identifier) . '`';
-    }	
+    }
+	
 }

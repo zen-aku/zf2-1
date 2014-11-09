@@ -6,7 +6,7 @@ use MysqlGenerator\Sql\Keyword\AdapterInterface;
 use MysqlGenerator\Sql\Keyword\StatementContainerInterface;
 use MysqlGenerator\Sql\Exception;
 
-class Value extends AbstractKeyword {
+class Value extends AbstractKeyword implements PreparableKeywordInterface {
 	
 	const ARRAY_ARRAY = 1;
 	const ASSOC_ARRAY = 2;
