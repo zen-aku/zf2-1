@@ -2,6 +2,8 @@
 
 namespace MysqlGenerator\Sql\Keyword;
 
+use MysqlGenerator\Adapter\AdapterInterface;
+
 class Table extends AbstractKeyword {
 	
 	/**
@@ -40,7 +42,7 @@ class Table extends AbstractKeyword {
 	/**
 	 * @return string " `schema`.`table` "
 	 */
-	public function getString() {			
+	public function getSqlString(AdapterInterface $adapter = null) {			
 		return ($this->schema) ? 
 			$this->quoteIdentifier($this->schema) . '.' . $this->quoteIdentifier($this->table) 
 			: $this->quoteIdentifier($this->table);

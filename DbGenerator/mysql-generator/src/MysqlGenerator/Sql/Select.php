@@ -470,10 +470,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $sqls[$name] = $this->createSqlFromSpecificationAndParameters($specification, $parameters[$name]);
             }
         }
-        $sql = implode(' ', $sqls);
-
-        $statementContainer->setSql($sql);
-        return;
+        return $statementContainer->setSql(implode(' ', $sqls));
     }
 
     /**
@@ -495,8 +492,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $sqls[$name] = $this->createSqlFromSpecificationAndParameters($specification, $parameters[$name]);
             }
         }
-        $sql = implode(' ', $sqls);
-        return $sql;
+        return implode(' ', $sqls);
     }
 
     /**

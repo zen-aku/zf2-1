@@ -2,7 +2,9 @@
 
 namespace MysqlGenerator\Sql\Keyword;
 
-abstract class AbstractKeyword {
+use MysqlGenerator\Sql\SqlInterface;
+
+abstract class AbstractKeyword implements SqlInterface {
 	
 	/**
      * @param  string $identifier

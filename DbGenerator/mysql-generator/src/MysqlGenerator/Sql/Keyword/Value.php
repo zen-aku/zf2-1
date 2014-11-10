@@ -2,11 +2,14 @@
 
 namespace MysqlGenerator\Sql\Keyword;
 
-use MysqlGenerator\Sql\Keyword\AdapterInterface;
-use MysqlGenerator\Sql\Keyword\StatementContainerInterface;
+use MysqlGenerator\Adapter\AdapterInterface;
+use MysqlGenerator\Adapter\StatementContainerInterface;
+use MysqlGenerator\Sql\PreparableSqlInterface;
+use MysqlGenerator\Sql\Expression;
+use MysqlGenerator\Sql\Select;
 use MysqlGenerator\Sql\Exception;
 
-class Value extends AbstractKeyword implements PreparableKeywordInterface {
+class Value extends AbstractKeyword implements PreparableSqlInterface {
 	
 	const ARRAY_ARRAY = 1;
 	const ASSOC_ARRAY = 2;
@@ -32,8 +35,7 @@ class Value extends AbstractKeyword implements PreparableKeywordInterface {
 	public function checkValues(array $values) {
 		$isArrayArray = false;
 		$isRowArray = false;
-		$isAssocArray = false;
-        
+		$isAssocArray = false;       
 		foreach ($values as $key => $value) {
 			if (is_array($value)) {
 				if ($isRowArray || $isAssocArray) return false;				
@@ -50,10 +52,10 @@ class Value extends AbstractKeyword implements PreparableKeywordInterface {
                 if ($isArrayArray || $isRowArray) return false;
                 $isAssocArray = 1;
             }				
-		}			
+		}				
 		if ($isArrayArray) return self::ARRAY_ARRAY; 
-		if ($isRowArray) return self::ASSOC_ARRAY;
-		if ($isAssocArray) return self::ROW_ARRAY;
+		if ($isRowArray) return self::ROW_ARRAY;
+		if ($isAssocArray) return self::ASSOC_ARRAY;
 	}	
 	
 	/**
@@ -71,14 +73,13 @@ class Value extends AbstractKeyword implements PreparableKeywordInterface {
 	public function addRowValues(array $row) {	
 		$this->values[] = $row;
 	}
-	
-	
+
 	/**
 	 * @param AdapterInterface $adapter
 	 * @return string  " VALUES (...), (...), ..."
 	 * @throws InvalidArgumentException
 	 */
-	public function getString(AdapterInterface $adapter){
+	public function getSqlString(AdapterInterface $adapter){
             	
 		$rowString = [];
         if ( is_array($this->values) ) {
@@ -116,7 +117,7 @@ class Value extends AbstractKeyword implements PreparableKeywordInterface {
 	 * @return string  " VALUES (':value1', ':value2', ...), (...), ..."
 	 * @throws InvalidArgumentException
 	 */
-	public function getPrepareString(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
+	public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer){
         
         $parameterContainer = $statementContainer->getParameterContainer();           
         $rowString = [];
@@ -130,8 +131,7 @@ class Value extends AbstractKeyword implements PreparableKeywordInterface {
                         $parameterContainer->merge($exprData->getParameterContainer());
                     }
                     elseif ($value instanceof Select) {
-                        $value->prepareStatement($adapter, $statementContainer); 
-                        $values[] =  '(' . $statementContainer->getSql() . ')';
+                        $values[] =  '(' . $value->prepareStatement($adapter, $statementContainer)->getSql() . ')';
                     }
                     else {         
                         $values[] = $bindName = ':value' . ++self::$bindIndex;                                 
@@ -139,12 +139,12 @@ class Value extends AbstractKeyword implements PreparableKeywordInterface {
                     }
                 }          
                 $rowString[] = '(' . implode(', ', $values) . ')';
-            }            
-            return self::KEYWORD . implode(', ', $rowString); 
+            }      
         } 
 		else {
             throw new Exception\InvalidArgumentException('values or select should be present');
         }
+		return $statementContainer->setSql(self::KEYWORD . implode(', ', $rowString));
     }
 	
 		

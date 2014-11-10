@@ -2,6 +2,8 @@
 
 namespace MysqlGenerator\Sql\Keyword;
 
+use MysqlGenerator\Adapter\AdapterInterface;
+
 class Columns extends AbstractKeyword {
 	
 	/**
@@ -29,14 +31,7 @@ class Columns extends AbstractKeyword {
 	public function addColumn($column) {
 		$this->columns[] = $column;
 	}
-	
-	/**
-	 * @param string $column
-	 */
-	public function removeColumn($column) {
-		if ( key_exists($column, $this->columns)) unset($this->columns[$column]);
-	}
-	
+		
 	/**
 	 * @return int
 	 */
@@ -47,7 +42,7 @@ class Columns extends AbstractKeyword {
 	/**
 	 * @return string " `column1`, `column2`, `column3` ... "
 	 */
-	public function getString() {	
+	public function getSqlString(AdapterInterface $adapter = null) {	
 		return implode( ', ', array_map( array($this, 'quoteIdentifier'), $this->columns));
 	}
 	

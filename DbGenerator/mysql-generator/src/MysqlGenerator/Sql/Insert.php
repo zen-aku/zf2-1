@@ -1,9 +1,10 @@
 <?php
+
 namespace MysqlGenerator\Sql;
 
 use MysqlGenerator\Sql\Keyword;
 
-class Insert {
+class Insert extends AbstractDml {
 	
 	const INSERT = 'INSERT';
 	const IGNORE = 'IGNORE';
@@ -21,6 +22,7 @@ class Insert {
 		'partition'		=> null,
 		'columns'		=> null,
 		'values'		=> null,
+		'select'		=> null,
 		'onDuplicateKey'=> null,	
 	);
 	
@@ -67,15 +69,38 @@ class Insert {
 	 * @return Insert
 	 */
 	public function columns(array $columns) {
+		$this->keywords['values'] = null;
+		$this->keywords['select'] = null;
 		$this->keywords['columns'] = new Keyword\InsertColumns($columns);
         return $this;
     }
+	
+	/**
+	 * @param array $parts
+	 * @return Insert
+	 */
+	public function partitions(array $parts) {
+		$this->keywords['partition'] = new Keyword\Partition($parts);
+        return $this;
+	}
+	
+	/**
+	 * @param string $part
+	 * @return Insert
+	 */
+	public function addPartition($part) {	
+		if (!$this->keywords['partition']) $this->keywords['partition'] = new Keyword\Partition($part);
+        $this->keywords['partition']->addColumn($part);
+		return $this;
+	}
 	
 	/**
 	 * @param string $columns
 	 * @return Insert
 	 */
 	public function addColumn($column) {
+		$this->keywords['values'] = null;
+		$this->keywords['select'] = null;
 		if (!$this->keywords['columns']) $this->keywords['columns'] = new Keyword\InsertColumns();
 		$this->keywords['columns']->addColumn($column);
 		return $this;
@@ -104,10 +129,20 @@ class Insert {
 		return $this;
 	}
 	
+	public function select(Select $select) {
+		$this->keywords['values'] = null;
+		$this->keywords['select'] = $select;
+		return $this;
+	}
+	
+	
 	/**
+	 * "INSERT INTO tbl_name VALUES(null,2,3),(null,5,6),(null,8,9),..."
+	 * "INSERT INTO tbl_name(a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9),..."
+	 * "INSERT INTO tbl_name (a,b) VALUES((SELECT...), (SELECT...)), ((SELECT...), (SELECT...)), ..."
 	 * @param array $values
 	 */
-	public function values( array $values ) {		
+	public function values( array $values ) {
 		if (!$this->keywords['values']) $this->keywords['values'] = new Keyword\Value();
 		
 		switch ($this->keywords['values']->checkValues($values)) {
@@ -133,72 +168,8 @@ class Insert {
 					'В MysqlGenerator\Sql\Insert::values() неправильно задан аргумент.'
 				);			
 		}
+		$this->keywords['select'] = null;
+		return $this;
 	}
-	
-	/**
-     * Get SQL string for this statement:
-     *  "INSERT INTO tbl_name VALUES(null,2,3),(null,5,6),(null,8,9),..."
-     *  "INSERT INTO tbl_name(a,b,c) VALUES(1,2,3),(4,5,6),(7,8,9),..."
-     *  "INSERT INTO tbl_name (a,b) VALUES((SELECT...), (SELECT...)), ((SELECT...), (SELECT...)), ..."
-     *  "INSERT INTO tbl_name(a,b,c) SELECT ...
-     * @param AdapterInterface $adapter
-     * @return string
-     */
-    public function getSqlString(AdapterInterface $adapter) {
-		$sqlString = '';
-		foreach ($this->keywords as $keyword) {
-			if ( $keyword instanceof Keyword\AbstractKeyword ) {
-				$sqlString .= $keyword->getString($adapter). ' ';
-			}
-			elseif ($keyword) {
-				$sqlString .= $keyword . ' ';
-			}
-		}
-		return $sqlString;	
-	}
- 
-	/**
-     * Prepare statement
-     * @param  AdapterInterface $adapter
-     * @param  StatementContainerInterface $statementContainer
-     * @return void
-     */
-	public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer) {
-		$sqlString = '';
-		foreach ($this->keywords as $keyword) {
-			if ( $keyword instanceof Keyword\PreparableKeywordInterface ) {
-				$sqlString .= $keyword->getPrepareString($adapter, $statementContainer). ' ';
-			}		
-			elseif ( $keyword instanceof Keyword\AbstractKeyword ) {
-				$sqlString .= $keyword->getString($adapter). ' ';
-			}
-			elseif ($keyword) {
-				$sqlString .= $keyword . ' ';
-			}
-		}
-		$statementContainer->setSql($sqlString);
-	}
-	
-	
-	/// Общий метод
-	public function getStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer = null) {
-		$sqlString = '';
-		foreach ($this->keywords as $keyword) {
-			if ($statementContainer && ($keyword instanceof Keyword\PreparableKeywordInterface) ) {
-				$sqlString .= $keyword->getPrepareString($adapter, $statementContainer). ' ';
-			}		
-			elseif ( $keyword instanceof Keyword\AbstractKeyword ) {
-				$sqlString .= $keyword->getString($adapter). ' ';
-			}
-			elseif ($keyword) {
-				$sqlString .= $keyword . ' ';
-			}
-		}
-		if (!$statementContainer) {
-			return $sqlString;
-		}
-		$statementContainer->setSql($sqlString);	
-	}
-	
 	
 }
