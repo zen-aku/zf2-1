@@ -28,16 +28,17 @@ JOIN:       [
             ]    
 
             [WHERE where_condition]
-                [GROUP BY {col_name | expr | position}[ASC | DESC], ... [WITH ROLLUP]]
+            [GROUP BY {col_name | expr | position}[ASC | DESC], ... [WITH ROLLUP]]
             [HAVING where_condition]
-                [ORDER BY {col_name | expr | position}[ASC | DESC], ...]
+            [ORDER BY {col_name | expr | position}[ASC | DESC], ...]
             [LIMIT {[offset,] row_count | row_count OFFSET offset}]
             [PROCEDURE procedure_name(argument_list)]
             [INTO OUTFILE 'file_name'
                 [CHARACTER SET charset_name]
                 export_options
-              | INTO DUMPFILE 'file_name'
-              | INTO var_name [, var_name]]
+                | INTO DUMPFILE 'file_name'
+                | INTO var_name [, var_name]
+            ]
             [FOR UPDATE | LOCK IN SHARE MODE]
         ]
 
@@ -84,9 +85,12 @@ SELECT * FROM tbl LIMIT 5,10;
 SELECT * FROM t1 
     LEFT JOIN (t2, t3, t4) ON (t2.a=t1.a AND t3.b=t1.b AND t4.c=t1.c);
 
-SELECT t1.name, t2.salary
-    FROM employee AS t1 
-        INNER JOIN info AS t2 ON t1.name = t2.name;
+SELECT t1.name, t2.salary FROM employee AS t1, info AS t2
+  WHERE t1.name = t2.name;
+SELECT t1.name, t2.salary FROM employee t1, info t2
+  WHERE t1.name = t2.name;
+
+
 
 SELECT left_tbl.*
   FROM left_tbl LEFT JOIN right_tbl ON left_tbl.id = right_tbl.id
@@ -109,23 +113,82 @@ SELECT * FROM t1
 Порядок разложения выражения Select на части:
 
     Массив элементов класса Select:
-1.SELECT
-2.DISTINCT
-3.PRIORITY
-4.STRAIGHT_JOIN
-5.RESULT
-6.CACHE
-7.SQL_CALC_FOUND_ROWS
-8.select_expr [, select_expr ...]
-9.FROM table_references
-10.JOIN  // Объект Join
-11.WHERE where_condition
-12.GROUP BY
-13.HAVING where_condition
-14.ORDER BY
+1.SELECT                                // const
+2.DISTINCT                              // const
+3.PRIORITY                              // const
+4.STRAIGHT_JOIN                         // const
+5.RESULT                                // const
+6.CACHE                                 // const
+7.SQL_CALC_FOUND_ROWS                   // const
+8.select_expr [, select_expr ...]       // object SelectColumns 
+9.FROM table_references                 // object From             
+10.JOIN                                 // object JoinContainer (контейнер объектов Join)    
+11.WHERE where_condition                // object Where
+12.GROUP BY                             // object Group
+13.HAVING where_condition               // object Having
+14.ORDER BY                             // object Order
 15.LIMIT
 16.PROCEDURE
 17.INTO OUTFILE
 18.FOR UPDATE | LOCK IN SHARE MODE
 
 19. UNION ???
+
+
+select_expr [, select_expr ...] :
+ - массив: [колонка => альяс]
+ - массив: [колонка1, колонка2]
+ - массив: [колонка1, колонка2 => альяс]
+ - массив: [Expression, колонка1, колонка2 => альяс]
+Ключ колонки массива может быть в виде строки выражения 'count(age)'?
+addColumnExpression('count(age)', 'альяс');
+addColumn('cokumn', 'альяс')
+Формат записи колонок table.column AS clmn
+
+table_references:
+ - строка: имя таблицы
+ - массив: [таблица => альяс]
+ - массив: [таблица1, таблица2]
+ - массив: [таблица1, таблица2 => альяс]
+Формат записи имён таблиц:  schema.table или tbl
+
+Проблема: альяс имени таблицы должен подставляться у имени столбцов:
+
+SELECT t1.name, t2.salary FROM employee AS t1, info AS t2;
+
+Но логика не определит сама к какой таблице принадлежит столбец, поэтому пользователь должен сам прописывать таблицу колонки.
+И тогда колонке надо задавать 3 значения: колонка, альяс, таблица(альяс):
+addColumn('колонка', 'альяс', таблица(альяс))
+
+
+
+
+В Zend\Select имя колонки склеивается с именем from таблицы:
+columns(array $columns, $prefixColumnsWithTable = true);
+В processSelect()
+$fromTable = $this->quoteIdentifier($alias) || $this->quoteIdentifier($schema) . '.' . $table || $this->quoteIdentifier($table)
+if($prefixColumnsWithTable) $columnName = $fromTable . $this->quoteIdentifier($column);
+Не допускается from нескольких таблиц и соответственно склейка колонок с другими таблицами.
+С помощью join можно передать имена колонок приклеваемой таблицы. 
+Фактичекси надо метод Select::processSelect() разбить на 3 части:
+классы Тable, Columns и Join и передавать объекты Тable и Join в объект Columns.
+1.Из объекта Тable берётся имя или альяс таблицы для склейки с колонками Select.
+2.Из объекта Join берётся список колонок присоединяемой таблицы и мерджится со списком колонок Select.
+
+SELECT users.login, clubs.name, 
+    FROM clubs
+    INNER JOIN users ON clubs.users_id = users.id  
+        WHERE clubs.id = 10;
+
+$select->from('clubs');
+$select->columns(['name'], true);
+$select->join('users')->on('clubs.users_id = users.id')->columns('login', true); // select->join() return Join
+
+А можно через вручную созданный объект Join:
+$join1 = new Join('users');
+$join1->on('clubs.users_id = users.id')
+    ->columns('login', true);
+$select->join([$join1, $join2 ...]);
+
+join может быть несколько, поэтому надо создавать дополнительный класс JoinContainer, 
+в котором будут храниться и собираться встроку объекты класса Join

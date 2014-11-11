@@ -25,7 +25,7 @@ return array(
 					'constraints' => array(
 						// 'action' => '(<action name1>|<action name2>|...)',
 						// 'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
-						'action' => '(index)',
+						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
 						// 'id' => '<regexp param>'
 						'id' => '[0-9]+',
 					),

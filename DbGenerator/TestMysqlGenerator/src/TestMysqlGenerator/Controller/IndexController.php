@@ -52,7 +52,16 @@ class IndexController extends AbstractActionController {
 	/**
 	 * router "/testmysqlgenerator/index/index"
 	 */
-    function indexAction() {
+    function indexAction() {       		
+    	return new ViewModel(
+			array()
+    	);	
+    }
+	
+	/**
+	 * router "/testmysqlgenerator/index/insert"
+	 */
+    function insertAction() {
         
 		//////insertvaluesAction()
         $insertUsers = new Sql\Insert('users');
@@ -202,8 +211,35 @@ class IndexController extends AbstractActionController {
 			array(
 				'result' => $result,
 			)
-    	);
-		
+    	);	
     }
+	
+	/**
+	 * router "/testmysqlgenerator/index/select"
+	 */
+    function selectAction() { 
+		
+		$insertUsers = new Sql\Insert('users');
+		$insertUsers->values(array(
+			[null, 'John', 15],
+			[null, 'Mike', 20],
+			[null, 'Mary', 25],
+			[null, 'Kate', 30],
+			[null, 'Alex', 35],		
+		));
+		$result = $insertUsers->getSqlString($this->adapter);
+		
+		
+		/////
+		
+		
+		
+    	return new ViewModel(
+			array(
+				'result' => $result,
+			)
+    	);	
+    }
+	
 
 }
