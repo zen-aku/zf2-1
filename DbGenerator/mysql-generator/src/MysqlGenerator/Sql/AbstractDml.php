@@ -11,7 +11,7 @@ abstract class AbstractDml  implements SqlInterface, PreparableSqlInterface {
      * @return string
      */
     public function getSqlString(AdapterInterface $adapter) {
-		$sqlString = '';
+		$sqlString = PHP_EOL;
 		foreach ($this->keywords as $keyword) {
 			if ( $keyword instanceof SqlInterface ) {
 				$sqlString .= $keyword->getSqlString($adapter). ' ';
@@ -29,7 +29,7 @@ abstract class AbstractDml  implements SqlInterface, PreparableSqlInterface {
      * @return void
      */
 	public function prepareStatement(AdapterInterface $adapter, StatementContainerInterface $statementContainer) {
-		$sqlString = '';
+		$sqlString = PHP_EOL;
 		foreach ($this->keywords as $keyword) {
 			if ( $keyword instanceof PreparableSqlInterface ) {
 				$sqlString .= $keyword->prepareStatement($adapter, $statementContainer)->getSql(). ' ';
