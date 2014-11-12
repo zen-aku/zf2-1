@@ -5,91 +5,77 @@ use MysqlGenerator\Adapter\AdapterInterface;
 
 class SelectColumns extends AbstractKeyword {
 	
+	const SQL_STAR = '*';
+	
 	/**
      * @var array
      */
     protected $columns = array();
 	
 	/**
+     * @var string
+     */
+    protected $quotePrefix = '';
+	
+	/**
 	 * @var boolean
 	 */
-	protected $prefixColumnsWithTable = true;
+	protected $hasPrefixColumns = true;
 	
 	/**
-	 * @var From
-	 */
-	protected $table = null;
-	
-	/**
-	 * @var JoinContainer
-	 */
-	protected $joinContainer = null;
-
-
-	/**
-	 * /**
-     * Specify columns from which to select
-     * Possible valid states:
+     * @param array $columns:
      *   array(*)
      *   array(value, ...)
      *     value can be strings or Expression objects
      *   array(string => value, ...)
      *     key string will be use as alias,
      *     value can be string or Expression objects
-     *
-     * @param  array $columns
-     * @param  bool  $prefixColumnsWithTable
-	 * @param array $columns
+     * @param bool  $prefixColumnsWithTable
 	 */
-	public function __construct(array $columns = array(), $prefixColumnsWithTable = true){
+	public function __construct(array $columns = array(), $hasPrefixColumns = true){
 		$this->columns = $columns;
-		$this->prefixColumnsWithTable = (bool)$prefixColumnsWithTable;
+		$this->hasPrefixColumns = (bool)$hasPrefixColumns;
     }
 	
-	/** 
-	 * @param From $table
+	/**
+	 * @return boolean
+	 */
+	public function hasPrefixColumns() {
+		return $this->hasPrefixColumns;
+	}
+	
+	/**
+	 * @param string $prefix
 	 * @return SelectColumns
 	 */
-	public function setTable(From $table) {
-		$this->table = $table;
+	public function setQuotePrefix($prefix) {
+		$this->quotePrefix = $this->hasPrefixColumns ? $prefix : '';
 		return $this;
 	}
 	
-	/** 
-	 * @param From $table
-	 * @return SelectColumns
-	 */
-	public function setJoinContainer(JoinContainer $joinContainer) {
-		$this->joinContainer = $joinContainer;
-		return $this;
-	}
-	
-	// ??? getPrefix(From $table)
-	public function getPrefix() {		
-		if ($this->table && $this->prefixColumnsWithTable) {			
-			if ($this->table->getAlias()) {
-				$fromTable = $this->quoteIdentifier($alias);
-			} 
-			else {			
-				$schema = $this->table->getSchema() ? $this->quoteIdentifier($this->table->getSchema()) : '';
-				$fromTable = $schema . '.' . $this->quoteIdentifier($this->table->getTable());
-			}
-			return  '.' . $fromTable;
-		}
-		else {
-			return '';
-		}
-	}
-
-		/**
+	/**
 	 * @param AdapterInterface $adapter
 	 */
-	public function getSqlString(AdapterInterface $adapter = null) {
-		
+	public function getSqlString(AdapterInterface $adapter = null) {	
+		$columns = [];
+		foreach ($this->columns as $keyAlias => $column) {
+			if ($column === self::SQL_STAR) {
+				$columns[] = $this->quotePrefix . self::SQL_STAR;
+			}
+			elseif ($column instanceof ExpressionInterface) {
+				        
+            } 
+			else {
+				$alias = is_string($keyAlias) ? ' AS ' . $this->quoteIdentifier($keyAlias) : '';
+                $columns[] = $this->quotePrefix . $this->quoteIdentifier($column) . $alias;
+            }	
+		}
+		return implode(', ', $columns);	
 	}
 	
 	
 	
+	/*
 	protected function processSelect(AdapterInterface $adapter = null, ParameterContainer $parameterContainer = null){
         $expr = 1;
 
@@ -212,9 +198,6 @@ class SelectColumns extends AbstractKeyword {
             return array($columns, $table);
         }
     }
-	
-	
-	
-	
-	
+	*/
+		
 }

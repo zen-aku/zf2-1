@@ -12,6 +12,6 @@ class Into extends Table {
 	 * @return string "INTO `table`"
 	 */
 	public function getSqlString(AdapterInterface $adapter = null){	
-		return self::KEYWORD . parent::getSqlString($adapter);
+		return self::KEYWORD . parent::getSqlString();
 	}   
 }

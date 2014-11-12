@@ -5,8 +5,7 @@ namespace MysqlGenerator\Sql;
 use MysqlGenerator\Sql\Keyword;
 
 class Select extends AbstractDml {
-	
-	
+		
 	const SELECT = 'SELECT';
 	
 	/**
@@ -16,7 +15,7 @@ class Select extends AbstractDml {
 		'select'	=> self::SELECT,
 		'columns'	=> null,
 		'from'		=> null,
-		'join'		=> null,
+		//'join'		=> null,
 		
 	);	
 		
@@ -34,35 +33,35 @@ class Select extends AbstractDml {
 	 * @return Select
 	 */
 	public function from($table, $schema = null){
-		$this->keywords['from'] = new Keyword\From($table, $schema);
-		if ($this->keywords['columns'] instanceof Keyword\SelectColumns) {
-			$this->keywords['columns']->setTable($this->keywords['from']);
+		$from = $this->keywords['from'] = new Keyword\From($table, $schema);
+		if ($columns = $this->keywords['columns'] instanceof Keyword\SelectColumns
+			&&  $columns->hasPrefixColumns()) 
+		{		
+			$columns->setQuotePrefix($from->getQuotePrefix());
 		}
 		return $this;
 	}
 	
 	/**
-     * Specify columns from which to select
-     * Possible valid states:
+     * @param  array $columns
      *   array(*)
      *   array(value, ...)
      *     value can be strings or Expression objects
      *   array(string => value, ...)
      *     key string will be use as alias,
      *     value can be string or Expression objects
-     *
-     * @param  array $columns
-     * @param  bool  $prefixColumnsWithTable
+     * @param  bool $hasPrefixColumns
      * @return Select
      */
-    public function columns(array $columns, $prefixColumnsWithTable = true){
-        $this->keywords['columns'] = new Keyword\SelectColumns($columns, $prefixColumnsWithTable);
-        if ($this->keywords['from']  instanceof Keyword\From) {
-			$this->keywords['columns']->setTable($this->keywords['from']);
+    public function columns(array $columns, $hasPrefixColumns = true) {
+        $col = $this->keywords['columns'] = new Keyword\SelectColumns($columns, $hasPrefixColumns);		
+		if ($this->keywords['from']  instanceof Keyword\From 
+			&& $hasPrefixColumns) 
+		{
+			$col->setQuotePrefix($this->keywords['from']->getQuotePrefix());
 		}
 		return $this;
     }
 	
-	
-	
+		
 }
