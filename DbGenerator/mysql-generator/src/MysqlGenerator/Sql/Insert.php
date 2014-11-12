@@ -14,7 +14,7 @@ class Insert extends AbstractDml {
 	/**
 	 * @var array
 	 */
-	protected $keywords = array (
+	protected $keywords = array(
 		'insert'		=> self::INSERT,
 		'priority'		=> null,
 		'ignore'		=> null,

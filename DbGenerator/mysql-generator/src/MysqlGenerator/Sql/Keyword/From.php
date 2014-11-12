@@ -1,0 +1,106 @@
+<?php
+namespace MysqlGenerator\Sql\Keyword;
+
+use MysqlGenerator\Adapter\AdapterInterface;
+
+class From extends AbstractKeyword {
+		
+	/**
+     * @var string
+     */
+    protected $table;
+	
+	/**
+     * @var string
+     */
+    protected $alias;
+
+    /**
+     * @var string
+     */
+    protected $schema;
+
+    /**
+     * @param string|array $table
+     * @param string $schema
+     */
+    public function __construct( $table, $schema = null ){
+		$this->schema = $schema;
+		
+		if (is_string($table)) {
+			$this->table = $table;
+		}
+		elseif (is_array($table)) {
+			if (is_string($this->alias = key($table)) && count($table) === 1) {
+				$this->table = current($table);
+			}
+			else {
+				throw new Exception\InvalidArgumentException('expects $table as an array is a single element associative array');
+			}
+		}
+		else {
+			throw new Exception\InvalidArgumentException('$table must be a string or array');
+		}	
+    }
+	
+	/**
+	 * @param string $table
+	 * @return From
+	 */
+	public function setTable($table) {
+		$this->table = $table;	
+		return $this;
+	}
+	
+	/**
+	 * @param string $alias
+	 * @return From
+	 */
+	public function setAlias($alias) {
+		$this->alias = $alias;	
+		return $this;
+	}
+	
+	/** 
+	 * @param string $schema
+	 * @return From
+	 */
+	public function setSchema($schema) {
+		$this->schema = $schema;
+		return $this;
+	}
+	
+	/**
+	 * @return string `schema`.`table`
+	 */
+	public function getQuoteSchemaTable() {
+		$schema = $this->schema ? $this->quoteIdentifier($this->schema) . '.' : '';
+		return $schema . $this->getQuoteTable();
+	}
+		
+	/** 
+	 * @return string `alias`
+	 */
+	public function getQuoteAlias() {
+		return $this->alias ?  $this->quoteIdentifier($this->alias) : '';
+	}
+	
+	/**
+	 * @return string `alias` или  `schema`.`table`
+	 */
+	public function getQuotePrefix() {		
+		if ($alias = $this->getQuoteAlias()) {
+			return  $alias;
+		}		
+		return $this->getQuoteSchemaTable();	
+	}
+				
+	/**
+	 * @return string " `schema`.`table` AS `alias` "
+	 */
+	public function getSqlString(AdapterInterface $adapter = null) {	
+		if ($alias = $this->getQuoteAlias()) $alias = ' AS ' . $alias;
+		return  $this->getQuoteSchemaTable(). $alias;
+	}
+	
+}

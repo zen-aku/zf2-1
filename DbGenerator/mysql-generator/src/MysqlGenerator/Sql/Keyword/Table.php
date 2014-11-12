@@ -27,16 +27,20 @@ class Table extends AbstractKeyword {
 	
 	/**
 	 * @param string $table
+	 * @return Table
 	 */
 	public function setTable($table) {
-		$this->table = $table;	
+		$this->table = $table;
+		return $this;
 	}
 	
 	/** 
 	 * @param string $schema
+	 * @return Table
 	 */
 	public function setSchema($schema) {
 		$this->schema = $schema;
+		return $this;
 	}
 	
 	/**
