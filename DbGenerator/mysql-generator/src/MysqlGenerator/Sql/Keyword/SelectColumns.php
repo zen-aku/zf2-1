@@ -24,13 +24,10 @@ class SelectColumns extends AbstractKeyword {
 	
 	/**
      * @param array $columns:
-     *   array(*)
-     *   array(value, ...)
-     *     value can be strings or Expression objects
-     *   array(string => value, ...)
-     *     key string will be use as alias,
-     *     value can be string or Expression objects
-     * @param bool  $prefixColumnsWithTable
+	 *  ['*'] или [SelectColumns::SQL_STAR]
+     *  ['col1', 'col2', ...]
+     *  ['col1', 'alias2' => 'col2', ...]
+     * @param bool $hasPrefixColumns
 	 */
 	public function __construct(array $columns = array(), $hasPrefixColumns = true){
 		$this->columns = $columns;
@@ -60,15 +57,14 @@ class SelectColumns extends AbstractKeyword {
 		$columns = [];
 		foreach ($this->columns as $keyAlias => $column) {
 			if ($column === self::SQL_STAR) {
-				$columns[] = $this->quotePrefix . self::SQL_STAR;
+				$col = self::SQL_STAR;
 			}
-			elseif ($column instanceof ExpressionInterface) {
-				        
-            } 
+			//elseif ($column instanceof ExpressionInterface) { } 
 			else {
 				$alias = is_string($keyAlias) ? ' AS ' . $this->quoteIdentifier($keyAlias) : '';
-                $columns[] = $this->quotePrefix . $this->quoteIdentifier($column) . $alias;
-            }	
+                $col = $this->quoteIdentifier($column) . $alias;
+            }
+			$columns[] = $this->quotePrefix . $col;
 		}
 		return implode(', ', $columns);	
 	}

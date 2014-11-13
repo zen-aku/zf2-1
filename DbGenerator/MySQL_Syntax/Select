@@ -7,9 +7,11 @@ SELECT
     [SQL_CALC_FOUND_ROWS]
     select_expr [, select_expr ...]
         [FROM table_references
+            [PARTITION (partition_names)] 
+            [[AS] alias]
 
 JOIN:       [
-                [INNER | CROSS] JOIN table_factor [join_condition]
+                [INNER | CROSS] JOIN table_factor [PARTITION (partition_names)] [[AS] alias] [join_condition]
                 | STRAIGHT_JOIN table_factor
                 | STRAIGHT_JOIN table_factor ON conditional_expr
                 | {LEFT|RIGHT} [OUTER] JOIN table_reference join_condition
@@ -90,7 +92,10 @@ SELECT t1.name, t2.salary FROM employee AS t1, info AS t2
 SELECT t1.name, t2.salary FROM employee t1, info t2
   WHERE t1.name = t2.name;
 
-
+SELECT e.id AS 'Employee ID', CONCAT(e.fname, ' ', e.lname) AS Name, s.city AS City, d.name AS department
+    FROM employees PARTITION (p0) AS e
+    JOIN stores PARTITION (p1) AS s ON e.store_id=s.id
+    JOIN departments PARTITION (p0) AS d ON e.department_id=d.id;
 
 SELECT left_tbl.*
   FROM left_tbl LEFT JOIN right_tbl ON left_tbl.id = right_tbl.id
@@ -194,3 +199,25 @@ join может быть несколько, поэтому надо созда�
 в котором будут храниться и собираться встроку объекты класса Join
 
 Объекты Тable и JoinСontainer надо передавать в Columns
+
+SELECT * FROM table1 
+    JOIN table2 ON table1.id=table2.id;
+SELECT * FROM table1 
+    JOIN table2 USING (id);
+
+SELECT * FROM table1 
+    JOIN table2 ON table1.id=table2.id
+    JOIN table2 USING (id);
+
+
+Join:
+    protected $keywords = array(
+        'join'=> self::TYPE_JOIN,
+        'table'=> null,
+        'on'=> null,
+        'using'=> null,		
+);	
+
+InnerJoin extends Join:
+    const TYPE_JOIN = 'INNER JOIN';
+Или передавать через конструктор тип джойна.

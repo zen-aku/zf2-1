@@ -20,6 +20,11 @@ class Table extends AbstractKeyword {
      * @var string
      */
     protected $schema;
+	
+	/**
+     * @var string
+     */
+	protected $sqlStringPartition = '';
 
     /**
      * @param string|array $table : 'table', ['table'], ['alias' => 'table']
@@ -72,6 +77,15 @@ class Table extends AbstractKeyword {
 	}
 	
 	/**
+	 * "PARTITION (`p1`, `p2`)"
+	 * @param Partition $partition 
+	 */
+	public function setPartition(Partition $partition) {
+		$this->sqlStringPartition = ' ' . $partition->getSqlString();
+		return $this;
+	}
+	
+	/**
 	 * @return string  "`schema`.`table`"
 	 */
 	public function getQuoteSchemaTable() {
@@ -92,7 +106,7 @@ class Table extends AbstractKeyword {
 	 */	
 	public function getSqlString(AdapterInterface $adapter = null) {
 		$alias = $this->alias ?  ' AS ' . $this->quoteIdentifier($this->alias) : '';
-		return $this->getQuoteSchemaTable() . $alias;	
+		return $this->getQuoteSchemaTable() . $this->sqlStringPartition . $alias;	
 	}
 	
 }

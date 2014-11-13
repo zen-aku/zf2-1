@@ -234,9 +234,10 @@ class IndexController extends AbstractActionController {
 		// SELECT `u`.`id`, `u`.`age`, `u`.`name` AS `nm` FROM `test`.`users` AS `u`
 		$select = new Sql\Select(['u' => 'users'], 'test');
 		$select->columns(['id', 'age', 'nm'=>'name']);
-		
-		//$result = $select->getSqlString($this->adapter);
-		$result = $this->adapter->execSqlObject($select);
+		$select->partition(['p1', 'p2']);
+				
+		$result = $select->getSqlString($this->adapter);
+		//$result = $this->adapter->execSqlObject($select);
 		
     	return new ViewModel(
 			array(
