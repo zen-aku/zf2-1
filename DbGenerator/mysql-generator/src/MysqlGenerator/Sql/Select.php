@@ -15,7 +15,7 @@ class Select extends AbstractDml {
 		'select'	=> self::SELECT,
 		'columns'	=> null,
 		'from'		=> null,
-		//'join'		=> null,
+		'join'		=> null,
 		
 	);	
 	
@@ -43,8 +43,13 @@ class Select extends AbstractDml {
 		if ($this->partition) {
 			$from->setPartition($this->partition);
 		}
-		if ($columns = $this->keywords['columns'] &&  $columns->hasPrefixColumns()) {		
+		if ($columns = $this->keywords['columns'] && $columns->hasPrefixColumns()) {		
 			$columns->setQuotePrefix($from->getQuotePrefix());
+		}
+		if ($joinContainer = $this->keywords['join']) {
+			foreach ($joinCntainer as $join) {
+				$join->setTableRef($this->keywords['from']);
+			}
 		}
 		return $this;
 	}
@@ -79,6 +84,19 @@ class Select extends AbstractDml {
 		}
 		return $this;
     }
+	
+	/**
+	 * @param  array | Keyword\Join $join
+	 */
+	public function join( $join ) {
+		if (!$this->keywords['join']) $this->keywords['join'] = new Keyword\JoinContainer();
+		
+		if ($join instanceof Keyword\Join) {
+			$join->setTableRef($this->keywords['from']);
+			$this->keywords['join']->addJoin($join);	
+		}
+		return $this;
+	}
 	
 		
 }

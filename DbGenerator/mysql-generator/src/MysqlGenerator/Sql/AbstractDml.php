@@ -4,7 +4,7 @@ namespace MysqlGenerator\Sql;
 use MysqlGenerator\Adapter\StatementContainerInterface;
 use MysqlGenerator\Adapter\AdapterInterface;
 
-abstract class AbstractDml  implements SqlInterface, PreparableSqlInterface {
+abstract class AbstractDml implements SqlInterface, PreparableSqlInterface {
 	
 	/**
      * @param AdapterInterface $adapter

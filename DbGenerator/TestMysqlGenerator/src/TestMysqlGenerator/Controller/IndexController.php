@@ -235,7 +235,20 @@ class IndexController extends AbstractActionController {
 		$select = new Sql\Select(['u' => 'users'], 'test');
 		$select->columns(['id', 'age', 'nm'=>'name']);
 		$select->partition(['p1', 'p2']);
-				
+		
+		$join = new Sql\Keyword\Join(['addr' => 'address'], 'test');
+		$join
+			->partition(['p0'])
+			->type(['natural', 'outer', 'right', 'join'])
+			//->type(['straight_join']);
+			->on(['id' => 'id']);
+		
+		$select->join($join);
+		
+		
+		
+		
+		
 		$result = $select->getSqlString($this->adapter);
 		//$result = $this->adapter->execSqlObject($select);
 		

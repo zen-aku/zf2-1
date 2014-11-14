@@ -221,3 +221,12 @@ Join:
 InnerJoin extends Join:
     const TYPE_JOIN = 'INNER JOIN';
 Или передавать через конструктор тип джойна.
+
+
+SELECT * FROM t1 
+    LEFT JOIN (t2, t3, t4) ON (t2.a=t1.a AND t3.b=t1.b AND t4.c=t1.c)
+Это то же самое что и :
+SELECT * FROM t1 
+    LEFT JOIN t2 ON t2.a=t1.a
+    LEFT JOIN t3 ON t3.b=t1.b
+    LEFT JOIN t4 ON t4.c=t1.c
