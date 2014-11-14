@@ -30,13 +30,13 @@ class On extends AbstractKeyword {
 	 * 'table1.id = table2.id and table1.age < table2.age'
 	 * @param string | array | Expression $conditionalExpr
 	 */
-	public function __construct($conditionalExpr) {
-		if ( is_array($conditionalExpr)) {			
-			if (!is_string(key($conditionalExpr)) || count($conditionalExpr) !== 1) {
-				throw new InvalidArgumentException('Invalid argument Join::on() or On::__construct()');
-			}
+	public function __construct($conditionalExpr) {	
+		if( !is_string($conditionalExpr) && !is_array($conditionalExpr) ) {
+			throw new InvalidArgumentException('Invalid argument Join::on() or On::__construct(). Argument must be string or array or Expression');	
 		}
-		
+		elseif ( is_array($conditionalExpr) && (!is_string(key($conditionalExpr)) || count($conditionalExpr) !== 1) ) {
+			throw new InvalidArgumentException('Invalid argument Join::on() or On::__construct(). Join::on() or On::__construct() expects argument as an array is a single element associative array');	
+		}	
 		$this->conditionalExpr = $conditionalExpr;
 	}
 
@@ -58,7 +58,6 @@ class On extends AbstractKeyword {
 		return $this;
 	}
 	
-
 	/**
 	 * 
 	 * @return On
@@ -72,6 +71,7 @@ class On extends AbstractKeyword {
 			
 			$columnTableJoin = $this->quoteIdentifier(current($this->conditionalExpr));
 			$columnTableJoin = $this->prefixTableJoin ? $this->prefixTableJoin . $columnTableJoin : $columnTableJoin;    
+			
 			$stringOn =  $columnTableRef . ' = ' . $columnTableJoin;
 		}		
 		elseif ( is_string($this->conditionalExpr) ) {	

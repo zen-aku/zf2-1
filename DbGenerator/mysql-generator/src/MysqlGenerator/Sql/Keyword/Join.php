@@ -151,12 +151,19 @@ class Join extends AbstractKeyword {
      * @return Join
      */
     public function columns(array $columns, $hasPrefixColumns = true) {
-        $this->columns = new Keyword\SelectColumns($columns, $hasPrefixColumns);		
+        $this->columns = new SelectColumns($columns, $hasPrefixColumns);		
 		if ($this->keywords['table'] && $hasPrefixColumns) {
 			$this->columns->setQuotePrefix($this->keywords['table']->getQuotePrefix());
 		}
 		return $this;
     }
+	
+	/**
+	 * @return string
+	 */
+	public function getQuoteColumnsJoin() {
+		return $this->columns ? $this->columns->getSqlString() : '';
+	}
 	
 	/**
 	 * ['columnTableRef'=>'columnTableJoin'] без префиксов!!!: ['id' => 'id']
@@ -165,9 +172,9 @@ class Join extends AbstractKeyword {
 	 * @return Join
 	 */
 	public function on($conditionalExpr) {	
-		$this->keywords['on'] = new On($conditionalExpr);
-		$this->keywords['on']->setPrefixTableRef($this->quotePrefixTableRef);
-		$this->keywords['on']->setPrefixTableJoin($this->keywords['table']->getQuotePrefix());
+		$this->keywords['on'] = (new On($conditionalExpr))
+			->setPrefixTableRef($this->quotePrefixTableRef)
+			->setPrefixTableJoin($this->keywords['table']->getQuotePrefix());
 		return $this;
 	}
 	

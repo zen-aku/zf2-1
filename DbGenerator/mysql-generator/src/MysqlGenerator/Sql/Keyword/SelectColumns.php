@@ -56,6 +56,7 @@ class SelectColumns extends AbstractKeyword {
 	public function getSqlString(AdapterInterface $adapter = null) {	
 		$columns = [];
 		foreach ($this->columns as $keyAlias => $column) {
+			$col = null;
 			if ($column === self::SQL_STAR) {
 				$col = self::SQL_STAR;
 			}

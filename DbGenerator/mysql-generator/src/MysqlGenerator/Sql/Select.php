@@ -14,6 +14,7 @@ class Select extends AbstractDml {
 	protected $keywords = array(
 		'select'	=> self::SELECT,
 		'columns'	=> null,
+		'joinColumns'=> null,
 		'from'		=> null,
 		'join'		=> null,
 		
@@ -86,14 +87,19 @@ class Select extends AbstractDml {
     }
 	
 	/**
-	 * @param  array | Keyword\Join $join
+	 * @param Keyword\Join $join
 	 */
 	public function join( $join ) {
 		if (!$this->keywords['join']) $this->keywords['join'] = new Keyword\JoinContainer();
 		
 		if ($join instanceof Keyword\Join) {
 			$join->setTableRef($this->keywords['from']);
-			$this->keywords['join']->addJoin($join);	
+			$this->keywords['join']->addJoin($join);
+			
+			$str = $join->getQuoteColumnsJoin();
+			if ($str && $this->keywords['columns']) {
+				$this->keywords['joinColumns'] .= ', ' . $str;	
+			}
 		}
 		return $this;
 	}
