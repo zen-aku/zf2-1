@@ -233,16 +233,18 @@ class IndexController extends AbstractActionController {
 		/////
 		// SELECT `u`.`id`, `u`.`age`, `u`.`name` AS `nm` FROM `test`.`users` AS `u`
 		$select = new Sql\Select(['u' => 'users'], 'test');
-		$select->columns(['id', 'age', 'nm'=>'name']);
+		$select->columns(['id', 'a'=>'age', 'nm'=>'name']);
 		$select->partition(['p1', 'p2']);
 		
 		$join = new Sql\Keyword\Join(['addr' => 'address'], 'test');
 		$join
 			->partition(['p0'])
 			->type(['natural', 'outer', 'right', 'join'])
-			//->type(['straight_join']);
-			->on(['id' => 'id']);
-		
+			//->type(['straight_join'])
+			->on(['id' => 'users_id'])
+			//->on('address.users_id = users.id or address.age = users.age')
+			->columns(['city', 'country'])	
+		;
 		$select->join($join);
 		
 		
