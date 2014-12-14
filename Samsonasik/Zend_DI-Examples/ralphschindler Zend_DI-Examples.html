@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)https://github.com/ralphschindler/Zend_DI-Examples -->
+<html lang="en" class=""><head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# object: http://ogp.me/ns/object# article: http://ogp.me/ns/article# profile: http://ogp.me/ns/profile#"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Language" content="en">
+    
+    
+    <title>ralphschindler/Zend_DI-Examples</title>
+    <link rel="search" type="application/opensearchdescription+xml" href="https://github.com/opensearch.xml" title="GitHub">
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
+    <link rel="apple-touch-icon" sizes="57x57" href="https://github.com/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="https://github.com/apple-touch-icon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="https://github.com/apple-touch-icon-144.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="https://github.com/apple-touch-icon-144.png">
+    <meta property="fb:app_id" content="1401488693436528">
+
+      <meta content="@github" name="twitter:site"><meta content="summary" name="twitter:card"><meta content="ralphschindler/Zend_DI-Examples" name="twitter:title"><meta content="Contribute to Zend_DI-Examples development by creating an account on GitHub." name="twitter:description"><meta content="https://avatars1.githubusercontent.com/u/76674?v=3&amp;s=400" name="twitter:image:src">
+<meta content="GitHub" property="og:site_name"><meta content="object" property="og:type"><meta content="https://avatars1.githubusercontent.com/u/76674?v=3&amp;s=400" property="og:image"><meta content="ralphschindler/Zend_DI-Examples" property="og:title"><meta content="https://github.com/ralphschindler/Zend_DI-Examples" property="og:url"><meta content="Contribute to Zend_DI-Examples development by creating an account on GitHub." property="og:description">
+
+      <meta name="browser-stats-url" content="/_stats">
+    <link rel="assets" href="https://assets-cdn.github.com/">
+    <link rel="conduit-xhr" href="https://ghconduit.com:25035/">
+    <link rel="xhr-socket" href="https://github.com/_sockets">
+    <meta name="pjax-timeout" content="1000">
+    <link rel="sudo-modal" href="https://github.com/sessions/sudo_modal">
+
+    <meta name="msapplication-TileImage" content="/windows-tile.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    
+      <meta name="google-analytics" content="UA-3769691-2">
+
+    <meta content="collector.githubapp.com" name="octolytics-host"><meta content="collector-cdn.github.com" name="octolytics-script-host"><meta content="github" name="octolytics-app-id"><meta content="5D7D310A:09C1:1CA6A7C:548CA1F3" name="octolytics-dimension-request_id"><meta content="7964729" name="octolytics-actor-id"><meta content="algerd" name="octolytics-actor-login"><meta content="aeaf5454c2a73f8cd1d28954e69b7cac5953d1b5ff94db24cffaadf31b9b5867" name="octolytics-actor-hash">
+    
+    <meta content="Rails, view, files#disambiguate" name="analytics-event">
+
+    
+    
+    <link rel="icon" type="image/x-icon" href="https://assets-cdn.github.com/favicon.ico">
+
+
+    <meta content="authenticity_token" name="csrf-param">
+<meta content="8Y16xYnjLzP6nX0f2KS8dfkGtp+HxkQC8e5LOuBAHOUp/KwxslstA5LitMIRW0oh2lB3qlLj4s3aAeDynvFONA==" name="csrf-token">
+
+    <link href="./ralphschindler Zend_DI-Examples_files/github-c7f434a471766a748d862b4cb294526acd6901321d901cc64028f53af8490603.css" media="all" rel="stylesheet" type="text/css">
+    <link href="./ralphschindler Zend_DI-Examples_files/github2-761398b51b4a87682bde8f8b3479da06f8bde788a3fae6fb10b018a384748cf0.css" media="all" rel="stylesheet" type="text/css">
+    
+    
+
+
+    <meta http-equiv="x-pjax-version" content="52744ce9703c979de4f8f2f444b85ff4">
+
+      
+  <meta name="description" content="Contribute to Zend_DI-Examples development by creating an account on GitHub.">
+  <meta name="go-import" content="github.com/ralphschindler/Zend_DI-Examples git https://github.com/ralphschindler/Zend_DI-Examples.git">
+
+  <meta content="76674" name="octolytics-dimension-user_id"><meta content="ralphschindler" name="octolytics-dimension-user_login"><meta content="2607075" name="octolytics-dimension-repository_id"><meta content="ralphschindler/Zend_DI-Examples" name="octolytics-dimension-repository_nwo"><meta content="true" name="octolytics-dimension-repository_public"><meta content="false" name="octolytics-dimension-repository_is_fork"><meta content="2607075" name="octolytics-dimension-repository_network_root_id"><meta content="ralphschindler/Zend_DI-Examples" name="octolytics-dimension-repository_network_root_nwo">
+  <link href="https://github.com/ralphschindler/Zend_DI-Examples/commits/master.atom" rel="alternate" title="Recent Commits to Zend_DI-Examples:master" type="application/atom+xml">
+
+  <script type="text/javascript" async="" src="./ralphschindler Zend_DI-Examples_files/api.js"></script><meta name="selected-link" value="repo_source" data-pjax-transient="true"></head>
+
+
+  <body class="logged_in  env-production windows vis-public" cz-shortcut-listen="true">
+    <a href="https://github.com/ralphschindler/Zend_DI-Examples#start-of-content" tabindex="1" class="accessibility-aid js-skip-to-content">Skip to content</a>
+    <div class="wrapper">
+      
+      
+      
+      
+
+
+      <div class="header header-logged-in true" role="banner">
+  <div class="container clearfix">
+
+    <a class="header-logo-invertocat" href="https://github.com/" data-hotkey="g d" aria-label="Homepage" ga-data-click="Header, go to dashboard, icon:logo">
+  <span class="mega-octicon octicon-mark-github"></span>
+</a>
+
+
+      <div class="site-search repo-scope js-site-search" role="search">
+          <form accept-charset="UTF-8" action="https://github.com/ralphschindler/Zend_DI-Examples/search" class="js-site-search-form" data-global-search-url="/search" data-repo-search-url="/ralphschindler/Zend_DI-Examples/search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+  <input type="text" class="js-site-search-field is-clearable" data-hotkey="s" name="q" placeholder="Search" data-global-scope-placeholder="Search GitHub" data-repo-scope-placeholder="Search" tabindex="1" autocapitalize="off">
+  <div class="scope-badge">This repository</div>
+</form>
+      </div>
+      <ul class="header-nav left" role="navigation">
+        <li class="header-nav-item explore">
+          <a class="header-nav-link" href="https://github.com/explore" data-ga-click="Header, go to explore, text:explore">Explore</a>
+        </li>
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="https://gist.github.com/" data-ga-click="Header, go to gist, text:gist">Gist</a>
+          </li>
+          <li class="header-nav-item">
+            <a class="header-nav-link" href="https://github.com/blog" data-ga-click="Header, go to blog, text:blog">Blog</a>
+          </li>
+        <li class="header-nav-item">
+          <a class="header-nav-link" href="https://help.github.com/" data-ga-click="Header, go to help, text:help">Help</a>
+        </li>
+      </ul>
+
+    
+<ul class="header-nav user-nav right" id="user-links">
+  <li class="header-nav-item dropdown js-menu-container">
+    <a class="header-nav-link name" href="https://github.com/algerd" data-ga-click="Header, go to profile, text:username">
+      <img alt="Alexander" class="avatar" data-user="7964729" height="20" src="./ralphschindler Zend_DI-Examples_files/7964729" width="20">
+      <span class="css-truncate">
+        <span class="css-truncate-target">algerd</span>
+      </span>
+    </a>
+  </li>
+
+  <li class="header-nav-item dropdown js-menu-container">
+    <a class="header-nav-link js-menu-target tooltipped tooltipped-s" href="https://github.com/ralphschindler/Zend_DI-Examples#" aria-label="Create new..." data-ga-click="Header, create new, icon:add">
+      <span class="octicon octicon-plus"></span>
+      <span class="dropdown-caret"></span>
+    </a>
+
+    <div class="dropdown-menu-content js-menu-content">
+      
+<ul class="dropdown-menu">
+  <li>
+    <a href="https://github.com/new"><span class="octicon octicon-repo"></span> New repository</a>
+  </li>
+  <li>
+    <a href="https://github.com/organizations/new"><span class="octicon octicon-organization"></span> New organization</a>
+  </li>
+
+
+    <li class="dropdown-divider"></li>
+    <li class="dropdown-header">
+      <span title="ralphschindler/Zend_DI-Examples">This repository</span>
+    </li>
+      <li>
+        <a href="https://github.com/ralphschindler/Zend_DI-Examples/issues/new"><span class="octicon octicon-issue-opened"></span> New issue</a>
+      </li>
+</ul>
+
+    </div>
+  </li>
+
+  <li class="header-nav-item">
+        <a href="https://github.com/notifications" aria-label="You have no unread notifications" class="header-nav-link notification-indicator tooltipped tooltipped-s" data-ga-click="Header, go to notifications, icon:read" data-hotkey="g n">
+        <span class="mail-status all-read"></span>
+        <span class="octicon octicon-inbox"></span>
+</a>
+  </li>
+
+  <li class="header-nav-item">
+    <a class="header-nav-link tooltipped tooltipped-s" href="https://github.com/settings/profile" id="account_settings" aria-label="Settings" data-ga-click="Header, go to settings, icon:settings">
+      <span class="octicon octicon-gear"></span>
+    </a>
+  </li>
+
+  <li class="header-nav-item">
+    <form accept-charset="UTF-8" action="https://github.com/logout" class="logout-form" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"><input name="authenticity_token" type="hidden" value="T/ywDQiXDLTU4RHi/CN0mb68BZzyWr5YEERJmY4I/R6XVRxD7k7/xo6XOkseTXKhqGHsTJ5t445V/r7HgxoihA=="></div>
+      <button class="header-nav-link sign-out-button tooltipped tooltipped-s" aria-label="Sign out" data-ga-click="Header, sign out, icon:logout">
+        <span class="octicon octicon-sign-out"></span>
+      </button>
+</form>  </li>
+
+</ul>
+
+
+    
+  </div>
+</div>
+
+      
+
+        
+
+
+      <div id="start-of-content" class="accessibility-aid"></div>
+          <div class="site" itemscope="" itemtype="http://schema.org/WebPage">
+    <div id="js-flash-container"><div id="pjax-flash">
+  
+</div></div>
+    <div class="pagehead repohead instapaper_ignore readability-menu">
+      <div class="container">
+        
+<ul class="pagehead-actions">
+
+    <li class="subscription">
+      <form accept-charset="UTF-8" action="https://github.com/notifications/subscribe" class="js-social-container" data-autosubmit="true" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"><input name="authenticity_token" type="hidden" value="3Nxuq6OZIoYw4/zUDrbVBxRmqjkp7GdXkKiI3I/MGzjFRHbKorrDzKXQcJT+lzc0HKiLAcuKpFL5If21CcnaRA=="></div>  <input id="repository_id" name="repository_id" type="hidden" value="2607075">
+
+    <div class="select-menu js-menu-container js-select-menu">
+      <a class="social-count js-social-count" href="https://github.com/ralphschindler/Zend_DI-Examples/watchers">
+        8
+      </a>
+      <a href="https://github.com/ralphschindler/Zend_DI-Examples/subscription" class="minibutton select-menu-button with-count js-menu-target" role="button" tabindex="0" aria-haspopup="true">
+        <span class="js-select-button">
+          <span class="octicon octicon-eye"></span>
+          Watch
+        </span>
+      </a>
+
+      <div class="select-menu-modal-holder">
+        <div class="select-menu-modal subscription-menu-modal js-menu-content" aria-hidden="true">
+          <div class="select-menu-header">
+            <span class="select-menu-title">Notifications</span>
+            <span class="octicon octicon-x js-menu-close" role="button" aria-label="Close"></span>
+          </div> <!-- /.select-menu-header -->
+
+          <div class="select-menu-list js-navigation-container" role="menu">
+
+            <div class="select-menu-item js-navigation-item selected" role="menuitem" tabindex="0">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <div class="select-menu-item-text">
+                <input checked="checked" id="do_included" name="do" type="radio" value="included">
+                <h4>Not watching</h4>
+                <span class="description">Be notified when participating or @mentioned.</span>
+                <span class="js-select-button-text hidden-select-button-text">
+                  <span class="octicon octicon-eye"></span>
+                  Watch
+                </span>
+              </div>
+            </div> <!-- /.select-menu-item -->
+
+            <div class="select-menu-item js-navigation-item " role="menuitem" tabindex="0">
+              <span class="select-menu-item-icon octicon octicon octicon-check"></span>
+              <div class="select-menu-item-text">
+                <input id="do_subscribed" name="do" type="radio" value="subscribed">
+                <h4>Watching</h4>
+                <span class="description">Be notified of all conversations.</span>
+                <span class="js-select-button-text hidden-select-button-text">
+                  <span class="octicon octicon-eye"></span>
+                  Unwatch
+                </span>
+              </div>
+            </div> <!-- /.select-menu-item -->
+
+            <div class="select-menu-item js-navigation-item " role="menuitem" tabindex="0">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <div class="select-menu-item-text">
+                <input id="do_ignore" name="do" type="radio" value="ignore">
+                <h4>Ignoring</h4>
+                <span class="description">Never be notified.</span>
+                <span class="js-select-button-text hidden-select-button-text">
+                  <span class="octicon octicon-mute"></span>
+                  Stop ignoring
+                </span>
+              </div>
+            </div> <!-- /.select-menu-item -->
+
+          </div> <!-- /.select-menu-list -->
+
+        </div> <!-- /.select-menu-modal -->
+      </div> <!-- /.select-menu-modal-holder -->
+    </div> <!-- /.select-menu -->
+
+</form>
+    </li>
+
+  <li>
+    
+  <div class="js-toggler-container js-social-container starring-container ">
+
+    <form accept-charset="UTF-8" action="https://github.com/ralphschindler/Zend_DI-Examples/unstar" class="js-toggler-form starred js-unstar-button" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"><input name="authenticity_token" type="hidden" value="HjTw6dnG86NZuTbTxjHJxwF94dZPwiYgfOeUHDZMXLKu7GKW9WDAVxf9gXtORWObU+bDtjhE3hH3AmUAQrjxKg=="></div>
+      <button class="minibutton with-count js-toggler-target star-button" aria-label="Unstar this repository" title="Unstar ralphschindler/Zend_DI-Examples">
+        <span class="octicon octicon-star"></span>
+        Unstar
+      </button>
+        <a class="social-count js-social-count" href="https://github.com/ralphschindler/Zend_DI-Examples/stargazers">
+          61
+        </a>
+</form>
+    <form accept-charset="UTF-8" action="https://github.com/ralphschindler/Zend_DI-Examples/star" class="js-toggler-form unstarred js-star-button" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"><input name="authenticity_token" type="hidden" value="ozBZxOaTNiwy4DOY9DFKnZsB+UsQKjJ24YCGjNLQSg8IsMaSEr41ybqOsuHd82ZDlODZNzdSP4z/ZUctB360UQ=="></div>
+      <button class="minibutton with-count js-toggler-target star-button" aria-label="Star this repository" title="Star ralphschindler/Zend_DI-Examples">
+        <span class="octicon octicon-star"></span>
+        Star
+      </button>
+        <a class="social-count js-social-count" href="https://github.com/ralphschindler/Zend_DI-Examples/stargazers">
+          61
+        </a>
+</form>  </div>
+
+  </li>
+
+
+        <li>
+          <a href="https://github.com/ralphschindler/Zend_DI-Examples/fork" class="minibutton with-count js-toggler-target fork-button tooltipped-n" title="Fork your own copy of ralphschindler/Zend_DI-Examples to your account" aria-label="Fork your own copy of ralphschindler/Zend_DI-Examples to your account" rel="nofollow" data-method="post">
+            <span class="octicon octicon-repo-forked"></span>
+            Fork
+          </a>
+          <a href="https://github.com/ralphschindler/Zend_DI-Examples/network" class="social-count">23</a>
+        </li>
+
+</ul>
+
+        <h1 itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb" class="entry-title public">
+          <span class="mega-octicon octicon-repo"></span>
+          <span class="author"><a href="https://github.com/ralphschindler" class="url fn" itemprop="url" rel="author"><span itemprop="title">ralphschindler</span></a></span><!--
+       --><span class="path-divider">/</span><!--
+       --><strong><a href="./ralphschindler Zend_DI-Examples_files/ralphschindler Zend_DI-Examples.html" class="js-current-repository" data-pjax="#js-repo-pjax-container">Zend_DI-Examples</a></strong>
+
+          <span class="page-context-loader">
+            <img alt="" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </span>
+
+        </h1>
+      </div><!-- /.container -->
+    </div><!-- /.repohead -->
+
+    <div class="container">
+      <div class="repository-with-sidebar repo-container new-discussion-timeline with-full-navigation">
+        <div class="repository-sidebar clearfix">
+            
+<nav class="sunken-menu repo-nav js-repo-nav js-sidenav-container-pjax js-octicon-loaders" role="navigation" data-pjax="#js-repo-pjax-container" data-issue-count-url="/ralphschindler/Zend_DI-Examples/issues/counts">
+  <ul class="sunken-menu-group">
+    <li class="tooltipped tooltipped-w" aria-label="Code">
+      <a href="./ralphschindler Zend_DI-Examples_files/ralphschindler Zend_DI-Examples.html" aria-label="Code" class="js-selected-navigation-item sunken-menu-item selected" data-hotkey="g c" data-selected-links="repo_source repo_downloads repo_commits repo_releases repo_tags repo_branches /ralphschindler/Zend_DI-Examples">
+        <span class="octicon octicon-code"></span> <span class="full-word">Code</span>
+        <img alt="" class="mini-loader" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+</a>    </li>
+
+      <li class="tooltipped tooltipped-w" aria-label="Issues">
+        <a href="https://github.com/ralphschindler/Zend_DI-Examples/issues" aria-label="Issues" class="js-selected-navigation-item sunken-menu-item" data-hotkey="g i" data-selected-links="repo_issues repo_labels repo_milestones /ralphschindler/Zend_DI-Examples/issues">
+          <span class="octicon octicon-issue-opened"></span> <span class="full-word">Issues</span>
+          <span class="counter">1</span>
+
+          <img alt="" class="mini-loader" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+</a>      </li>
+
+    <li class="tooltipped tooltipped-w" aria-label="Pull Requests">
+      <a href="https://github.com/ralphschindler/Zend_DI-Examples/pulls" aria-label="Pull Requests" class="js-selected-navigation-item sunken-menu-item" data-hotkey="g p" data-selected-links="repo_pulls /ralphschindler/Zend_DI-Examples/pulls">
+          <span class="octicon octicon-git-pull-request"></span> <span class="full-word">Pull Requests</span>
+          <span class="counter">0</span>
+
+          <img alt="" class="mini-loader" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+</a>    </li>
+
+
+      <li class="tooltipped tooltipped-w" aria-label="Wiki">
+        <a href="https://github.com/ralphschindler/Zend_DI-Examples/wiki" aria-label="Wiki" class="js-selected-navigation-item sunken-menu-item" data-hotkey="g w" data-selected-links="repo_wiki /ralphschindler/Zend_DI-Examples/wiki">
+          <span class="octicon octicon-book"></span> <span class="full-word">Wiki</span>
+          <img alt="" class="mini-loader" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+</a>      </li>
+  </ul>
+  <div class="sunken-menu-separator"></div>
+  <ul class="sunken-menu-group">
+
+    <li class="tooltipped tooltipped-w" aria-label="Pulse">
+      <a href="https://github.com/ralphschindler/Zend_DI-Examples/pulse" aria-label="Pulse" class="js-selected-navigation-item sunken-menu-item" data-selected-links="pulse /ralphschindler/Zend_DI-Examples/pulse">
+        <span class="octicon octicon-pulse"></span> <span class="full-word">Pulse</span>
+        <img alt="" class="mini-loader" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+</a>    </li>
+
+    <li class="tooltipped tooltipped-w" aria-label="Graphs">
+      <a href="https://github.com/ralphschindler/Zend_DI-Examples/graphs" aria-label="Graphs" class="js-selected-navigation-item sunken-menu-item" data-selected-links="repo_graphs repo_contributors /ralphschindler/Zend_DI-Examples/graphs">
+        <span class="octicon octicon-graph"></span> <span class="full-word">Graphs</span>
+        <img alt="" class="mini-loader" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+</a>    </li>
+  </ul>
+
+
+</nav>
+
+              <div class="only-with-full-nav">
+                
+  
+<div class="clone-url open" data-protocol-type="http" data-url="/users/set_protocol?protocol_selector=http&amp;protocol_type=clone">
+  <h3><span class="text-emphasized">HTTPS</span> clone URL</h3>
+  <div class="input-group js-zeroclipboard-container">
+    <input type="text" class="input-mini input-monospace js-url-field js-zeroclipboard-target" value="https://github.com/ralphschindler/Zend_DI-Examples.git" readonly="readonly">
+    <span class="input-group-button">
+      <button aria-label="Copy to clipboard" class="js-zeroclipboard minibutton zeroclipboard-button zeroclipboard-is-hover" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </span>
+  </div>
+</div>
+
+  
+<div class="clone-url " data-protocol-type="ssh" data-url="/users/set_protocol?protocol_selector=ssh&amp;protocol_type=clone">
+  <h3><span class="text-emphasized">SSH</span> clone URL</h3>
+  <div class="input-group js-zeroclipboard-container">
+    <input type="text" class="input-mini input-monospace js-url-field js-zeroclipboard-target" value="git@github.com:ralphschindler/Zend_DI-Examples.git" readonly="readonly">
+    <span class="input-group-button">
+      <button aria-label="Copy to clipboard" class="js-zeroclipboard minibutton zeroclipboard-button" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </span>
+  </div>
+</div>
+
+  
+<div class="clone-url " data-protocol-type="subversion" data-url="/users/set_protocol?protocol_selector=subversion&amp;protocol_type=clone">
+  <h3><span class="text-emphasized">Subversion</span> checkout URL</h3>
+  <div class="input-group js-zeroclipboard-container">
+    <input type="text" class="input-mini input-monospace js-url-field js-zeroclipboard-target" value="https://github.com/ralphschindler/Zend_DI-Examples" readonly="readonly">
+    <span class="input-group-button">
+      <button aria-label="Copy to clipboard" class="js-zeroclipboard minibutton zeroclipboard-button" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+    </span>
+  </div>
+</div>
+
+
+
+<p class="clone-options">You can clone with
+  <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="js-clone-selector" data-protocol="http">HTTPS</a>, <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="js-clone-selector" data-protocol="ssh">SSH</a>, or <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="js-clone-selector" data-protocol="subversion">Subversion</a>.
+  <a href="https://help.github.com/articles/which-remote-url-should-i-use" class="help tooltipped tooltipped-n" aria-label="Get help on which URL is right for you.">
+    <span class="octicon octicon-question"></span>
+  </a>
+</p>
+
+
+  <a href="github-windows://openRepo/https://github.com/ralphschindler/Zend_DI-Examples" class="minibutton sidebar-button" title="Save ralphschindler/Zend_DI-Examples to your computer and use it in GitHub Desktop." aria-label="Save ralphschindler/Zend_DI-Examples to your computer and use it in GitHub Desktop.">
+    <span class="octicon octicon-device-desktop"></span>
+    Clone in Desktop
+  </a>
+
+                <a href="https://github.com/ralphschindler/Zend_DI-Examples/archive/master.zip" class="minibutton sidebar-button" aria-label="Download the contents of ralphschindler/Zend_DI-Examples as a zip file" title="Download the contents of ralphschindler/Zend_DI-Examples as a zip file" rel="nofollow">
+                  <span class="octicon octicon-cloud-download"></span>
+                  Download ZIP
+                </a>
+              </div>
+        </div><!-- /.repository-sidebar -->
+
+        <div id="js-repo-pjax-container" class="repository-content context-loader-container" data-pjax-container="">
+          
+<span id="js-show-full-navigation"></span>
+
+<div class="repository-meta js-details-container ">
+
+
+
+</div>
+
+<div class="overall-summary overall-summary-bottomless">
+
+  <div class="stats-switcher-viewport js-stats-switcher-viewport">
+    <div class="stats-switcher-wrapper">
+    <ul class="numbers-summary">
+      <li class="commits">
+        <a data-pjax="" href="https://github.com/ralphschindler/Zend_DI-Examples/commits/master">
+            <span class="octicon octicon-history"></span>
+            <span class="num text-emphasized">
+              17
+            </span>
+            commits
+        </a>
+      </li>
+      <li>
+        <a data-pjax="" href="https://github.com/ralphschindler/Zend_DI-Examples/branches">
+          <span class="octicon octicon-git-branch"></span>
+          <span class="num text-emphasized">
+            1
+          </span>
+          branch
+        </a>
+      </li>
+
+      <li>
+        <a data-pjax="" href="https://github.com/ralphschindler/Zend_DI-Examples/releases">
+          <span class="octicon octicon-tag"></span>
+          <span class="num text-emphasized">
+            0
+          </span>
+          releases
+        </a>
+      </li>
+
+      <li>
+        
+  <a href="https://github.com/ralphschindler/Zend_DI-Examples/graphs/contributors">
+    <span class="octicon octicon-organization"></span>
+    <span class="num text-emphasized">
+      0
+    </span>
+    contributors
+  </a>
+      </li>
+    </ul>
+
+      <div class="repository-lang-stats">
+        <ol class="repository-lang-stats-numbers">
+          <li>
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/search?l=php">
+                <span class="color-block language-color" style="background-color:#4F5D95;"></span>
+                <span class="lang">PHP</span>
+                <span class="percent">100%</span>
+              </a>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <div class="tooltipped tooltipped-s" aria-label="Show language statistics">
+    <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="repository-lang-stats-graph js-toggle-lang-stats" style="background-color:#4F5D95">
+  <span class="language-color" style="width:100%; background-color:#4F5D95;" itemprop="keywords">PHP</span>
+    </a>
+  </div>
+
+
+
+<div class="file-navigation in-mid-page">
+  <a href="https://github.com/ralphschindler/Zend_DI-Examples/find/master" class="js-show-file-finder minibutton empty-icon tooltipped tooltipped-s right" data-pjax="" data-hotkey="t" aria-label="Quickly jump between files">
+    <span class="octicon octicon-list-unordered"></span>
+  </a>
+    <a href="https://github.com/ralphschindler/Zend_DI-Examples/compare" aria-label="Compare, review, create a pull request" class="minibutton primary tooltipped tooltipped-s left compare-button" data-pjax="">
+      <span class="octicon octicon-git-compare"></span>
+    </a>
+
+  
+<div class="select-menu js-menu-container js-select-menu left">
+  <span class="minibutton select-menu-button js-menu-target css-truncate" data-hotkey="w" data-master-branch="master" data-ref="master" title="master" role="button" aria-label="Switch branches or tags" tabindex="0" aria-haspopup="true">
+    <span class="octicon octicon-git-branch"></span>
+    <i>branch:</i>
+    <span class="js-select-button css-truncate-target">master</span>
+  </span>
+
+  <div class="select-menu-modal-holder js-menu-content js-navigation-container" data-pjax="" aria-hidden="true">
+
+    <div class="select-menu-modal">
+      <div class="select-menu-header">
+        <span class="select-menu-title">Switch branches/tags</span>
+        <span class="octicon octicon-x js-menu-close" role="button" aria-label="Close"></span>
+      </div> <!-- /.select-menu-header -->
+
+      <div class="select-menu-filters">
+        <div class="select-menu-text-filter">
+          <input type="text" aria-label="Filter branches/tags" id="context-commitish-filter-field" class="js-filterable-field js-navigation-enable" placeholder="Filter branches/tags">
+        </div>
+        <div class="select-menu-tabs">
+          <ul>
+            <li class="select-menu-tab">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples#" data-tab-filter="branches" class="js-select-menu-tab">Branches</a>
+            </li>
+            <li class="select-menu-tab">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples#" data-tab-filter="tags" class="js-select-menu-tab">Tags</a>
+            </li>
+          </ul>
+        </div><!-- /.select-menu-tabs -->
+      </div><!-- /.select-menu-filters -->
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="branches">
+
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+            <div class="select-menu-item js-navigation-item selected">
+              <span class="select-menu-item-icon octicon octicon-check"></span>
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/tree/master" data-name="master" data-skip-pjax="true" rel="nofollow" class="js-navigation-open select-menu-item-text css-truncate-target" title="master">master</a>
+            </div> <!-- /.select-menu-item -->
+        </div>
+
+          <div class="select-menu-no-results">Nothing to show</div>
+      </div> <!-- /.select-menu-list -->
+
+      <div class="select-menu-list select-menu-tab-bucket js-select-menu-tab-bucket" data-tab-filter="tags">
+        <div data-filterable-for="context-commitish-filter-field" data-filterable-type="substring">
+
+
+        </div>
+
+        <div class="select-menu-no-results">Nothing to show</div>
+      </div> <!-- /.select-menu-list -->
+
+    </div> <!-- /.select-menu-modal -->
+  </div> <!-- /.select-menu-modal-holder -->
+</div> <!-- /.select-menu -->
+
+
+
+  <div class="breadcrumb"><span class="repo-root js-repo-root"><span itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb"><a href="./ralphschindler Zend_DI-Examples_files/ralphschindler Zend_DI-Examples.html" class="" data-branch="master" data-direction="back" data-pjax="true" itemscope="url"><span itemprop="title">Zend_DI-Examples</span></a></span></span><span class="separator">/</span><form action="https://github.com/ralphschindler/Zend_DI-Examples/new/master" aria-label="Fork this project and create a new file" class="js-new-blob-form tooltipped tooltipped-e new-file-link" method="post"><span aria-label="Fork this project and create a new file" class="js-new-blob-submit octicon octicon-plus" data-test-id="create-new-git-file" role="button"></span></form></div>
+</div>
+
+
+
+  
+  <div class="commit commit-tease js-details-container">
+    <p class="commit-title ">
+        <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/076f2b89b785fd73c5480392ec86f07d14e75085" class="message" data-pjax="true" title="Removed var_dumps()">Removed var_dumps()</a>
+        
+    </p>
+    <div class="commit-meta">
+      <button aria-label="Copy SHA" class="js-zeroclipboard zeroclipboard-link" data-clipboard-text="076f2b89b785fd73c5480392ec86f07d14e75085" data-copied-hint="Copied!" type="button"><span class="octicon octicon-clippy"></span></button>
+      <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/076f2b89b785fd73c5480392ec86f07d14e75085" class="sha-block" data-pjax="">latest commit <span class="sha">076f2b89b7</span></a>
+
+      <div class="authorship">
+        <img alt="" class="avatar" height="20" src="./ralphschindler Zend_DI-Examples_files/efbac446480b975348a691b310407492" width="20">
+        <span class="author-name"><span>Ralph Schindler</span></span>
+        authored <time class="updated" datetime="2012-04-18T19:37:27Z" is="relative-time" title="18 апр. 2012 г., 23:37 GMT+4">on 18 Apr 2012</time>
+
+      </div>
+    </div>
+  </div>
+
+  
+<div class="file-wrap">
+
+  <table class="files" data-pjax="">
+
+
+    <tbody>
+      <tr class="warning include-fragment-error">
+        <td class="icon"><span class="octicon octicon-alert"></span></td>
+        <td class="content" colspan="3">Failed to load latest commit information.</td>
+      </tr>
+
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-directory"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/tree/master/10" class="js-directory-link" id="d3d9446802a44259755d38e6d163e820-bc64e0cf5c14b09520503563734f7d3dbf552234" title="10">10</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/c005ddf87444d180ae5dfe2cdec11a0ae15627f3" class="message" data-pjax="true" title="First commit of use cases for Zend\Di">First commit of use cases for Zend\Di</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2011-10-06T05:57:05Z" is="time-ago" title="6 окт. 2011 г., 9:57 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-directory"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/tree/master/11" class="js-directory-link" id="6512bd43d9caa6e02c990b0a82652dca-b1e4f2bdecaeb1ab09659113f72c285f46b75cb7" title="11">11</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/069e939506a8df802a790e9cdfc2f78ead4c6a6a" class="message" data-pjax="true" title="Added use cases for compiler interface injection and annotation injection">Added use cases for compiler interface injection and annotation injec…</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2011-10-06T14:18:26Z" is="time-ago" title="6 окт. 2011 г., 18:18 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-directory"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/tree/master/12" class="js-directory-link" id="c20ad4d76fe97759aa27a0c99bff6710-b847dbdd086033c04feb290e788259795cbb3f17" title="12">12</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/069e939506a8df802a790e9cdfc2f78ead4c6a6a" class="message" data-pjax="true" title="Added use cases for compiler interface injection and annotation injection">Added use cases for compiler interface injection and annotation injec…</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2011-10-06T14:18:26Z" is="time-ago" title="6 окт. 2011 г., 18:18 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-directory"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/tree/master/includes" class="js-directory-link" id="bb2b21ef7774df8687ff02b0284505c6-63bdf1d1b4470d02d748176c2244b89b4c925a6a" title="includes">includes</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/b94bb58df9dae9ced478dde0d049741a8d280f00" class="message" data-pjax="true" title="Added example number 16 (Builder definition example)
+Added beta2 phars with include director for out-the-box runs.">Added example number 16 (Builder definition example)</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-01-09T21:18:59Z" is="time-ago" title="10 янв. 2012 г., 1:18 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/README.md" class="js-directory-link" id="04c6e90faac2675aa89e2176d2eec7d8-c02a51b41e7d2c97a011c9f59b7a4d317e9d6bf2" title="README.md">README.md</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/5407f92da24ae7cc864e0f1c2c497aa8b6578b53" class="message" data-pjax="true" title="Added absolute links to the README.md">Added absolute links to the README.md</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2011-11-01T22:03:30Z" is="time-ago" title="2 нояб. 2011 г., 2:03 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-01.php" class="js-directory-link" id="eccdffd55b738fe5a122fe06dbc567de-818fd36d81c41566d139035cf070d7f14ebbd06d" title="example-01.php">example-01.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-02.php" class="js-directory-link" id="17ba701d90be5ee430c3b592cdc4bdde-8f4951cc990008b68fe64670b86cdedab0454d33" title="example-02.php">example-02.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-03.php" class="js-directory-link" id="7143dd2d193027ac20c7cf0f783ddfdd-12a8621129adb01cf4ef0255a6c3ac21bcb1348e" title="example-03.php">example-03.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-04.php" class="js-directory-link" id="f407f842ad578080bf72e1a90e4ae7f3-a4de696e23051e3cedab291d16591153034b3d54" title="example-04.php">example-04.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-05.php" class="js-directory-link" id="15d68047beaf2bc2c5a1c1de8d7bb720-21dda5e7eaf703b2c2a467f384f5b6f196452726" title="example-05.php">example-05.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-06.php" class="js-directory-link" id="6c4ddc98574977051b257577e678bb63-be47e4784812d9ec2c00ad5c9ea93eaab277ac46" title="example-06.php">example-06.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-07.php" class="js-directory-link" id="cff6f3676ebf830fd3556abe24a096d7-49d1e19cb1656b6d3029f52c3fd412b7cc67173a" title="example-07.php">example-07.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-08.php" class="js-directory-link" id="0051021e61940b8e0c5f219a8ff6fb2f-aae1ca80e7796b9cb326f481378fb4a1657631bc" title="example-08.php">example-08.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-09.php" class="js-directory-link" id="bfaa6efe39f8e6b53b1623ec75af5196-8323358a4c04185f8126cf4cddb24b6c4d2a041d" title="example-09.php">example-09.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-10.php" class="js-directory-link" id="e967c2432839dc733d5b6744acc83766-7e8508267fc3ce84bf3eb6417a32d894e15bfa1a" title="example-10.php">example-10.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-11.php" class="js-directory-link" id="78ab2f4faf182fba1312c9cf89ad8899-bff61b23d5223ff7f093db9e305f64bff0da31b3" title="example-11.php">example-11.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-12.php" class="js-directory-link" id="295341a461dd86f9fc7f24d3dcf27c4e-077575fc41147fa016ad4c229c2703273e6f8a45" title="example-12.php">example-12.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-13.php" class="js-directory-link" id="5d740fc68f1856010c2cc6bc0725a30c-b08a9cb2020b1320fb0f4623ca325c6415b38f3a" title="example-13.php">example-13.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-14.php" class="js-directory-link" id="f92da2f3b08729d09e2602a7c9cf1f40-caf3680259121c5173b865a906adfd1a7c007f93" title="example-14.php">example-14.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-15.php" class="js-directory-link" id="3228397e70a500cacbf2c011378b12e6-dfc70fd6813b7739bedbe2aac15af534405c0dba" title="example-15.php">example-15.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-16.php" class="js-directory-link" id="dac25b1f13259f9cbfbd2335a1a1484a-d6840f7a98f235c8460b1a0701cd78d444dbd88d" title="example-16.php">example-16.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-17.php" class="js-directory-link" id="18b9b51210cf0ba4a0b37d82bd45312c-e44e3da0c3511e5f20578db42d1b8e615ebc4353" title="example-17.php">example-17.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-18.php" class="js-directory-link" id="07fcacfb04f3cb074c22f200053ddda6-765754f28a4c2e4ebe95ec43e595570bdc94bbf8" title="example-18.php">example-18.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-19.php" class="js-directory-link" id="ce1a182de256c64cee012821ccf08793-0cad1b0de8d0a02fa747bd517309f0d683888873" title="example-19.php">example-19.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/2f43a88d9c519ce731bb93bdfc1c9632168ef774" class="message" data-pjax="true" title="Example 19 added: shared support
+Also, added newlines to all scripts">Example 19 added: shared support</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-17T02:40:19Z" is="time-ago" title="17 марта 2012 г., 6:40 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-20.php" class="js-directory-link" id="51e321e3694735a8482f2c5caaf5f640-c3da6240ba3164b8ab80c59ed227a9b56d3f0bc5" title="example-20.php">example-20.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/7f70660b16447e65de2c7b88df7d43de84887492" class="message" data-pjax="true" title="Added example of preference to Zend\Di Examples">Added example of preference to Zend\Di Examples</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-03-19T20:04:24Z" is="time-ago" title="20 марта 2012 г., 0:04 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-21.php" class="js-directory-link" id="9b641fb81449432182c0c5d287c5d7de-24be138ea95b448007e51048b9c30cb1fa4fa3df" title="example-21.php">example-21.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/076f2b89b785fd73c5480392ec86f07d14e75085" class="message" data-pjax="true" title="Removed var_dumps()">Removed var_dumps()</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-04-18T19:37:27Z" is="time-ago" title="18 апр. 2012 г., 23:37 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+        <tr>
+          <td class="icon">
+            <span class="octicon octicon-file-text"></span>
+            <img alt="" class="spinner" height="16" src="./ralphschindler Zend_DI-Examples_files/octocat-spinner-32.gif" width="16">
+          </td>
+          <td class="content">
+            <span class="css-truncate css-truncate-target"><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/zf2bootstrap.dist.php" class="js-directory-link" id="ca47665f7d3498566559c7a1432d4258-b37798a5faae7fec9fb17c7c0f460b203d98f1ad" title="zf2bootstrap.dist.php">zf2bootstrap.dist.php</a></span>
+          </td>
+          <td class="message">
+            <span class="css-truncate css-truncate-target">
+              <a href="https://github.com/ralphschindler/Zend_DI-Examples/commit/61c8dde6b11da9f9b9a962c0073440a86221d657" class="message" data-pjax="true" title="Updated examples for beta2 usages">Updated examples for beta2 usages</a>
+            </span>
+          </td>
+          <td class="age">
+            <span class="css-truncate css-truncate-target"><time datetime="2012-01-05T15:18:36Z" is="time-ago" title="5 янв. 2012 г., 19:18 GMT+4">3 years ago</time></span>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+</div>
+
+
+  <div id="readme" class="boxed-group flush clearfix announce instapaper_body md">
+    <h3>
+      <span class="octicon octicon-book"></span>
+      README.md
+    </h3>
+
+    <article class="markdown-body entry-content" itemprop="mainContentOfPage"><h1>
+<a id="user-content-readme" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#readme" aria-hidden="true"><span class="octicon octicon-link"></span></a>README</h1>
+
+<h2>
+<a id="user-content-bootstrapping" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#bootstrapping" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bootstrapping</h2>
+
+<p>Each script will utilize the zf2bootstrap.dist.php file located in this directory.  If you want to override this file, simply copy it to <code>zf2bootstrap.php</code> in the current working directory, or inside of your configured <code>include_path</code>.</p>
+
+<p>Most of the examples here build off of the "Movie and Lister" example
+put forth by Martin Fowler in his post located at <a href="http://martinfowler.com/articles/injection.html">http://martinfowler.com/articles/injection.html</a>.</p>
+
+<h2>
+<a id="user-content-example-index" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-index" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example Index</h2>
+
+<h3>
+<a id="user-content-example-01---constructor-injection" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-01---constructor-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 01 - Constructor Injection</h3>
+
+<p>Simple Constructor Injection.  Object obtained from the container by
+using the class name.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-01.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-02---interface-injection" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-02---interface-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 02 - Interface Injection</h3>
+
+<p>Interface Injection via runtime definition.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-02.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-03---setter-injection" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-03---setter-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 03 - Setter Injection</h3>
+
+<p>Setter injection via runtime definition.  The setter method has to be marked as such so that the container knows that the setter is non-optional.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-03.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-04---configuration-parameters" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-04---configuration-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 04 - Configuration Parameters</h3>
+
+<p>Constructor injection with configuration parameters passed into the instance manager.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-04.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-05---call-time-parameters" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-05---call-time-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 05 - Call-time Parameters</h3>
+
+<p>Constructor injection with parameters passed into the containers <code>get()</code> method.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-05.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-06---setter-injection-with-configuration" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-06---setter-injection-with-configuration" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 06 - Setter Injection With Configuration</h3>
+
+<p>Setter injection with configuration. With this form of setter injection, the setter is originally optional, but since parameters that fulfill this method are passed into the configuration, the setter will be called.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-06.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-07---setter-injection-with-call-time-parameters" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-07---setter-injection-with-call-time-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 07 - Setter Injection With Call-time Parameters</h3>
+
+<p>setter-injection-with-calltime-params</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-07.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-08---multiple-injections--single-injection-point" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-08---multiple-injections--single-injection-point" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 08 - Multiple Injections / Single Injection Point</h3>
+
+<p>The ability to inject objects/dependencies of the same type through a single injection point.  This is sometimes called re-injection.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-08.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-09---setter-injection-with-annotation" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-09---setter-injection-with-annotation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 09 - Setter Injection With Annotation</h3>
+
+<p>Setter injection specified by an annotation.  By default, setters are identified but marked as optional. By using the Inject() annotation, this will mark the method as required.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-09.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-10---compiler-based-constructor-injection" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-10---compiler-based-constructor-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 10 - Compiler Based Constructor Injection</h3>
+
+<p>Compiler based constructor injection</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-10.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-11---compiler-based-interface-injection" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-11---compiler-based-interface-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 11 - Compiler Based Interface Injection</h3>
+
+<p>Compiler based interface injection</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-11.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-12---compiled-based-setter-injection-with-annotation" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-12---compiled-based-setter-injection-with-annotation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 12 - Compiled Based Setter Injection With Annotation</h3>
+
+<p>Compiler based setter injection using annotations.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-12.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-13---closure-based-dependency" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-13---closure-based-dependency" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 13 - Closure based dependency</h3>
+
+<p>The ability to specific a method that can be called to satisfy a dependency.  This is useful when the dependency is not managed by the container, but perhaps by another container or some other outside system (service locator).</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-13.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-14---disambiguation" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-14---disambiguation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 14 - Disambiguation</h3>
+
+<p>When two methods have the same parameter signature, use the fully qualified name for the parameters instead of the given name.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-14.php"> ✍ source</a></p>
+
+<h3>
+<a id="user-content-example-15---multiple-injection-to-single-injection-point-with-multiple-arguments" class="anchor" href="https://github.com/ralphschindler/Zend_DI-Examples#example-15---multiple-injection-to-single-injection-point-with-multiple-arguments" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example 15 - Multiple Injection to Single Injection Point With Multiple Arguments</h3>
+
+<p>When a method must be called multiple times (sometimes called reinjection), and there are multiple values that need to be passed along with the dependency.</p>
+
+<p><a href="https://github.com/ralphschindler/Zend_DI-Examples/blob/master/example-15.php"> ✍ source</a></p>
+</article>
+  </div>
+
+
+        </div>
+
+      </div><!-- /.repo-container -->
+      <div class="modal-backdrop"></div>
+    </div><!-- /.container -->
+  </div><!-- /.site -->
+
+
+    </div><!-- /.wrapper -->
+
+      <div class="container">
+  <div class="site-footer" role="contentinfo">
+    <ul class="site-footer-links right">
+      <li><a href="https://status.github.com/">Status</a></li>
+      <li><a href="https://developer.github.com/">API</a></li>
+      <li><a href="http://training.github.com/">Training</a></li>
+      <li><a href="http://shop.github.com/">Shop</a></li>
+      <li><a href="https://github.com/blog">Blog</a></li>
+      <li><a href="https://github.com/about">About</a></li>
+
+    </ul>
+
+    <a href="https://github.com/" aria-label="Homepage">
+      <span class="mega-octicon octicon-mark-github" title="GitHub"></span>
+    </a>
+
+    <ul class="site-footer-links">
+      <li>© 2014 <span title="0.05345s from github-fe118-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+        <li><a href="https://github.com/site/terms">Terms</a></li>
+        <li><a href="https://github.com/site/privacy">Privacy</a></li>
+        <li><a href="https://github.com/security">Security</a></li>
+        <li><a href="https://github.com/contact">Contact</a></li>
+    </ul>
+  </div><!-- /.site-footer -->
+</div><!-- /.container -->
+
+
+    <div class="fullscreen-overlay js-fullscreen-overlay" id="fullscreen_overlay">
+  <div class="fullscreen-container js-suggester-container">
+    <div class="textarea-wrap">
+      <textarea name="fullscreen-contents" id="fullscreen-contents" class="fullscreen-contents js-fullscreen-contents" placeholder=""></textarea>
+      <div class="suggester-container">
+        <div class="suggester fullscreen-suggester js-suggester js-navigation-container"></div>
+      </div>
+    </div>
+  </div>
+  <div class="fullscreen-sidebar">
+    <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="exit-fullscreen js-exit-fullscreen tooltipped tooltipped-w" aria-label="Exit Zen Mode">
+      <span class="mega-octicon octicon-screen-normal"></span>
+    </a>
+    <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="theme-switcher js-theme-switcher tooltipped tooltipped-w" aria-label="Switch themes">
+      <span class="octicon octicon-color-mode"></span>
+    </a>
+  </div>
+</div>
+
+
+
+    <div id="ajax-error-message" class="flash flash-error">
+      <span class="octicon octicon-alert"></span>
+      <a href="https://github.com/ralphschindler/Zend_DI-Examples#" class="octicon octicon-x flash-close js-ajax-error-dismiss" aria-label="Dismiss error"></a>
+      Something went wrong with that request. Please try again.
+    </div>
+
+
+      <script crossorigin="anonymous" src="./ralphschindler Zend_DI-Examples_files/frameworks-153d6254b838872c8db73c8bd92905913f6f5b2164b7e40e5292286bd5a39403.js" type="text/javascript"></script>
+      <script async="async" crossorigin="anonymous" src="./ralphschindler Zend_DI-Examples_files/github-f4947a80dc89b7b7941d65654d67ea6d87fb3f3baf28a2975462979455f8dcbe.js" type="text/javascript"></script>
+      
+      
+  
+
+
+<div id="global-zeroclipboard-html-bridge" class="global-zeroclipboard-container" style="position: absolute; left: 1128.5px; top: 460px; width: 36px; height: 26px; z-index: 999999999;"><object id="global-zeroclipboard-flash-bridge" name="global-zeroclipboard-flash-bridge" width="100%" height="100%" type="application/x-shockwave-flash" data="https://assets-cdn.github.com/flash/ZeroClipboard.v2.1.6.swf"><param name="allowScriptAccess" value="always"><param name="allowNetworking" value="all"><param name="menu" value="false"><param name="wmode" value="transparent"><param name="flashvars" value="trustedOrigins=github.com%2C%2F%2Fgithub.com%2Chttps%3A%2F%2Fgithub.com&amp;swfObjectId=global-zeroclipboard-flash-bridge"></object></div>    <div class="facebox" id="facebox" style="display:none;">       <div class="facebox-popup">         <div class="facebox-content">         </div>         <button type="button" class="facebox-close js-facebox-close" aria-label="Close modal">           <span class="octicon octicon-remove-close"></span>         </button>       </div>     </div></body></html>
